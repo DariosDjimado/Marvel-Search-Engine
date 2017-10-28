@@ -1,6 +1,0 @@
-*.jar
-*.class
-.idea/
-HeapOverflow.iml
-target/
-log/
