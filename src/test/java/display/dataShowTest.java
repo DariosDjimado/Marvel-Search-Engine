@@ -1,6 +1,6 @@
 package display;
 
-import heapoverflow.display.DataShow;
+import fr.tse.fise2.heapoverflow.display.DataShow;
 
 public class dataShowTest {
     public static void main(String[] args) {

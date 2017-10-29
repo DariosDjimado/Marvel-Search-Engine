@@ -1,4 +1,4 @@
-package heapoverflow.display;
+package fr.tse.fise2.heapoverflow.display;
 
 import java.awt.*;
 
