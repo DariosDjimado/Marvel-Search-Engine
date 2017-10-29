@@ -1,7 +1,13 @@
 package fr.tse.fise2.heapoverflow.display;
 
+import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Observer;
 
 /**
  * DataShow is the classe used to display detailed datas on characters, comics ...
@@ -17,49 +23,21 @@ import java.awt.*;
 public class DataShow extends JFrame {
     /**
      * Constructor to display comics
+     * @param comic
+     *      The comic object to display
      */
-    public DataShow(String comicName) {
-        this.setTitle(comicName);
+    public DataShow(Comic comic) {
+        this.setTitle(comic.getTitle());
         this.setSize(400, 500);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        //Instanciation d'un objet JPanel
-        ComicsPanel pan = new ComicsPanel(comicName);
-        //On prévient notre JFrame que notre JPanel sera son content pane
-        this.setContentPane(pan);
+
+        this.setLayout(new BorderLayout());
+
+        Title1Panel head = new Title1Panel(comic.getTitle());
+        head.setLayout(new BoxLayout(head, BoxLayout.LINE_AXIS));
+        this.getContentPane().add(head, BorderLayout.PAGE_START);
+
         this.setVisible(true);
-    }
-}
-
-/**
- * Extending JPanel to adapt for comics displaying.
- * Light example to test swing
- * @author Théo Basty
- * @version 0.1
- */
-class ComicsPanel extends JPanel{
-    /**
-     * Name of the comic displayed
-     */
-    String comicName_;
-
-    /**
-     * Class constructor
-     * @param comicName
-     *      Name of the comic to display
-     */
-    public ComicsPanel(String comicName) {
-        comicName_ = comicName;
-    }
-
-    /**
-     * function called to redraw window content
-     * @param g
-     *      Graphics object from AWT
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        g.setFont(Fonts.title1);
-        g.drawString(comicName_, 10,40);
     }
 }
