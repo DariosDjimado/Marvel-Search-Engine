@@ -1,26 +1,26 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
-public class CharacterDataWrapper extends TemplateDataWrapper {
+public class ComicDataWrapper extends TemplateDataWrapper {
 
-    private CharacterDataContainer data;
+    private ComicDataContainer data;
 
-    public CharacterDataContainer getData() {
+    public ComicDataContainer getData() {
         return data;
     }
 
-    public void setData(CharacterDataContainer data) {
+    public void setData(ComicDataContainer data) {
         this.data = data;
     }
 
     @Override
     public String toString() {
-        return "CharacterDataWrapper{" +
+        return "ComicDataWrapper{" +
                 "data=" + data +
                 ", attributionText='" + attributionText + '\'' +
                 ", etag='" + etag + '\'' +
                 ", status='" + status + '\'' +
                 ", copyright='" + copyright + '\'' +
-                ", code=" + code +
+                ", code='" + code + '\'' +
                 ", attributionHTML='" + attributionHTML + '\'' +
                 '}';
     }

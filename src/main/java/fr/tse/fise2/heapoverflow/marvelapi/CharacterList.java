@@ -2,21 +2,21 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
-public class SeriesList extends TemplateList {
+public class CharacterList extends TemplateList {
 
-    private SeriesSummary[] items;
+    private CharacterSummary[] items;
 
-    public SeriesSummary[] getItems() {
+    public CharacterSummary[] getItems() {
         return items;
     }
 
-    public void setItems(SeriesSummary[] items) {
+    public void setItems(CharacterSummary[] items) {
         this.items = items;
     }
 
     @Override
     public String toString() {
-        return "SeriesList{" +
+        return "CharacterList{" +
                 "items=" + Arrays.toString(items) +
                 ", collectionURI='" + collectionURI + '\'' +
                 ", available=" + available +

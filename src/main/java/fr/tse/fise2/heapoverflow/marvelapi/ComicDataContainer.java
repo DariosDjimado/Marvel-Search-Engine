@@ -2,21 +2,21 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
-public class CharacterDataContainer extends TemplateDataContainer {
+public class ComicDataContainer extends TemplateDataContainer {
 
-    private Character[] results;
+    private Comic[] results;
 
-    public Character[] getResults() {
+    public Comic[] getResults() {
         return results;
     }
 
-    public void setResults(Character[] results) {
+    public void setResults(Comic[] results) {
         this.results = results;
     }
 
     @Override
     public String toString() {
-        return "CharacterDataContainer{" +
+        return "ComicDataContainer{" +
                 "results=" + Arrays.toString(results) +
                 ", total=" + total +
                 ", limit=" + limit +

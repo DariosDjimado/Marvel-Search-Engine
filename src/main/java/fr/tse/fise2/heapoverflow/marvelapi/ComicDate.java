@@ -1,8 +1,12 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
-public class StorySummary extends TemplateSummary {
+import java.util.Date;
+
+public class ComicDate {
 
     private String type;
+
+    private Date date;
 
     public String getType() {
         return type;
@@ -12,12 +16,19 @@ public class StorySummary extends TemplateSummary {
         this.type = type;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
-        return "StorySummary{" +
+        return "ComicDate{" +
                 "type='" + type + '\'' +
-                ", resourceURI='" + resourceURI + '\'' +
-                ", name='" + name + '\'' +
+                ", date=" + date +
                 '}';
     }
 }
