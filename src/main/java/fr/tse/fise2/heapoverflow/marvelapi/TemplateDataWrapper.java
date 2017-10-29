@@ -13,7 +13,7 @@ public class TemplateDataWrapper {
 
     protected String copyright;
 
-    protected String code;
+    protected int code;
 
     protected String attributionHTML;
 
@@ -49,11 +49,11 @@ public class TemplateDataWrapper {
         this.copyright = copyright;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 

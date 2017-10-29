@@ -8,9 +8,9 @@ public class TemplateList {
 
     protected String collectionURI;
 
-    protected String available;
+    protected int available;
 
-    protected String returned;
+    protected int returned;
 
     public String getCollectionURI() {
         return collectionURI;
@@ -20,19 +20,19 @@ public class TemplateList {
         this.collectionURI = collectionURI;
     }
 
-    public String getAvailable() {
+    public int getAvailable() {
         return available;
     }
 
-    public void setAvailable(String available) {
+    public void setAvailable(int available) {
         this.available = available;
     }
 
-    public String getReturned() {
+    public int getReturned() {
         return returned;
     }
 
-    public void setReturned(String returned) {
+    public void setReturned(int returned) {
         this.returned = returned;
     }
 }
