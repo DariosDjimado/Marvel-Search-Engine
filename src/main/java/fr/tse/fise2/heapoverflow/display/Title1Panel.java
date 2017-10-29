@@ -31,6 +31,6 @@ public class Title1Panel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         g.setFont(Fonts.title1);
-        g.drawString(text_, 10,40);
+        g.drawString(text_, 10,30);
     }
 }
