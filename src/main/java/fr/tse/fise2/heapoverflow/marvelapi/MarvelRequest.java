@@ -18,7 +18,7 @@ public class MarvelRequest extends UrlBuilder {
      * @param json the string that we need to deserialize
      * @return CharacterDataWrapper object or null if the rateLimit is reached
      */
-    private static CharacterDataWrapper deserializeCharacters(String json) {
+    public static CharacterDataWrapper deserializeCharacters(String json) {
         if (json.equals(requestCanceled)) {
             return null;
         } else {
@@ -32,7 +32,7 @@ public class MarvelRequest extends UrlBuilder {
      * @param json the string that we need to deserialize
      * @return ComicDataWrapper object or null if the rateLimit is reached
      */
-    private static ComicDataWrapper deserializeComics(String json) {
+    public static ComicDataWrapper deserializeComics(String json) {
         if (json.equals(requestCanceled)) {
             return null;
         } else {
@@ -48,7 +48,7 @@ public class MarvelRequest extends UrlBuilder {
      * @throws IOException from okHttp3
      * @throws NoSuchAlgorithmException from MD5
      */
-    String getData(String partialUrl) throws IOException, NoSuchAlgorithmException {
+    public String getData(String partialUrl) throws IOException, NoSuchAlgorithmException {
         if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
             Request request = new Request.Builder()
                     .url(getUrl(partialUrl))
@@ -70,7 +70,7 @@ public class MarvelRequest extends UrlBuilder {
             String response = requestExample.getData("characters");
             System.out.println(deserializeCharacters(response).getData().getResults()[0]);
 
-            String response2 = requestExample.getData("comics");
+            String response2 = requestExample.getData("comics/21486");
             System.out.println(deserializeCharacters(response2).getData().getResults()[0]);
 
             System.out.println(Authentication.getNumberOfRequest());

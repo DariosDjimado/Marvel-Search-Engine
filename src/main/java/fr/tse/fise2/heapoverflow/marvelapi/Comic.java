@@ -1,7 +1,6 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
-import java.util.Date;
 
 public class Comic {
 
@@ -17,7 +16,7 @@ public class Comic {
 
     private String description;
 
-    private Date modified;
+    private String modified;
 
     private String isbn;
 
@@ -111,11 +110,11 @@ public class Comic {
         this.description = description;
     }
 
-    public Date getModified() {
+    public String getModified() {
         return modified;
     }
 
-    public void setModified(Date modified) {
+    public void setModified(String modified) {
         this.modified = modified;
     }
 
