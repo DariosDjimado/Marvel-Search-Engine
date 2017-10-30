@@ -37,7 +37,11 @@ public class UrlBuilder {
         }
 
         // return the url
-        return baseUrl + partialUrl + "?apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
+        if(partialUrl.contains("?")){
+            return baseUrl + partialUrl + "&apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
+        } else{
+            return baseUrl + partialUrl + "?apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
+        }
 
     }
 
