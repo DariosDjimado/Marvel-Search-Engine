@@ -67,30 +67,4 @@ public class MarvelRequest extends UrlBuilder {
     public static BufferedImage getImage(Image image) throws IOException {
         return ImageIO.read(imageUrl(image));
     }
-
-    // TODO test
-    public static void main(String[] args) {
-        MarvelRequest requestExample = new MarvelRequest();
-
-        try {
-            String response = requestExample.getData("characters");
-            System.out.println(deserializeCharacters(response).getData().getResults()[0]);
-
-            String response2 = requestExample.getData("comics/21486");
-            System.out.println(deserializeComics(response2).getData().getResults()[0]);
-
-            System.out.println(Authentication.getNumberOfRequest());
-
-            // fetch comics
-            String responseComics = requestExample.getData("comics");
-            // find an existing image
-            Image comicImage = deserializeComics(responseComics).getData().getResults()[2].getImages()[0];
-            // fetch the image
-            BufferedImage bufferedImage = getImage(comicImage);
-            System.out.println(bufferedImage);
-
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
 }
