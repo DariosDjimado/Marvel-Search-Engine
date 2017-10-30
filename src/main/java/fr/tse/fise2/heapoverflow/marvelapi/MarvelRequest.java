@@ -5,6 +5,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -51,7 +53,7 @@ public class MarvelRequest extends UrlBuilder {
     public String getData(String partialUrl) throws IOException, NoSuchAlgorithmException {
         if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
             Request request = new Request.Builder()
-                    .url(getUrl(partialUrl))
+                    .url(apiPlainDataUrl(partialUrl))
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 Authentication.setNumberOfRequest(Authentication.getNumberOfRequest() + 1);
@@ -60,6 +62,10 @@ public class MarvelRequest extends UrlBuilder {
         } else {
             return requestCanceled;
         }
+    }
+
+    public static BufferedImage getImage(Image image) throws IOException {
+        return ImageIO.read(imageUrl(image));
     }
 
     // TODO test
@@ -71,9 +77,17 @@ public class MarvelRequest extends UrlBuilder {
             System.out.println(deserializeCharacters(response).getData().getResults()[0]);
 
             String response2 = requestExample.getData("comics/21486");
-            System.out.println(deserializeCharacters(response2).getData().getResults()[0]);
+            System.out.println(deserializeComics(response2).getData().getResults()[0]);
 
             System.out.println(Authentication.getNumberOfRequest());
+
+            // fetch comics
+            String responseComics = requestExample.getData("comics");
+            // find an existing image
+            Image comicImage = deserializeComics(responseComics).getData().getResults()[2].getImages()[0];
+            // fetch the image
+            BufferedImage bufferedImage = getImage(comicImage);
+            System.out.println(bufferedImage);
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();

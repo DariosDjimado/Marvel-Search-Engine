@@ -1,8 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.net.URL;
 
 public class UrlBuilder {
 
@@ -12,7 +14,7 @@ public class UrlBuilder {
      * @return String
      * @throws NoSuchAlgorithmException from MessageDigest.
      */
-    public static String getUrl(String partialUrl) throws NoSuchAlgorithmException {
+    public static String apiPlainDataUrl(String partialUrl) throws NoSuchAlgorithmException {
 
         // Queries
         String timestamp = Long.toString(System.currentTimeMillis());
@@ -39,10 +41,16 @@ public class UrlBuilder {
 
     }
 
+
+    // TODO add comment
+    public static URL imageUrl(Image image) throws MalformedURLException {
+        return new URL(image.getPath()+'.'+image.getExtension());
+    }
+
     // TODO test
     public static void main(String[] args) {
         try {
-            System.out.println(UrlBuilder.getUrl("comics"));
+            System.out.println(UrlBuilder.apiPlainDataUrl("comics"));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
