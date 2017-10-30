@@ -3,7 +3,7 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 import java.util.Arrays;
 
 public class Character {
-    private String id;
+    private int id;
 
     private SeriesList series;
 
@@ -25,11 +25,11 @@ public class Character {
 
     private String modified;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
