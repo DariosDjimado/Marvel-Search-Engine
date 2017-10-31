@@ -64,7 +64,7 @@ public class MarvelRequest extends UrlBuilder {
         }
     }
 
-    public static BufferedImage getImage(Image image) throws IOException {
-        return ImageIO.read(imageUrl(image));
+    public static BufferedImage getImage(Image image, ImageVariant imageVariant) throws IOException {
+        return ImageIO.read(imageUrl(image,imageVariant));
     }
 }

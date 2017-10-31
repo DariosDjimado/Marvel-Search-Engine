@@ -137,10 +137,10 @@ public class TestMarvelRequest {
         // find an existing image
         Image comicImage = deserializeComics(responseComics).getData().getResults()[2].getImages()[0];
         // fetch the image
-        BufferedImage bufferedImage = getImage(comicImage);
+        BufferedImage bufferedImage = getImage(comicImage, ImageVariant.PORTRAIT_MEDIUM);
 
-        assertEquals(bufferedImage.getHeight(), 825);
-        assertEquals(bufferedImage.getWidth(), 550);
+        assertEquals(bufferedImage.getHeight(), 150);
+        assertEquals(bufferedImage.getWidth(), 100);
 
     }
 
