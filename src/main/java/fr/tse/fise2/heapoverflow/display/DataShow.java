@@ -1,6 +1,8 @@
 package fr.tse.fise2.heapoverflow.display;
 
+import fr.tse.fise2.heapoverflow.marvelapi.CharacterSummary;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+import fr.tse.fise2.heapoverflow.marvelapi.CreatorSummary;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,21 +29,53 @@ public class DataShow extends JFrame {
      */
     public DataShow(Comic comic) {
         this.setTitle(comic.getTitle());
-        this.setSize(1000, 500);
+        this.setSize(600, 500);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        JPanel content = new JPanel();
-        this.setLayout(new BorderLayout());
+        this.getContentPane().setLayout(new BorderLayout());
 
+        //region title display
         Title1Panel head = new Title1Panel(comic.getTitle());
         head.setPreferredSize(new Dimension(head.getFontMetrics(Fonts.title1).stringWidth(comic.getTitle()), 45));
         this.getContentPane().add(head, BorderLayout.NORTH);
+        //endregion
 
+        //region detail display
         ShowComicDetails detail = new ShowComicDetails(comic);
-//        detail.setBackground(Color.RED);
+//        detail.setBackground(Color.RED)
         this.getContentPane().add(detail, BorderLayout.CENTER);
+        //endregion
 
+        //region Tabs display
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
+        //region Description
+        JEditorPane description = new JEditorPane();
+        description.setText(comic.getDescription());
+        tabs.addTab("Description", new JScrollPane(description));
+        //endregion
+        //region Character
+        DefaultListModel<CharacterListElement> charListModel = new DefaultListModel<>();
+        for(CharacterSummary character : comic.getCharacters().getItems()){
+            charListModel.addElement(new CharacterListElement(character));
+        }
+        JList<CharacterListElement> characters = new JList<>(charListModel);
+        tabs.addTab("Characters", new JScrollPane(characters));
+        //endregion
+        //region Creators
+        DefaultListModel<CreatorListElement> creaListModel = new DefaultListModel<>();
+        for(CreatorSummary creator : comic.getCreators().getItems()){
+            creaListModel.addElement(new CreatorListElement(creator));
+        }
+        JList<CreatorListElement> creators = new JList<>(creaListModel);
+        tabs.addTab("Creators", new JScrollPane(creators));
+        //endregion
+
+        this.getContentPane().add(tabs, BorderLayout.SOUTH);
+        //endregion
+
+        //region thumbnail display
         try {
             URL url = new URL(comic.getThumbnail().getPath() + "/portrait_fantastic." + comic.getThumbnail().getExtension());
             System.out.println("getting " + url);
@@ -53,8 +87,134 @@ public class DataShow extends JFrame {
         catch (Exception e){
             System.out.println(e);
         }
+        //endregion
 
-
+        this.setResizable(false);
         this.setVisible(true);
+    }
+}
+
+/**
+ * Class to adapt Character Summary for JList display
+ * @author Théo Basty
+ */
+class CharacterListElement{
+    /**
+     * CharacterSummary to be listed
+     */
+    CharacterSummary character;
+
+    /**
+     * Constructor
+     * @param character
+     *      Character to be listed
+     */
+    public CharacterListElement(CharacterSummary character) {
+        this.character = character;
+    }
+
+    /**
+     * CharacterSummary getter
+     * @return
+     *      The character represented
+     */
+    public CharacterSummary getCharacter() {
+        return character;
+    }
+
+    /**
+     * CharacterSummary setter
+     * @param character
+     *      Character to be listed
+     */
+    public void setCharacter(CharacterSummary character) {
+        this.character = character;
+    }
+
+    /**
+     * Override toString to return only the name of the character
+     * @return
+     *      name of the character
+     */
+    @Override
+    public String toString() {
+        return this.character.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CharacterListElement that = (CharacterListElement) o;
+
+        return character != null ? character.equals(that.character) : that.character == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return character.hashCode();
+    }
+}/**
+
+ * Class to adapt Creator Summary for JList display
+ * @author Théo Basty
+ */
+class CreatorListElement{
+    /**
+     * CharacterSummary to be listed
+     */
+    CreatorSummary creator;
+
+    /**
+     * Constructor
+     * @param creator
+     *      Creator to be listed
+     */
+    public CreatorListElement(CreatorSummary creator) {
+        this.creator = creator;
+    }
+
+    /**
+     * CreatorSummary getter
+     * @return
+     *      The creator represented
+     */
+    public CreatorSummary getCharacter() {
+        return creator;
+    }
+
+    /**
+     * CreatorSummary setter
+     * @param creator
+     *      Creator to be listed
+     */
+    public void setCharacter(CreatorSummary creator) {
+        this.creator = creator;
+    }
+
+    /**
+     * Override toString to return only the name of the character
+     * @return
+     *      name of the creator
+     */
+    @Override
+    public String toString() {
+        return this.creator.getRole() + " : " + this.creator.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CreatorListElement that = (CreatorListElement) o;
+
+        return creator != null ? creator.equals(that.creator) : that.creator == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return creator.hashCode();
     }
 }
