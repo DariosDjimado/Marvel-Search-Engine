@@ -4,6 +4,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -35,6 +36,7 @@ public class DataShow extends JFrame {
 
         //region title display
         JLabel head = new JLabel();
+        head.setBorder(new EmptyBorder(10, 10, 0, 10));
         head.setFont(Fonts.title1);
         head.setText(comic.getTitle());
         this.getContentPane().add(head, BorderLayout.NORTH);
@@ -42,7 +44,6 @@ public class DataShow extends JFrame {
 
         //region detail display
         ShowComicDetails detail = new ShowComicDetails(comic);
-//        detail.setBackground(Color.RED)
         this.getContentPane().add(detail, BorderLayout.CENTER);
         //endregion
 
@@ -78,6 +79,7 @@ public class DataShow extends JFrame {
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(comic.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
             thumb.setPreferredSize(new Dimension(200, 274));
+            thumb.setBorder(new EmptyBorder(10,10,0,5));
             this.getContentPane().add(thumb, BorderLayout.WEST);
         }
         catch (Exception e){

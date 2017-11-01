@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -31,9 +32,9 @@ public class ShowThumbnail extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(Color.GRAY);
-        g.fillRect(15,5,179,263);
+        g.fillRect(this.getBorder().getBorderInsets(this).left+5,5,179,263);
         g.setColor(Color.black);
-        g.drawRect(15,5,179,263);
-        g.drawImage(image_, 21, 11, null);
+        g.drawRect(this.getBorder().getBorderInsets(this).left+5,5,179,263);
+        g.drawImage(image_, this.getBorder().getBorderInsets(this).left+11, 11, null);
     }
 }
