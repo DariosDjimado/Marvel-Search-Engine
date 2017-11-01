@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 
 /**
- * DataShow is the classe used to display detailed datas on characters, comics ...
- * (still a stub at this stage)
+ * Window used to display detailed datas on characters, comics ...
+ * <br/>
  * can display :
  * <ul>
  *     <li>Comics</li>
