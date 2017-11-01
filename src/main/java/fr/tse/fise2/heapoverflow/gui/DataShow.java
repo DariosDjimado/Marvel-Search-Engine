@@ -1,4 +1,4 @@
-package fr.tse.fise2.heapoverflow.display;
+package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.marvelapi.CharacterSummary;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
