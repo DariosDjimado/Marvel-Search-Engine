@@ -65,5 +65,16 @@ public class ShowComicDetails extends JPanel {
             g.drawString("- " + price.getType() + " : " + price.getPrice(), 15, g.getFont().getSize() * lineCount);
         }
 
+
+
+        //pageCount
+        lineCount++;
+        if (comic_.getIssueNumber() > 0) {
+            g.setFont(Fonts.boldContent);
+            g.drawString("Page Count : ", 5, g.getFont().getSize() * lineCount);
+            g.setFont(Fonts.content);
+            g.drawString(String.valueOf(comic_.getPageCount()), 5 + g.getFontMetrics(Fonts.boldContent).stringWidth("Page Count : "), g.getFont().getSize() * lineCount);
+        }
+
     }
 }

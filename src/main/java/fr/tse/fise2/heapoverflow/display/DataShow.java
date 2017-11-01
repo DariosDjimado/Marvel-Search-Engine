@@ -200,7 +200,7 @@ class CreatorListElement{
      */
     @Override
     public String toString() {
-        return this.creator.getRole() + " : " + this.creator.getName();
+        return this.creator.getName() + " : " + this.creator.getRole();
     }
 
     @Override
