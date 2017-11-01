@@ -34,8 +34,9 @@ public class DataShow extends JFrame {
         this.getContentPane().setLayout(new BorderLayout());
 
         //region title display
-        Title1Panel head = new Title1Panel(comic.getTitle());
-        head.setPreferredSize(new Dimension(head.getFontMetrics(Fonts.title1).stringWidth(comic.getTitle()), 45));
+        JLabel head = new JLabel();
+        head.setFont(Fonts.title1);
+        head.setText(comic.getTitle());
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
 
