@@ -1,8 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.marvelapi.CharacterSummary;
-import fr.tse.fise2.heapoverflow.marvelapi.Comic;
-import fr.tse.fise2.heapoverflow.marvelapi.CreatorSummary;
+import fr.tse.fise2.heapoverflow.marvelapi.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -77,10 +75,7 @@ public class DataShow extends JFrame {
 
         //region thumbnail display
         try {
-            URL url = new URL(comic.getThumbnail().getPath() + "/portrait_fantastic." + comic.getThumbnail().getExtension());
-            System.out.println("getting " + url);
-            BufferedImage image = ImageIO.read(url);
-            ShowThumbnail thumb = new ShowThumbnail(image);
+            ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(comic.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
             thumb.setPreferredSize(new Dimension(200, 274));
             this.getContentPane().add(thumb, BorderLayout.WEST);
         }
