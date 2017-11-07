@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Class to show detailed informations on Comics
+ * JPanel to show detailed informations on Comics
  */
 public class ShowComicDetails extends JPanel {
     /**
