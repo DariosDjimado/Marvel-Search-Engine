@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 
 /**
- * DataShow is the classe used to display detailed datas on characters, comics ...
- * (still a stub at this stage)
+ * Window used to display detailed datas on characters, comics ...
+ * <br/>
  * can display :
  * <ul>
  *     <li>Comics</li>
@@ -22,11 +22,20 @@ import java.net.URL;
  */
 public class DataShow extends JFrame {
     /**
-     * Constructor to display comics
+     * Function to display comics
      * @param comic
      *      The comic object to display
      */
-    public DataShow(Comic comic) {
+    public DataShow(final Comic comic) throws HeadlessException {
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                DrawComic(comic);
+            }
+        });
+
+    }
+
+    public void DrawComic(Comic comic) {
         this.setTitle(comic.getTitle());
         this.setSize(600, 500);
         this.setLocationRelativeTo(null);
