@@ -1,5 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.Controller;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
@@ -323,6 +325,11 @@ class SuggestionLabel extends JLabel {
         String typedWord = autoCompletion.getCurrentlyTypedWord();
         String t = text.substring(0, text.lastIndexOf(typedWord));
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
+        SearchHandler.setCurrentSearch(tmp.split("\\|+")[1]);
         textField.setText(tmp + " ");
+
+
+        Controller.emitEvent(tmp);
+
     }
 }
