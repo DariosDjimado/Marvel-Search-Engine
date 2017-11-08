@@ -19,7 +19,7 @@ import java.net.URL;
  * </ul>
  *
  * @author Théo Basty
- * @version 0.1
+ * @version 2.0
  */
 public class DataShow extends JFrame {
     /**
@@ -122,8 +122,9 @@ public class DataShow extends JFrame {
 
     /**
      * Function to draw character details on the window
-     *
+     * TODO: fetch all comics and series appearances from API
      * @param character
+     *
      */
     public void DrawCharacter(Character character) {
         this.setTitle(character.getName());
@@ -142,8 +143,8 @@ public class DataShow extends JFrame {
         //endregion
 
         //region detail display
-//        ShowComicDetails detail = new ShowComicDetails(comic);
-//        this.getContentPane().add(detail, BorderLayout.CENTER);
+        ShowCharacterDetails detail = new ShowCharacterDetails(character);
+        this.getContentPane().add(detail, BorderLayout.CENTER);
         //endregion
 
         //region Tabs display
@@ -155,21 +156,21 @@ public class DataShow extends JFrame {
         description.setEditable(false);
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
-        //region Character
-//        DefaultListModel<CharacterListElement> charListModel = new DefaultListModel<>();
-//        for(CharacterSummary character : comic.getCharacters().getItems()){
-//            charListModel.addElement(new CharacterListElement(character));
-//        }
-//        JList<CharacterListElement> characters = new JList<>(charListModel);
-//        tabs.addTab("Characters", new JScrollPane(characters));
+        //region Series
+        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
+        for(SeriesSummary serie : character.getSeries().getItems()){
+            seriesListModel.addElement(new SerieListElement(serie));
+        }
+        JList<SerieListElement> series = new JList<>(seriesListModel);
+        tabs.addTab("Series", new JScrollPane(series));
         //endregion
-        //region Creators
-//        DefaultListModel<CreatorListElement> creaListModel = new DefaultListModel<>();
-//        for(CreatorSummary creator : comic.getCreators().getItems()){
-//            creaListModel.addElement(new CreatorListElement(creator));
-//        }
-//        JList<CreatorListElement> creators = new JList<>(creaListModel);
-//        tabs.addTab("Creators", new JScrollPane(creators));
+        //region Comics
+        DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
+        for(ComicSummary comic : character.getComics().getItems()){
+            comicListModel.addElement(new ComicListElement(comic));
+        }
+        JList<ComicListElement> comics = new JList<>(comicListModel);
+        tabs.addTab("Comics", new JScrollPane(comics));
         //endregion
 
         this.getContentPane().add(tabs, BorderLayout.SOUTH);
@@ -313,5 +314,129 @@ class CreatorListElement{
     @Override
     public int hashCode() {
         return creator.hashCode();
+    }
+}
+
+ /** Class to adapt Comic Summary for JList display
+   * @author Théo Basty
+   */
+class ComicListElement{
+    /**
+     * ComicSummary to be listed
+     */
+    ComicSummary comic;
+
+    /**
+     * Constructor
+     * @param comic
+     *      Comic to be listed
+     */
+    public ComicListElement(ComicSummary comic) {
+        this.comic = comic;
+    }
+
+    /**
+     * ComicSummary getter
+     * @return
+     *      The comic represented
+     */
+    public ComicSummary getCharacter() {
+        return comic;
+    }
+
+    /**
+     * ComicSummary setter
+     * @param comic
+     *      Comic to be listed
+     */
+    public void setCharacter(ComicSummary comic) {
+        this.comic = comic;
+    }
+
+    /**
+     * Override toString to return only the name of the comic
+     * @return
+     *      name of the comic
+     */
+    @Override
+    public String toString() {
+        return this.comic.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ComicListElement that = (ComicListElement) o;
+
+        return comic != null ? comic.equals(that.comic) : that.comic == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return comic.hashCode();
+    }
+}
+
+ /** Class to adapt Serie Summary for JList display
+  * @author Théo Basty
+  */
+class SerieListElement{
+    /**
+     * SeriesSummary to be listed
+     */
+    SeriesSummary serie;
+
+    /**
+     * Constructor
+     * @param serie
+     *      Serie to be listed
+     */
+    public SerieListElement(SeriesSummary serie) {
+        this.serie = serie;
+    }
+
+    /**
+     * CreatorSummary getter
+     * @return
+     *      The serie represented
+     */
+    public SeriesSummary getCharacter() {
+        return serie;
+    }
+
+    /**
+     * SeriesSummary setter
+     * @param serie
+     *      Serie to be listed
+     */
+    public void setCharacter(SeriesSummary serie) {
+        this.serie = serie;
+    }
+
+    /**
+     * Override toString to return only the name of the serie
+     * @return
+     *      name of the serie
+     */
+    @Override
+    public String toString() {
+        return this.serie.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SerieListElement that = (SerieListElement) o;
+
+        return serie != null ? serie.equals(that.serie) : that.serie == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return serie.hashCode();
     }
 }
