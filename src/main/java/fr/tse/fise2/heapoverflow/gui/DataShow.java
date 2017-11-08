@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.marvelapi.*;
+import fr.tse.fise2.heapoverflow.marvelapi.Character;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,6 +36,25 @@ public class DataShow extends JFrame {
 
     }
 
+    /**
+     * Function to display Character
+     *
+     * @param character The character object to display
+     */
+    public DataShow(final Character character) throws HeadlessException {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                DrawCharacter(character);
+            }
+        });
+
+    }
+
+    /**
+     * Function to draw comic details on the window
+     *
+     * @param comic The comic to display
+     */
     public void DrawComic(Comic comic) {
         this.setTitle(comic.getTitle());
         this.setSize(600, 500);
@@ -62,6 +82,7 @@ public class DataShow extends JFrame {
         //region Description
         JEditorPane description = new JEditorPane();
         description.setText(comic.getDescription());
+        description.setEditable(false);
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
         //region Character
@@ -90,8 +111,77 @@ public class DataShow extends JFrame {
             thumb.setPreferredSize(new Dimension(200, 274));
             thumb.setBorder(new EmptyBorder(10,10,0,5));
             this.getContentPane().add(thumb, BorderLayout.WEST);
+        } catch (Exception e){
+            System.out.println(e);
         }
-        catch (Exception e){
+        //endregion
+
+        this.setResizable(false);
+        this.setVisible(true);
+    }
+
+    /**
+     * Function to draw character details on the window
+     *
+     * @param character
+     */
+    public void DrawCharacter(Character character) {
+        this.setTitle(character.getName());
+        this.setSize(600, 500);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        this.getContentPane().setLayout(new BorderLayout());
+
+        //region title display
+        JLabel head = new JLabel();
+        head.setBorder(new EmptyBorder(10, 10, 0, 10));
+        head.setFont(Fonts.title1);
+        head.setText(character.getName());
+        this.getContentPane().add(head, BorderLayout.NORTH);
+        //endregion
+
+        //region detail display
+//        ShowComicDetails detail = new ShowComicDetails(comic);
+//        this.getContentPane().add(detail, BorderLayout.CENTER);
+        //endregion
+
+        //region Tabs display
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
+        //region Description
+        JEditorPane description = new JEditorPane();
+        description.setText(character.getDescription());
+        description.setEditable(false);
+        tabs.addTab("Description", new JScrollPane(description));
+        //endregion
+        //region Character
+//        DefaultListModel<CharacterListElement> charListModel = new DefaultListModel<>();
+//        for(CharacterSummary character : comic.getCharacters().getItems()){
+//            charListModel.addElement(new CharacterListElement(character));
+//        }
+//        JList<CharacterListElement> characters = new JList<>(charListModel);
+//        tabs.addTab("Characters", new JScrollPane(characters));
+        //endregion
+        //region Creators
+//        DefaultListModel<CreatorListElement> creaListModel = new DefaultListModel<>();
+//        for(CreatorSummary creator : comic.getCreators().getItems()){
+//            creaListModel.addElement(new CreatorListElement(creator));
+//        }
+//        JList<CreatorListElement> creators = new JList<>(creaListModel);
+//        tabs.addTab("Creators", new JScrollPane(creators));
+        //endregion
+
+        this.getContentPane().add(tabs, BorderLayout.SOUTH);
+        //endregion
+
+        //region thumbnail display
+        try {
+            ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(character.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
+            thumb.setPreferredSize(new Dimension(200, 274));
+            thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
+            this.getContentPane().add(thumb, BorderLayout.WEST);
+        } catch (Exception e) {
             System.out.println(e);
         }
         //endregion
