@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.SearchListenner;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 
@@ -21,7 +22,7 @@ import java.net.URL;
  * @author Théo Basty
  * @version 2.0
  */
-public class DataShow extends JFrame {
+public class DataShow extends JFrame implements SearchListenner {
     /**
      * Function to display comics
      * @param comic
@@ -189,6 +190,27 @@ public class DataShow extends JFrame {
 
         this.setResizable(false);
         this.setVisible(true);
+    }
+
+    @Override
+    public void onComicAvailable(Comic c) {
+        this.setContentPane(new JPanel());
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                DrawComic(c);
+            }
+        });
+
+    }
+
+    @Override
+    public void onCharacterAvailable(Character c) {
+        this.setContentPane(new JPanel());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                DrawCharacter(c);
+            }
+        });
     }
 }
 
