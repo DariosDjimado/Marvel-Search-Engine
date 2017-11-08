@@ -325,8 +325,11 @@ class SuggestionLabel extends JLabel {
         String typedWord = autoCompletion.getCurrentlyTypedWord();
         String t = text.substring(0, text.lastIndexOf(typedWord));
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
+        SearchHandler.setCurrentSearch(tmp.split("\\|+")[1]);
         textField.setText(tmp + " ");
 
-        Controller.emitEvent(tmp.split("\\|+")[1]);
+
+        Controller.emitEvent(tmp);
+
     }
 }
