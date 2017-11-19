@@ -10,6 +10,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Window used to display detailed datas on characters, comics ...
@@ -73,7 +75,38 @@ public class DataShow extends JFrame implements SearchListenner {
         //endregion
 
         //region detail display
-        ShowComicDetails detail = new ShowComicDetails(comic);
+//        ShowComicDetails detail = new ShowComicDetails(comic);
+        JPanel detail = new JPanel();
+        detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
+        detail.setBorder(new EmptyBorder(10, 5, 0, 10));
+
+        LinkedHashMap<String, String> references = new LinkedHashMap<>();
+        references.put("ISBN : "        , comic.getIsbn());
+        references.put("UPC : "         , comic.getUpc());
+        references.put("Diamond Code : ", comic.getDiamondCode());
+        references.put("EAN : "         , comic.getEan());
+        references.put("ISSN : "        , comic.getIssn());
+        JPanel referencesPane = new JPanel();
+        referencesPane.setLayout(new BoxLayout(referencesPane, BoxLayout.Y_AXIS));
+        referencesPane.setBackground(Color.lightGray);
+        referencesPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), new EmptyBorder(5,5,5,5)));
+        for(String reference : references.keySet()){
+            JLabel title = new JLabel(reference);
+            title.setFont(Fonts.boldContent);
+            JLabel content = new JLabel(references.get(reference));
+            content.setFont(Fonts.content);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            refLine.setOpaque(false);
+            refLine.add(title);
+            refLine.add(content);
+            referencesPane.add(refLine);
+        }
+        referencesPane.setMaximumSize(referencesPane.getLayout().minimumLayoutSize(referencesPane));
+        JPanel alignedRefLeft = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        alignedRefLeft.add(referencesPane);
+        detail.add(alignedRefLeft);
+
+
         this.getContentPane().add(detail, BorderLayout.CENTER);
         //endregion
 
