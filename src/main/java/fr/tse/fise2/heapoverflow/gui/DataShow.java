@@ -6,7 +6,9 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -73,43 +75,80 @@ public class DataShow extends JFrame implements SearchListenner {
         head.setText(comic.getTitle());
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
-
         //region detail display
-//        ShowComicDetails detail = new ShowComicDetails(comic);
+//        ShowComicDetails detailOld = new ShowComicDetails(comic);
         JPanel detail = new JPanel();
         detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
 
+        //region references
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : "        , comic.getIsbn());
         references.put("UPC : "         , comic.getUpc());
         references.put("Diamond Code : ", comic.getDiamondCode());
         references.put("EAN : "         , comic.getEan());
         references.put("ISSN : "        , comic.getIssn());
+
         JPanel referencesPane = new JPanel();
-        referencesPane.setLayout(new BoxLayout(referencesPane, BoxLayout.Y_AXIS));
+        referencesPane.setLayout(new GridLayout(3, 2));
         referencesPane.setBackground(Color.lightGray);
-        referencesPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), new EmptyBorder(5,5,5,5)));
+        referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2,2,2,2), BorderFactory.createLineBorder(Color.darkGray)));
         for(String reference : references.keySet()){
             JLabel title = new JLabel(reference);
-            title.setFont(Fonts.boldContent);
+            title.setFont(Fonts.boldRef);
             JLabel content = new JLabel(references.get(reference));
-            content.setFont(Fonts.content);
-            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            content.setFont(Fonts.ref);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
             refLine.setOpaque(false);
             refLine.add(title);
             refLine.add(content);
             referencesPane.add(refLine);
         }
-        referencesPane.setMaximumSize(referencesPane.getLayout().minimumLayoutSize(referencesPane));
+//        referencesPane.setMaximumSize(referencesPane.getLayout().minimumLayoutSize(referencesPane));
         JPanel alignedRefLeft = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
         alignedRefLeft.add(referencesPane);
         detail.add(alignedRefLeft);
+        //endregion
+        //region detail content
+        LinkedHashMap<String, String> details = new LinkedHashMap<>();
+        for(ComicDate date:comic.getDates()) {
+            if (date.getType().equals("onsaleDate")) {
+                details.put("Release Date : ", date.getDate().substring(0, 10));
+            }
+        }
+        details.put("Format : ", comic.getFormat());
+        details.put("Serie : ", comic.getSeries().getName());
+        if(comic.getIssueNumber() > 0) {
+            details.put("Issue Number : ", comic.getIssueNumber().toString());
+        }
+        details.put("Prices : ", "");
+        for (ComicPrice price : comic.getPrices()) {
+            details.put("", "- " + price.getType() + " : " + price.getPrice());
+        }
+        details.put("Page Count : ", Integer.valueOf(comic.getPageCount()).toString());
 
-
-        this.getContentPane().add(detail, BorderLayout.CENTER);
+        JPanel detailPane = new JPanel();
+        detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
+        for(String detailLine : details.keySet()){
+            JLabel title = new JLabel(detailLine);
+            title.setFont(Fonts.boldContent);
+            JLabel content = new JLabel(details.get(detailLine));
+            content.setFont(Fonts.content);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            refLine.setOpaque(false);
+            refLine.add(title);
+            refLine.add(content);
+            detailPane.add(refLine);
+        }
+        detailPane.setBorder(new EmptyBorder(5,0,0,0));
+        detail.add(detailPane);
         //endregion
 
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        wrapper.add(detail);
+        this.getContentPane().add(wrapper, BorderLayout.CENTER);
+//        this.getContentPane().add(detailOld, BorderLayout.CENTER);
+        //endregion
         //region Tabs display
         JTabbedPane tabs = new JTabbedPane();
         tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
@@ -135,10 +174,66 @@ public class DataShow extends JFrame implements SearchListenner {
         JList<CreatorListElement> creators = new JList<>(creaListModel);
         tabs.addTab("Creators", new JScrollPane(creators));
         //endregion
+        //region variants
+        if(comic.getVariants().length > 0) {
+            DefaultListModel<ComicListElement> variantsListModel = new DefaultListModel<>();
+            for (ComicSummary comicVariant : comic.getVariants()) {
+                variantsListModel.addElement(new ComicListElement(comicVariant));
+            }
+            JList<ComicListElement> variants = new JList<>(variantsListModel);
+            tabs.addTab("Variants", new JScrollPane(variants));
+        }
+        //endregion
+        //region collections
+//        if(true) {
+        if(comic.getCollections().length > 0) {
+            DefaultListModel<ComicListElement> CollectionsListModel = new DefaultListModel<>();
+            for (ComicSummary comicCollection : comic.getCollections()) {
+                CollectionsListModel.addElement(new ComicListElement(comicCollection));
+            }
+            JList<ComicListElement> collections = new JList<>(CollectionsListModel);
+            tabs.addTab("Collections", new JScrollPane(collections));
+        }
+        //endregion
+        //region collected issues
+//        if(true) {
+        if(comic.getCollectedIssues().length > 0) {
+            DefaultListModel<ComicListElement> CollectedListModel = new DefaultListModel<>();
+            for (ComicSummary comicCollected : comic.getCollectedIssues()) {
+                CollectedListModel.addElement(new ComicListElement(comicCollected));
+            }
+            JList<ComicListElement> collected = new JList<>(CollectedListModel);
+            tabs.addTab("Collected Issues", new JScrollPane(collected));
+        }
+        //endregion
+        //region stories
+        if(comic.getStories().getItems().length > 0) {
+            JPanel stories = new JPanel();
+            stories.setLayout(new BoxLayout(stories, BoxLayout.PAGE_AXIS));
+            stories.setBackground(Color.white);
+            for(StorySummary story : comic.getStories().getItems()){
+                JLabel storyName = new JLabel(story.getName());
+                storyName.setFont(Fonts.content);
+                stories.add(storyName);
+            }
+            tabs.addTab("Stories", new JScrollPane(stories));
+        }
+        //endregion
+        //region events
+        if(comic.getEvents().getItems().length > 0) {
+            JPanel events = new JPanel();
+            events.setLayout(new BoxLayout(events, BoxLayout.PAGE_AXIS));
+            for(StorySummary event : comic.getStories().getItems()){
+                JLabel eventName = new JLabel(event.getName());
+                eventName.setFont(Fonts.content);
+                events.add(eventName);
+            }
+            tabs.addTab("Stories", new JScrollPane(events));
+        }
+        //endregion
 
         this.getContentPane().add(tabs, BorderLayout.SOUTH);
         //endregion
-
         //region thumbnail display
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(comic.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
@@ -175,12 +270,33 @@ public class DataShow extends JFrame implements SearchListenner {
         head.setText(character.getName());
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
-
         //region detail display
-        ShowCharacterDetails detail = new ShowCharacterDetails(character);
-        this.getContentPane().add(detail, BorderLayout.CENTER);
-        //endregion
+//        ShowCharacterDetails detail = new ShowCharacterDetails(character);
+        JPanel detail = new JPanel();
+        detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
+        detail.setBorder(new EmptyBorder(10, 5, 0, 10));
 
+        LinkedHashMap<String, String> details = new LinkedHashMap<>();
+        details.put("Appears in : ", "");
+        details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Series");
+        details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
+        details.put("Last Modification : ", character.getModified().substring(0, 10));
+
+        for(String detailLine : details.keySet()){
+            JLabel title = new JLabel(detailLine);
+            title.setFont(Fonts.boldContent);
+            JLabel content = new JLabel(details.get(detailLine));
+            content.setFont(Fonts.content);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            refLine.setOpaque(false);
+            refLine.add(title);
+            refLine.add(content);
+            detail.add(refLine);
+        }
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        wrapper.add(detail);
+        this.getContentPane().add(wrapper, BorderLayout.CENTER);
+        //endregion
         //region Tabs display
         JTabbedPane tabs = new JTabbedPane();
         tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
@@ -209,7 +325,6 @@ public class DataShow extends JFrame implements SearchListenner {
 
         this.getContentPane().add(tabs, BorderLayout.SOUTH);
         //endregion
-
         //region thumbnail display
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(character.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
@@ -370,9 +485,7 @@ class CreatorListElement{
     public int hashCode() {
         return creator.hashCode();
     }
-}
-
- /** Class to adapt Comic Summary for JList display
+} /** Class to adapt Comic Summary for JList display
    * @author Théo Basty
    */
 class ComicListElement{
@@ -395,7 +508,7 @@ class ComicListElement{
      * @return
      *      The comic represented
      */
-    public ComicSummary getCharacter() {
+    public ComicSummary getComic() {
         return comic;
     }
 
@@ -404,7 +517,7 @@ class ComicListElement{
      * @param comic
      *      Comic to be listed
      */
-    public void setCharacter(ComicSummary comic) {
+    public void setComic(ComicSummary comic) {
         this.comic = comic;
     }
 
@@ -432,9 +545,7 @@ class ComicListElement{
     public int hashCode() {
         return comic.hashCode();
     }
-}
-
- /** Class to adapt Serie Summary for JList display
+} /** Class to adapt Serie Summary for JList display
   * @author Théo Basty
   */
 class SerieListElement{

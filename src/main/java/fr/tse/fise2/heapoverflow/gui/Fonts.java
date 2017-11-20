@@ -23,4 +23,12 @@ public class Fonts {
      * Font for bold content
      */
     public static Font boldContent = new Font("Calibri", Font.BOLD, 16);
+    /**
+     * Font for bold content
+     */
+    public static Font boldRef = new Font("Calibri", Font.BOLD, 12);
+    /**
+     * Font for bold content
+     */
+    public static Font ref = new Font("Calibri", Font.PLAIN, 12);
 }

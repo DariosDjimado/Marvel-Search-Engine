@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+import fr.tse.fise2.heapoverflow.marvelapi.ComicDate;
 import fr.tse.fise2.heapoverflow.marvelapi.ComicPrice;
 
 import javax.swing.*;
@@ -32,6 +33,17 @@ public class ShowComicDetails extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         int lineCount = 0;
+        //Release date
+        for(ComicDate date:comic_.getDates()){
+            if(date.getType().equals("onsaleDate")){
+                lineCount++;
+                g.setFont(Fonts.boldContent);
+                g.drawString("Release date : ", 5, g.getFont().getSize()*lineCount);
+                g.setFont(Fonts.content);
+                g.drawString(date.getDate().substring(0, 10), 5 + g.getFontMetrics(Fonts.boldContent).stringWidth("Release date : "), g.getFont().getSize()*lineCount);
+            }
+        }
+
         //Format
         lineCount++;
         g.setFont(Fonts.boldContent);
