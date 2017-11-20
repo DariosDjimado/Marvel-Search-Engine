@@ -76,7 +76,6 @@ public class DataShow extends JFrame implements SearchListenner {
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
         //region detail display
-//        ShowComicDetails detailOld = new ShowComicDetails(comic);
         JPanel detail = new JPanel();
         detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
@@ -271,7 +270,6 @@ public class DataShow extends JFrame implements SearchListenner {
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
         //region detail display
-//        ShowCharacterDetails detail = new ShowCharacterDetails(character);
         JPanel detail = new JPanel();
         detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
