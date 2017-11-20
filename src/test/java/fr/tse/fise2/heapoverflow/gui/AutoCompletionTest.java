@@ -1,21 +1,25 @@
 package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.database.DataBase;
+import fr.tse.fise2.heapoverflow.main.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import static org.junit.Assert.*;
 
 public class AutoCompletionTest {
     public AutoCompletionTest() {
+        final Controller controller = new Controller();
+
+
         JFrame frame = new JFrame();
         frame.setPreferredSize(new Dimension(300,400));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JTextField f = new JTextField(20);
 
-        AutoCompletion autoCompletion = new AutoCompletion(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
+        AutoCompletion autoCompletion = new AutoCompletion(controller,f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
             @Override
             boolean wordTyped(String typedWord) {
 
