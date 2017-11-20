@@ -17,3 +17,14 @@ target/
 
 # Project
 comic-name.txt
+
+
+*.jar
+
+# Derby
+*.dat
+*.log
+README_DO_NOT_TOUCH_FILES.txt
+
+# wikidata api
+dumpfiles
