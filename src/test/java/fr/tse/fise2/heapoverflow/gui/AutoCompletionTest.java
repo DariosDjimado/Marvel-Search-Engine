@@ -15,7 +15,7 @@ public class AutoCompletionTest {
 
         JTextField f = new JTextField(20);
 
-        AutoCompletion autoCompletion = new AutoCompletion(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 075f) {
+        AutoCompletion autoCompletion = new AutoCompletion(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
             @Override
             boolean wordTyped(String typedWord) {
 

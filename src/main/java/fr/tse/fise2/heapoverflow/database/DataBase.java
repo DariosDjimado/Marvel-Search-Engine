@@ -16,7 +16,7 @@ public class DataBase {
         Path file = Paths.get("comic-name.txt");
         List<String> lines = new ArrayList<String>();
         for (Comic aComic : comics) {
-            lines.add(aComic.getTitle());
+            lines.add(aComic.getTitle() + "||" + aComic.getId());
         }
         Files.write(file, lines, Charset.forName("UTF-8"));
     }
