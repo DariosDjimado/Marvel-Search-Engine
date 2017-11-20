@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.database.CharacterRow;
 import fr.tse.fise2.heapoverflow.main.Controller;
 
 import javax.swing.*;
@@ -7,13 +8,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 class AutoCompletion {
+    private final Controller controller;
 
     private final JTextField textField;
     private final Window container;
@@ -41,7 +41,11 @@ class AutoCompletion {
         }
     };
 
-    public AutoCompletion(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoCompletion(Controller controller,JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+
+        this.controller = controller;
+
+
         this.textField = textField;
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
@@ -62,6 +66,32 @@ class AutoCompletion {
         suggestionsPanel.setBackground(popUpBackground);
 
         addKeyBindingToRequestFocusInPopUpWindow();
+
+
+        AutoCompletion that = this;
+        this.container.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                that.autoSuggestionPopUpWindow.setVisible(false);
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                that.autoSuggestionPopUpWindow.setVisible(false);
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+
+            }
+        });
+
+
     }
 
     private void addKeyBindingToRequestFocusInPopUpWindow() {
@@ -166,7 +196,7 @@ class AutoCompletion {
     }
 
     protected void addWordToSuggestions(String word) {
-        SuggestionLabel suggestionLabel = new SuggestionLabel(word, suggestionFocusedColor, suggestionsTextColor, this);
+        SuggestionLabel suggestionLabel = new SuggestionLabel(this.controller, word, suggestionFocusedColor, suggestionsTextColor, this);
 
         calculatePopUpWindowSize(suggestionLabel);
 
@@ -246,7 +276,19 @@ class AutoCompletion {
 
         boolean suggestionAdded = false;
 
-        for (String word : dictionary) {//get words in the dictionary which we added
+
+
+        try {
+
+            for(CharacterRow a: this.controller.getCharactersTable().findCharactersLike(typedWord,0,20)){
+                addWordToSuggestions(a.getName());
+                suggestionAdded = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        /*for (String word : dictionary) {//get words in the dictionary which we added
             boolean fullymatches = true;
             if (typedWord.length() < 3 || !word.contains(typedWord)) {
                 fullymatches = false;
@@ -255,12 +297,13 @@ class AutoCompletion {
                 addWordToSuggestions(word);
                 suggestionAdded = true;
             }
-        }
+        }*/
         return suggestionAdded;
     }
 }
 
 class SuggestionLabel extends JLabel {
+    private final Controller controller;
 
     private final JWindow autoSuggestionsPopUpWindow;
     private final JTextField textField;
@@ -268,8 +311,10 @@ class SuggestionLabel extends JLabel {
     private boolean focused = false;
     private Color suggestionsTextColor, suggestionBorderColor;
 
-    public SuggestionLabel(String string, final Color borderColor, Color suggestionsTextColor, AutoCompletion autoCompletion) {
+    public SuggestionLabel(final Controller controller, String string, final Color borderColor, Color suggestionsTextColor, AutoCompletion autoCompletion) {
         super(string);
+
+        this.controller = controller;
 
         this.suggestionsTextColor = suggestionsTextColor;
         this.autoCompletion = autoCompletion;
@@ -303,6 +348,8 @@ class SuggestionLabel extends JLabel {
                 autoSuggestionsPopUpWindow.setVisible(false);
             }
         });
+
+        this.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
     }
 
     public boolean isFocused() {
@@ -325,11 +372,13 @@ class SuggestionLabel extends JLabel {
         String typedWord = autoCompletion.getCurrentlyTypedWord();
         String t = text.substring(0, text.lastIndexOf(typedWord));
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
-        SearchHandler.setCurrentSearch(tmp.split("\\|+")[1]);
         textField.setText(tmp + " ");
 
-
+        try {
+            SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         Controller.emitEvent(tmp);
-
     }
 }
