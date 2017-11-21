@@ -26,54 +26,22 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author Théo Basty
  * @version 2.0
  */
-public class DataShow extends JFrame implements SearchListenner {
-    /**
-     * Function to display comics
-     * @param comic
-     *      The comic object to display
-     */
-    public DataShow(final Comic comic) throws HeadlessException {
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run() {
-                DrawComic(comic);
-            }
-        });
-
-    }
-
-    /**
-     * Function to display Character
-     *
-     * @param character The character object to display
-     */
-    public DataShow(final Character character) throws HeadlessException {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DrawCharacter(character);
-            }
-        });
-
-    }
-
+public class DataShow extends JFrame {
     /**
      * Function to draw comic details on the window
      *
      * @param comic The comic to display
      */
-    public void DrawComic(Comic comic) {
-        this.setTitle(comic.getTitle());
-        this.setSize(600, 500);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        this.getContentPane().setLayout(new BorderLayout());
+    public static void DrawComic(JPanel panel,Comic comic) {
+        panel.setPreferredSize(new Dimension(600, 500));
+        panel.setLayout(new BorderLayout());
 
         //region title display
         JLabel head = new JLabel();
         head.setBorder(new EmptyBorder(10, 10, 0, 10));
         head.setFont(Fonts.title1);
         head.setText(comic.getTitle());
-        this.getContentPane().add(head, BorderLayout.NORTH);
+        panel.add(head, BorderLayout.NORTH);
         //endregion
         //region detail display
         JPanel detail = new JPanel();
@@ -145,12 +113,12 @@ public class DataShow extends JFrame implements SearchListenner {
 
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         wrapper.add(detail);
-        this.getContentPane().add(wrapper, BorderLayout.CENTER);
-//        this.getContentPane().add(detailOld, BorderLayout.CENTER);
+        panel.add(wrapper, BorderLayout.CENTER);
+//        panel.add(detailOld, BorderLayout.CENTER);
         //endregion
         //region Tabs display
         JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
         //region Description
         JEditorPane description = new JEditorPane();
         description.setText(comic.getDescription());
@@ -231,21 +199,19 @@ public class DataShow extends JFrame implements SearchListenner {
         }
         //endregion
 
-        this.getContentPane().add(tabs, BorderLayout.SOUTH);
+        panel.add(tabs, BorderLayout.SOUTH);
         //endregion
         //region thumbnail display
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(comic.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
             thumb.setPreferredSize(new Dimension(200, 274));
             thumb.setBorder(new EmptyBorder(10,10,0,5));
-            this.getContentPane().add(thumb, BorderLayout.WEST);
+            panel.add(thumb, BorderLayout.WEST);
         } catch (Exception e){
             System.out.println(e);
         }
         //endregion
 
-        this.setResizable(false);
-        this.setVisible(true);
     }
 
     /**
@@ -254,20 +220,16 @@ public class DataShow extends JFrame implements SearchListenner {
      * @param character
      *
      */
-    public void DrawCharacter(Character character) {
-        this.setTitle(character.getName());
-        this.setSize(600, 500);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        this.getContentPane().setLayout(new BorderLayout());
+    public static void DrawCharacter(JPanel panel, Character character) {
+        panel.setPreferredSize(new Dimension(600, 500));
+        panel.setLayout(new BorderLayout());
 
         //region title display
         JLabel head = new JLabel();
         head.setBorder(new EmptyBorder(10, 10, 0, 10));
         head.setFont(Fonts.title1);
         head.setText(character.getName());
-        this.getContentPane().add(head, BorderLayout.NORTH);
+        panel.add(head, BorderLayout.NORTH);
         //endregion
         //region detail display
         JPanel detail = new JPanel();
@@ -293,11 +255,11 @@ public class DataShow extends JFrame implements SearchListenner {
         }
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         wrapper.add(detail);
-        this.getContentPane().add(wrapper, BorderLayout.CENTER);
+        panel.add(wrapper, BorderLayout.CENTER);
         //endregion
         //region Tabs display
         JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(this.getWidth(), 150));
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
         //region Description
         JEditorPane description = new JEditorPane();
         description.setText(character.getDescription());
@@ -321,42 +283,18 @@ public class DataShow extends JFrame implements SearchListenner {
         tabs.addTab("Comics", new JScrollPane(comics));
         //endregion
 
-        this.getContentPane().add(tabs, BorderLayout.SOUTH);
+        panel.add(tabs, BorderLayout.SOUTH);
         //endregion
         //region thumbnail display
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(character.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
             thumb.setPreferredSize(new Dimension(200, 274));
             thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
-            this.getContentPane().add(thumb, BorderLayout.WEST);
+            panel.add(thumb, BorderLayout.WEST);
         } catch (Exception e) {
             System.out.println(e);
         }
         //endregion
-
-        this.setResizable(false);
-        this.setVisible(true);
-    }
-
-    @Override
-    public void onComicAvailable(Comic c) {
-        this.setContentPane(new JPanel());
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run() {
-                DrawComic(c);
-            }
-        });
-
-    }
-
-    @Override
-    public void onCharacterAvailable(Character c) {
-        this.setContentPane(new JPanel());
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DrawCharacter(c);
-            }
-        });
     }
 }
 

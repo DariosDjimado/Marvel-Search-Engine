@@ -22,7 +22,7 @@ public class Controller {
                 Comic fetched = deserializeComics(response).getData().getResults()[0];
                 System.out.println(fetched);
 
-                dataShow.onComicAvailable(fetched);
+//                dataShow.onComicAvailable(fetched);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -33,7 +33,7 @@ public class Controller {
                 String response = request.getData("comics/" + SearchHandler.getCurrentSearch());
                 Comic fetched = deserializeComics(response).getData().getResults()[0];
                 System.out.println(fetched);
-                dataShow = new DataShow(fetched);
+//                dataShow = new DataShow(fetched);
 
             } catch (Exception e) {
                 e.printStackTrace();

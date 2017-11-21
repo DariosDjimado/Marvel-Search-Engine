@@ -3,6 +3,9 @@ package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.gui.DataShow;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
+import oracle.jrockit.jfr.JFR;
+
+import javax.swing.*;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
@@ -15,7 +18,16 @@ public class dataShowTestComic {
 //            Files.write(myFile, Arrays.asList(response));
 //            String response = Files.readAllLines(myFile).get(0);
             Comic fetched = deserializeComics(response).getData().getResults()[0];
-            DataShow testWindow = new DataShow(fetched);
+            JFrame frame = new JFrame();
+            frame.setTitle("Comic 39595 - " + fetched.getTitle());
+            frame.setSize(600, 500);
+            frame.setLocationRelativeTo(null);
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            JPanel panel = new JPanel();
+            DataShow.DrawComic(panel, fetched);
+            frame.setContentPane(panel);
+            frame.setVisible(true);
         }
         catch(Exception e)  {
             System.out.println(e);
