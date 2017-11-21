@@ -4,6 +4,7 @@ import fr.tse.fise2.heapoverflow.main.SearchListenner;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 
+import fr.tse.fise2.heapoverflow.gui.tizee;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -28,6 +29,8 @@ public class DataShow extends JFrame implements SearchListenner {
      * @param comic
      *      The comic object to display
      */
+
+	
     public DataShow(final Comic comic) throws HeadlessException {
         SwingUtilities.invokeLater(new Runnable(){
             public void run() {
@@ -63,6 +66,7 @@ public class DataShow extends JFrame implements SearchListenner {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         this.getContentPane().setLayout(new BorderLayout());
+        
 
         //region title display
         JLabel head = new JLabel();
@@ -72,6 +76,7 @@ public class DataShow extends JFrame implements SearchListenner {
         this.getContentPane().add(head, BorderLayout.NORTH);
         //endregion
 
+        
         //region detail display
         ShowComicDetails detail = new ShowComicDetails(comic);
         this.getContentPane().add(detail, BorderLayout.CENTER);
@@ -85,6 +90,13 @@ public class DataShow extends JFrame implements SearchListenner {
         description.setText(comic.getDescription());
         description.setEditable(false);
         tabs.addTab("Description", new JScrollPane(description));
+        
+   	 /**
+         * Creates new form radio
+    	 * @return 
+         */
+
+        
         //endregion
         //region Character
         DefaultListModel<CharacterListElement> charListModel = new DefaultListModel<>();
@@ -212,6 +224,8 @@ public class DataShow extends JFrame implements SearchListenner {
             }
         });
     }
+    
+    
 }
 
 /**

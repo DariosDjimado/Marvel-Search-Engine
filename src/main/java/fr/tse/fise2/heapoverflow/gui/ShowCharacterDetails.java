@@ -23,6 +23,8 @@ public class ShowCharacterDetails extends JPanel {
      */
     public ShowCharacterDetails(Character character_) {
         this.character_ = character_;
+        
+
     }
 
     /**
