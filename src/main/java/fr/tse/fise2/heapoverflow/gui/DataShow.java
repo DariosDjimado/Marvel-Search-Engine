@@ -12,8 +12,10 @@ import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
 /**
  * Window used to display detailed datas on characters, comics ...
@@ -145,7 +147,7 @@ public class DataShow extends JFrame {
         if(comic.getVariants().length > 0) {
             DefaultListModel<ComicListElement> variantsListModel = new DefaultListModel<>();
             for (ComicSummary comicVariant : comic.getVariants()) {
-                variantsListModel.addElement(new ComicListElement(comicVariant));
+                variantsListModel.addElement(new ComicListElement(comicVariant.getName(), comic.getRessourceURI()));
             }
             JList<ComicListElement> variants = new JList<>(variantsListModel);
             tabs.addTab("Variants", new JScrollPane(variants));
@@ -156,7 +158,7 @@ public class DataShow extends JFrame {
         if(comic.getCollections().length > 0) {
             DefaultListModel<ComicListElement> CollectionsListModel = new DefaultListModel<>();
             for (ComicSummary comicCollection : comic.getCollections()) {
-                CollectionsListModel.addElement(new ComicListElement(comicCollection));
+                CollectionsListModel.addElement(new ComicListElement(comicCollection.getName(), comic.getRessourceURI()));
             }
             JList<ComicListElement> collections = new JList<>(CollectionsListModel);
             tabs.addTab("Collections", new JScrollPane(collections));
@@ -167,7 +169,7 @@ public class DataShow extends JFrame {
         if(comic.getCollectedIssues().length > 0) {
             DefaultListModel<ComicListElement> CollectedListModel = new DefaultListModel<>();
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
-                CollectedListModel.addElement(new ComicListElement(comicCollected));
+                CollectedListModel.addElement(new ComicListElement(comicCollected.getName(), comic.getRessourceURI()));
             }
             JList<ComicListElement> collected = new JList<>(CollectedListModel);
             tabs.addTab("Collected Issues", new JScrollPane(collected));
@@ -216,7 +218,7 @@ public class DataShow extends JFrame {
 
     /**
      * Function to draw character details on the window
-     * TODO: fetch all comics and series appearances from API
+     * TODO: move all requests to EDT
      * @param character
      *
      */
@@ -267,20 +269,58 @@ public class DataShow extends JFrame {
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
         //region Series
-        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
-        for(SeriesSummary serie : character.getSeries().getItems()){
-            seriesListModel.addElement(new SerieListElement(serie));
+        MarvelRequest request = new MarvelRequest();
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new HashSet<>();
+            do {
+                String response = request.getData(character.getSeries().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
+            for (Comic comic : fetched) {
+                comicListModel.addElement(new ComicListElement(comic.getTitle(), comic.getRessourceURI()));
+            }
+            JList<ComicListElement> comics = new JList<>(comicListModel);
+            tabs.addTab("Series", new JScrollPane(comics));
         }
-        JList<SerieListElement> series = new JList<>(seriesListModel);
-        tabs.addTab("Series", new JScrollPane(series));
+        catch (Exception e){
+            System.out.println(e);
+        }
+
+//        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
+//        for(SeriesSummary serie : character.getSeries().getItems()){
+//            seriesListModel.addElement(new SerieListElement(serie));
+//        }
+//        JList<SerieListElement> series = new JList<>(seriesListModel);
+//        tabs.addTab("Series", new JScrollPane(series));
         //endregion
         //region Comics
-        DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
-        for(ComicSummary comic : character.getComics().getItems()){
-            comicListModel.addElement(new ComicListElement(comic));
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new HashSet<>();
+            do {
+                String response = request.getData(character.getComics().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
+            for (Comic comic : fetched) {
+                comicListModel.addElement(new ComicListElement(comic.getTitle(), comic.getRessourceURI()));
+            }
+            JList<ComicListElement> comics = new JList<>(comicListModel);
+            tabs.addTab("Comics", new JScrollPane(comics));
         }
-        JList<ComicListElement> comics = new JList<>(comicListModel);
-        tabs.addTab("Comics", new JScrollPane(comics));
+        catch (Exception e){
+            System.out.println(e);
+        }
         //endregion
 
         panel.add(tabs, BorderLayout.SOUTH);
@@ -428,43 +468,13 @@ class ComicListElement{
     /**
      * ComicSummary to be listed
      */
-    ComicSummary comic;
+    String name;
+    String URI;
 
-    /**
-     * Constructor
-     * @param comic
-     *      Comic to be listed
-     */
-    public ComicListElement(ComicSummary comic) {
-        this.comic = comic;
-    }
+    public ComicListElement(String name, String URI) {
 
-    /**
-     * ComicSummary getter
-     * @return
-     *      The comic represented
-     */
-    public ComicSummary getComic() {
-        return comic;
-    }
-
-    /**
-     * ComicSummary setter
-     * @param comic
-     *      Comic to be listed
-     */
-    public void setComic(ComicSummary comic) {
-        this.comic = comic;
-    }
-
-    /**
-     * Override toString to return only the name of the comic
-     * @return
-     *      name of the comic
-     */
-    @Override
-    public String toString() {
-        return this.comic.getName();
+        this.name = name;
+        this.URI = URI;
     }
 
     @Override
@@ -474,12 +484,20 @@ class ComicListElement{
 
         ComicListElement that = (ComicListElement) o;
 
-        return comic != null ? comic.equals(that.comic) : that.comic == null;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return URI != null ? URI.equals(that.URI) : that.URI == null;
     }
 
     @Override
     public int hashCode() {
-        return comic.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (URI != null ? URI.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 } /** Class to adapt Serie Summary for JList display
   * @author Théo Basty
