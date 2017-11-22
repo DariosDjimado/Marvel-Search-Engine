@@ -44,6 +44,20 @@ public class MarvelRequest extends UrlBuilder {
     }
 
     /**
+     * This method consists exclusively to convert a json string to ComicDataWrapper.
+     * @param json the string that we need to deserialize
+     * @return ComicDataWrapper object or null if the rateLimit is reached
+     */
+    public static CreatorDataWrapper deserializeCreators(String json) {
+        if (json.equals(requestCanceled)) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            return gson.fromJson(json, CreatorDataWrapper.class);
+        }
+    }
+
+    /**
      * This method takes the required partialUrl and makes a request from the entire url and returns the response.
      * @param partialUrl the part of the url that will be concatenate with the keys and the timestamp
      * @return String. If the rateLimit is reached this method will return the specified string <i>requestCanceled</i>
