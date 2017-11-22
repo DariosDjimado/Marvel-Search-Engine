@@ -33,7 +33,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCreat
  * @version 2.0
  * TODO move all subrequests to EDT
  */
-public class DataShow extends JFrame {
+public class DataShow{
     /**
      * Function to draw comic details on the window
      *
