@@ -1,5 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.database.DataBase;
+import fr.tse.fise2.heapoverflow.main.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -15,7 +17,8 @@ public class AutoCompletionTest {
 
         JTextField f = new JTextField(20);
 
-        AutoCompletion autoCompletion = new AutoCompletion(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
+        Controller stub = new Controller();
+        AutoCompletion autoCompletion = new AutoCompletion(stub, f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
             @Override
             boolean wordTyped(String typedWord) {
 

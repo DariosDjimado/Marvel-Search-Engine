@@ -17,6 +17,7 @@ target/
 
 # Project
 comic-name.txt
+comicSample.json
 
 
 *.jar
