@@ -2,28 +2,37 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
-public class Character implements Comparable{
+/**
+ * Created by théo on 22/11/2017.
+ */
+public class Creator implements Comparable{
     private int id;
+
+    private String firstName;
+
+    private String middleName;
+
+    private String lastName;
+
+    private String suffix;
+
+    private String fullName;
+
+    private String modified;
+
+    private String resourceURI;
+
+    private Url[] urls;
+
+    private Image thumbnail;
 
     private SeriesList series;
 
     private StoryList stories;
 
-    private Image thumbnail;
-
-    private String resourceURI;
-
-    private EventList events;
-
-    private Url[] urls;
-
-    private String description;
-
-    private String name;
-
     private ComicList comics;
 
-    private String modified;
+    private EventList events;
 
     public int getId() {
         return id;
@@ -31,6 +40,78 @@ public class Character implements Comparable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getModified() {
+        return modified;
+    }
+
+    public void setModified(String modified) {
+        this.modified = modified;
+    }
+
+    public String getResourceURI() {
+        return resourceURI;
+    }
+
+    public void setResourceURI(String resourceURI) {
+        this.resourceURI = resourceURI;
+    }
+
+    public Url[] getUrls() {
+        return urls;
+    }
+
+    public void setUrls(Url[] urls) {
+        this.urls = urls;
+    }
+
+    public Image getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Image thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public SeriesList getSeries() {
@@ -49,20 +130,12 @@ public class Character implements Comparable{
         this.stories = stories;
     }
 
-    public Image getThumbnail() {
-        return thumbnail;
+    public ComicList getComics() {
+        return comics;
     }
 
-    public void setThumbnail(Image thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    public String getResourceURI() {
-        return resourceURI;
-    }
-
-    public void setResourceURI(String resourceURI) {
-        this.resourceURI = resourceURI;
+    public void setComics(ComicList comics) {
+        this.comics = comics;
     }
 
     public EventList getEvents() {
@@ -73,52 +146,24 @@ public class Character implements Comparable{
         this.events = events;
     }
 
-    public Url[] getUrls() {
-        return urls;
-    }
-
-    public void setUrls(Url[] urls) {
-        this.urls = urls;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ComicList getComics() {
-        return comics;
-    }
-
-    public void setComics(ComicList comics) {
-        this.comics = comics;
-    }
-
-    public String getModified() {
-        return modified;
-    }
-
-    public void setModified(String modified) {
-        this.modified = modified;
-    }
-
     @Override
     public String toString() {
-        return "Character [id = " + id + ", series = " + series + ", stories = " + stories + ", thumbnail = "
-                + thumbnail + ", resourceURI = " + resourceURI + ", events = " + events + ", urls = "
-                + Arrays.toString(urls) + ", description = " + description + ", name = " + name + ", comics = "
-                + comics + ", modified = " + modified + "]";
+        return "Creator{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", suffix='" + suffix + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", modified='" + modified + '\'' +
+                ", resourceURI='" + resourceURI + '\'' +
+                ", urls=" + Arrays.toString(urls) +
+                ", thumbnail=" + thumbnail +
+                ", series=" + series +
+                ", stories=" + stories +
+                ", comics=" + comics +
+                ", events=" + events +
+                '}';
     }
 
     /**
@@ -165,7 +210,7 @@ public class Character implements Comparable{
             return 0;
         }
         else {
-            return this.getName().compareTo(((Character)o).getName());
+            return this.getFullName().compareTo(((Creator)o).getFullName());
         }
     }
 }
