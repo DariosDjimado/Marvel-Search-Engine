@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -30,16 +31,18 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCreat
  *
  * @author Théo Basty
  * @version 2.0
+ * TODO move all subrequests to EDT
  */
 public class DataShow extends JFrame {
     /**
      * Function to draw comic details on the window
      *
+     * @param panel The panel in which to draw comic infos
      * @param comic The comic to display
      */
     public static void DrawComic(JPanel panel,Comic comic) {
         MarvelRequest request = new MarvelRequest();
-        panel.setPreferredSize(new Dimension(600, 500));
+        panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
         //region title display
@@ -278,12 +281,12 @@ public class DataShow extends JFrame {
 
     /**
      * Function to draw character details on the window
-     * TODO: move all requests to EDT
-     * @param character
+     * @param panel The panel in which to draw Character infos
+     * @param character The Character to draw
      *
      */
     public static void DrawCharacter(JPanel panel, Character character) {
-        panel.setPreferredSize(new Dimension(600, 500));
+        panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
         //region title display
@@ -441,6 +444,39 @@ public class DataShow extends JFrame {
         //region thumbnail display
         try {
             ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(character.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
+            thumb.setPreferredSize(new Dimension(200, 274));
+            thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
+            panel.add(thumb, BorderLayout.WEST);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        //endregion
+    }
+
+    /**
+     * Function to draw an empty layout on a panel
+     *
+     * @param panel The panel in which to draw the empty layout
+     */
+    public static void DrawEmpty(JPanel panel){
+        panel.setMinimumSize(new Dimension(600, 500));
+        panel.setLayout(new BorderLayout());
+
+        //region title display
+        JLabel head = new JLabel();
+        head.setBorder(new EmptyBorder(10, 10, 0, 10));
+        head.setFont(Fonts.title1);
+        head.setText("Choose something to display");
+        panel.add(head, BorderLayout.NORTH);
+        //endregion
+        //region Tabs display
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
+        panel.add(tabs, BorderLayout.SOUTH);
+        //endregion
+        //region thumbnail display
+        try {
+            ShowThumbnail thumb = new ShowThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
             thumb.setPreferredSize(new Dimension(200, 274));
             thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
             panel.add(thumb, BorderLayout.WEST);
