@@ -11,11 +11,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCreators;
 
 /**
  * Window used to display detailed datas on characters, comics ...
@@ -35,6 +38,7 @@ public class DataShow extends JFrame {
      * @param comic The comic to display
      */
     public static void DrawComic(JPanel panel,Comic comic) {
+        MarvelRequest request = new MarvelRequest();
         panel.setPreferredSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
@@ -128,76 +132,132 @@ public class DataShow extends JFrame {
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
         //region Character
-        DefaultListModel<CharacterListElement> charListModel = new DefaultListModel<>();
-        for(CharacterSummary character : comic.getCharacters().getItems()){
-            charListModel.addElement(new CharacterListElement(character));
+        try {
+            CharacterDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Character> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(comic.getCharacters().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeCharacters(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
+            for (Character character : fetched) {
+                characterListModel.addElement(new MarvelListElement(character.getName(), character.getResourceURI(), MarvelType.Character));
+            }
+            JList<MarvelListElement> characters = new JList<>(characterListModel);
+            tabs.addTab("Character", new JScrollPane(characters));
         }
-        JList<CharacterListElement> characters = new JList<>(charListModel);
-        tabs.addTab("Characters", new JScrollPane(characters));
+        catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
+        }
         //endregion
         //region Creators
-        DefaultListModel<CreatorListElement> creaListModel = new DefaultListModel<>();
-        for(CreatorSummary creator : comic.getCreators().getItems()){
-            creaListModel.addElement(new CreatorListElement(creator));
+        try {
+            CreatorDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Creator> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(comic.getCreators().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeCreators(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> creatorListModel = new DefaultListModel<>();
+            for (Creator oneCreator : fetched) {
+                creatorListModel.addElement(new MarvelListElement(oneCreator.getFullName(), oneCreator.getResourceURI(), MarvelType.Creator));
+            }
+            JList<MarvelListElement> creators = new JList<>(creatorListModel);
+            tabs.addTab("Creators", new JScrollPane(creators));
         }
-        JList<CreatorListElement> creators = new JList<>(creaListModel);
-        tabs.addTab("Creators", new JScrollPane(creators));
+        catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
         //endregion
         //region variants
         if(comic.getVariants().length > 0) {
-            DefaultListModel<ComicListElement> variantsListModel = new DefaultListModel<>();
+            DefaultListModel<MarvelListElement> variantsListModel = new DefaultListModel<>();
             for (ComicSummary comicVariant : comic.getVariants()) {
-                variantsListModel.addElement(new ComicListElement(comicVariant.getName(), comic.getRessourceURI()));
+                variantsListModel.addElement(new MarvelListElement(comicVariant.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<ComicListElement> variants = new JList<>(variantsListModel);
+            JList<MarvelListElement> variants = new JList<>(variantsListModel);
             tabs.addTab("Variants", new JScrollPane(variants));
         }
         //endregion
         //region collections
 //        if(true) {
         if(comic.getCollections().length > 0) {
-            DefaultListModel<ComicListElement> CollectionsListModel = new DefaultListModel<>();
+            DefaultListModel<MarvelListElement> CollectionsListModel = new DefaultListModel<>();
             for (ComicSummary comicCollection : comic.getCollections()) {
-                CollectionsListModel.addElement(new ComicListElement(comicCollection.getName(), comic.getRessourceURI()));
+                CollectionsListModel.addElement(new MarvelListElement(comicCollection.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<ComicListElement> collections = new JList<>(CollectionsListModel);
+            JList<MarvelListElement> collections = new JList<>(CollectionsListModel);
             tabs.addTab("Collections", new JScrollPane(collections));
         }
         //endregion
         //region collected issues
 //        if(true) {
         if(comic.getCollectedIssues().length > 0) {
-            DefaultListModel<ComicListElement> CollectedListModel = new DefaultListModel<>();
+            DefaultListModel<MarvelListElement> CollectedListModel = new DefaultListModel<>();
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
-                CollectedListModel.addElement(new ComicListElement(comicCollected.getName(), comic.getRessourceURI()));
+                CollectedListModel.addElement(new MarvelListElement(comicCollected.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<ComicListElement> collected = new JList<>(CollectedListModel);
+            JList<MarvelListElement> collected = new JList<>(CollectedListModel);
             tabs.addTab("Collected Issues", new JScrollPane(collected));
         }
         //endregion
         //region stories
-        if(comic.getStories().getItems().length > 0) {
-            JPanel stories = new JPanel();
-            stories.setLayout(new BoxLayout(stories, BoxLayout.PAGE_AXIS));
-            stories.setBackground(Color.white);
-            for(StorySummary story : comic.getStories().getItems()){
-                JLabel storyName = new JLabel(story.getName());
-                storyName.setFont(Fonts.content);
-                stories.add(storyName);
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(comic.getStories().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
+            for (Comic oneComic : fetched) {
+                storiesListModel.addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Story));
             }
+            JList<MarvelListElement> stories = new JList<>(storiesListModel);
             tabs.addTab("Stories", new JScrollPane(stories));
+        }
+        catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
         }
         //endregion
         //region events
-        if(comic.getEvents().getItems().length > 0) {
-            JPanel events = new JPanel();
-            events.setLayout(new BoxLayout(events, BoxLayout.PAGE_AXIS));
-            for(StorySummary event : comic.getStories().getItems()){
-                JLabel eventName = new JLabel(event.getName());
-                eventName.setFont(Fonts.content);
-                events.add(eventName);
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(comic.getEvents().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
+            for (Comic oneComic : fetched) {
+                eventsListModel.addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Story));
             }
-            tabs.addTab("Stories", new JScrollPane(events));
+            JList<MarvelListElement> events = new JList<>(eventsListModel);
+            tabs.addTab("Events", new JScrollPane(events));
+        }
+        catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
         }
         //endregion
 
@@ -273,7 +333,7 @@ public class DataShow extends JFrame {
         try {
             ComicDataWrapper responseObj;
             int reqCount = 0;
-            Set<Comic> fetched = new HashSet<>();
+            Set<Comic> fetched = new TreeSet<>();
             do {
                 String response = request.getData(character.getSeries().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
                 responseObj = deserializeComics(response);
@@ -281,15 +341,16 @@ public class DataShow extends JFrame {
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
+            DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
             for (Comic comic : fetched) {
-                comicListModel.addElement(new ComicListElement(comic.getTitle(), comic.getRessourceURI()));
+                comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Serie));
             }
-            JList<ComicListElement> comics = new JList<>(comicListModel);
+            JList<MarvelListElement> comics = new JList<>(comicListModel);
             tabs.addTab("Series", new JScrollPane(comics));
         }
         catch (Exception e){
             System.out.println(e);
+            e.printStackTrace();
         }
 
 //        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
@@ -303,7 +364,7 @@ public class DataShow extends JFrame {
         try {
             ComicDataWrapper responseObj;
             int reqCount = 0;
-            Set<Comic> fetched = new HashSet<>();
+            Set<Comic> fetched = new TreeSet<>();
             do {
                 String response = request.getData(character.getComics().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
                 responseObj = deserializeComics(response);
@@ -311,15 +372,67 @@ public class DataShow extends JFrame {
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<ComicListElement> comicListModel = new DefaultListModel<>();
+            DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
             for (Comic comic : fetched) {
-                comicListModel.addElement(new ComicListElement(comic.getTitle(), comic.getRessourceURI()));
+                comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<ComicListElement> comics = new JList<>(comicListModel);
+            JList<MarvelListElement> comics = new JList<>(comicListModel);
             tabs.addTab("Comics", new JScrollPane(comics));
         }
         catch (Exception e){
             System.out.println(e);
+            e.printStackTrace();
+        }
+        //endregion
+        //region Stories
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(character.getStories().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
+            for (Comic story : fetched) {
+                storiesListModel.addElement(new MarvelListElement(story.getTitle(), story.getRessourceURI(), MarvelType.Story));
+            }
+            JList<MarvelListElement> stories = new JList<>(storiesListModel);
+            tabs.addTab("Stories", new JScrollPane(stories));
+        }
+        catch (SocketTimeoutException ex){
+            tabs.addTab("Stories", new JLabel("Request timeout"));
+        }
+        catch (Exception ex){
+            System.out.println(ex);
+            ex.printStackTrace();
+        }
+        //endregion
+        //region Events
+        try {
+            ComicDataWrapper responseObj;
+            int reqCount = 0;
+            Set<Comic> fetched = new TreeSet<>();
+            do {
+                String response = request.getData(character.getEvents().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
+                responseObj = deserializeComics(response);
+                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                reqCount++;
+            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+            DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
+            for (Comic event : fetched) {
+                eventsListModel.addElement(new MarvelListElement(event.getTitle(), event.getRessourceURI(), MarvelType.Story));
+            }
+            JList<MarvelListElement> events = new JList<>(eventsListModel);
+            tabs.addTab("Events", new JScrollPane(events));
+        }
+        catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
         }
         //endregion
 
@@ -339,50 +452,52 @@ public class DataShow extends JFrame {
 }
 
 /**
- * Class to adapt Character Summary for JList display
+ * Class to adapt marvel API elements for JList display and use
  * @author Théo Basty
  */
-class CharacterListElement{
-    /**
-     * CharacterSummary to be listed
-     */
-    CharacterSummary character;
+class MarvelListElement{
+    String dispName;
+    String shortURI;
+    MarvelType type;
 
-    /**
-     * Constructor
-     * @param character
-     *      Character to be listed
-     */
-    public CharacterListElement(CharacterSummary character) {
-        this.character = character;
+    public MarvelListElement(String dispName, String shortURI, MarvelType type) {
+        this.dispName = dispName;
+        if(shortURI != null && shortURI.substring(0, 4).equals("http")){
+            this.shortURI = shortURI.substring(36);
+        }
+        else {
+            this.shortURI = shortURI;
+        }
+        this.type = type;
     }
 
-    /**
-     * CharacterSummary getter
-     * @return
-     *      The character represented
-     */
-    public CharacterSummary getCharacter() {
-        return character;
+    public String getDispName() {
+        return dispName;
     }
 
-    /**
-     * CharacterSummary setter
-     * @param character
-     *      Character to be listed
-     */
-    public void setCharacter(CharacterSummary character) {
-        this.character = character;
+    public void setDispName(String dispName) {
+        this.dispName = dispName;
     }
 
-    /**
-     * Override toString to return only the name of the character
-     * @return
-     *      name of the character
-     */
+    public String getShortURI() {
+        return shortURI;
+    }
+
+    public void setShortURI(String shortURI) {
+        this.shortURI = shortURI;
+    }
+
+    public MarvelType getType() {
+        return type;
+    }
+
+    public void setType(MarvelType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
-        return this.character.getName();
+        return dispName;
     }
 
     @Override
@@ -390,173 +505,21 @@ class CharacterListElement{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CharacterListElement that = (CharacterListElement) o;
+        MarvelListElement that = (MarvelListElement) o;
 
-        return character != null ? character.equals(that.character) : that.character == null;
+        if (dispName != null ? !dispName.equals(that.dispName) : that.dispName != null) return false;
+        if (shortURI != null ? !shortURI.equals(that.shortURI) : that.shortURI != null) return false;
+        return type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return character.hashCode();
-    }
-}/**
-
- * Class to adapt Creator Summary for JList display
- * @author Théo Basty
- */
-class CreatorListElement{
-    /**
-     * CharacterSummary to be listed
-     */
-    CreatorSummary creator;
-
-    /**
-     * Constructor
-     * @param creator
-     *      Creator to be listed
-     */
-    public CreatorListElement(CreatorSummary creator) {
-        this.creator = creator;
-    }
-
-    /**
-     * CreatorSummary getter
-     * @return
-     *      The creator represented
-     */
-    public CreatorSummary getCharacter() {
-        return creator;
-    }
-
-    /**
-     * CreatorSummary setter
-     * @param creator
-     *      Creator to be listed
-     */
-    public void setCharacter(CreatorSummary creator) {
-        this.creator = creator;
-    }
-
-    /**
-     * Override toString to return only the name of the character
-     * @return
-     *      name of the creator
-     */
-    @Override
-    public String toString() {
-        return this.creator.getName() + " : " + this.creator.getRole();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CreatorListElement that = (CreatorListElement) o;
-
-        return creator != null ? creator.equals(that.creator) : that.creator == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return creator.hashCode();
-    }
-} /** Class to adapt Comic Summary for JList display
-   * @author Théo Basty
-   */
-class ComicListElement{
-    /**
-     * ComicSummary to be listed
-     */
-    String name;
-    String URI;
-
-    public ComicListElement(String name, String URI) {
-
-        this.name = name;
-        this.URI = URI;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ComicListElement that = (ComicListElement) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return URI != null ? URI.equals(that.URI) : that.URI == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (URI != null ? URI.hashCode() : 0);
+        int result = dispName != null ? dispName.hashCode() : 0;
+        result = 31 * result + (shortURI != null ? shortURI.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-} /** Class to adapt Serie Summary for JList display
-  * @author Théo Basty
-  */
-class SerieListElement{
-    /**
-     * SeriesSummary to be listed
-     */
-    SeriesSummary serie;
-
-    /**
-     * Constructor
-     * @param serie
-     *      Serie to be listed
-     */
-    public SerieListElement(SeriesSummary serie) {
-        this.serie = serie;
-    }
-
-    /**
-     * CreatorSummary getter
-     * @return
-     *      The serie represented
-     */
-    public SeriesSummary getCharacter() {
-        return serie;
-    }
-
-    /**
-     * SeriesSummary setter
-     * @param serie
-     *      Serie to be listed
-     */
-    public void setCharacter(SeriesSummary serie) {
-        this.serie = serie;
-    }
-
-    /**
-     * Override toString to return only the name of the serie
-     * @return
-     *      name of the serie
-     */
-    @Override
-    public String toString() {
-        return this.serie.getName();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SerieListElement that = (SerieListElement) o;
-
-        return serie != null ? serie.equals(that.serie) : that.serie == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return serie.hashCode();
-    }
+}
+enum MarvelType{
+    Character, Comic, Serie, Creator, Story
 }
