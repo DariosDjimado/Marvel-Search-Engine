@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.database.CharacterRow;
+import fr.tse.fise2.heapoverflow.database.ComicRow;
 import fr.tse.fise2.heapoverflow.main.Controller;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-class AutoCompletion {
+public class AutoCompletion {
     private final Controller controller;
 
     private final JTextField textField;
@@ -41,12 +42,14 @@ class AutoCompletion {
         }
     };
 
-    public AutoCompletion(Controller controller,JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoCompletion(Controller controller,ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
 
         this.controller = controller;
 
+        Window mainWindow = this.controller.getUi();
 
-        this.textField = textField;
+
+        this.textField = this.controller.getUi().getUiSearchComponent().getSearchTextField();
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
         this.suggestionFocusedColor = suggestionFocusedColor;
@@ -228,15 +231,15 @@ class AutoCompletion {
         int windowX = 0;
         int windowY = 0;
 
-        windowX = container.getX() + textField.getX() + 5;
+        windowX = container.getX() + textField.getX();
         if (suggestionsPanel.getHeight() > autoSuggestionPopUpWindow.getMinimumSize().height) {
             windowY = container.getY() + textField.getY() + textField.getHeight() + autoSuggestionPopUpWindow.getMinimumSize().height;
         } else {
             windowY = container.getY() + textField.getY() + textField.getHeight() + autoSuggestionPopUpWindow.getHeight();
         }
 
-        autoSuggestionPopUpWindow.setLocation(windowX, windowY);
-        autoSuggestionPopUpWindow.setMinimumSize(new Dimension(textField.getWidth(), 30));
+        autoSuggestionPopUpWindow.setLocation(windowX + this.textField.getMargin().left, windowY + this.textField.getHeight() - this.textField.getMargin().bottom);
+        autoSuggestionPopUpWindow.setMinimumSize(new Dimension(350, 30));
         autoSuggestionPopUpWindow.revalidate();
         autoSuggestionPopUpWindow.repaint();
 
@@ -279,11 +282,20 @@ class AutoCompletion {
 
 
         try {
-
-            for(CharacterRow a: this.controller.getCharactersTable().findCharactersLike(typedWord,0,20)){
-                addWordToSuggestions(a.getName());
-                suggestionAdded = true;
+            if(this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()){
+                for(ComicRow a: this.controller.getComicsTable().findComicsLike(typedWord,0,20)){
+                    addWordToSuggestions(a.getTitle());
+                    suggestionAdded = true;
+                }
             }
+
+            if(this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()){
+                for(CharacterRow a: this.controller.getCharactersTable().findCharactersLike(typedWord,0,20)){
+                    addWordToSuggestions(a.getName());
+                    suggestionAdded = true;
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -375,10 +387,22 @@ class SuggestionLabel extends JLabel {
         textField.setText(tmp + " ");
 
         try {
-            SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
+
+            if(this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()){
+                SearchHandler.setCurrentSearch(String.valueOf(this.controller.getComicsTable().findComicByTitle(tmp).getId()));
+                this.controller.emitSearchComicById(tmp);
+            }
+
+            if(this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()){
+                SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
+                this.controller.emitSearchCharacterById(tmp);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Controller.emitEvent(tmp);
+
+
+
     }
 }

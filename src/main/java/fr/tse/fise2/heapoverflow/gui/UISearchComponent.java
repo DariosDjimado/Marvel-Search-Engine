@@ -1,36 +1,52 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
+import fr.tse.fise2.heapoverflow.main.SearchButtonLIstenner;
+import fr.tse.fise2.heapoverflow.main.SelectionChangedListenner;
+import fr.tse.fise2.heapoverflow.marvelapi.Character;
+import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.Arrays;
 
 public class UISearchComponent implements UIComponent {
+    private final JPanel leftWrapperPanel;
     private JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
+    private SearchButtonLIstenner searchButtonLIstenner;
+    private JPanel searchResultsPanel;
+    private SelectionChangedListenner selectionChangedListenner;
 
 
-    public UISearchComponent() {
+    public UISearchComponent(JPanel leftWrapperPanel) {
         this.charactersRadioButton = new JRadioButton();
-        this.comicsRadioButton =  new JRadioButton();
+        // select character by default
+        this.charactersRadioButton.setSelected(true);
+        this.comicsRadioButton = new JRadioButton();
         this.searchTextField = new JTextField();
 
         charactersRadioButton.addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED){
+            if (e.getStateChange() == ItemEvent.SELECTED) {
                 this.comicsRadioButton.setSelected(false);
             }
         });
 
         this.comicsRadioButton.addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED){
+            if (e.getStateChange() == ItemEvent.SELECTED) {
                 this.charactersRadioButton.setSelected(false);
             }
         });
+
+        //
+        this.leftWrapperPanel = leftWrapperPanel;
     }
 
-    public void setup(JPanel leftWrapperPanel) {
+    public void setup() {
         JPanel SearchWrapperPanel = new JPanel();
         SearchWrapperPanel.setLayout(new BorderLayout(0, 0));
         SearchWrapperPanel.setAlignmentX(0.5f);
@@ -48,9 +64,16 @@ public class UISearchComponent implements UIComponent {
         SearchWrapperPanel.setVisible(true);
 
 
-        JButton searchLabel = new JButton();
-        searchLabel.setText("Search");
-        searchLabel.setVerticalAlignment(0);
+        JButton searchButton = new JButton();
+
+
+        searchButton.addActionListener((ActionEvent e) -> {
+            this.searchButtonLIstenner.emitNewSearch(this.getSearchTextField().getText());
+        });
+
+
+        searchButton.setText("Search");
+        searchButton.setVerticalAlignment(0);
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -58,9 +81,8 @@ public class UISearchComponent implements UIComponent {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0, 5, 0, 0);
-        searchLabel.setVisible(true);
-        searchPanel.add(searchLabel, gbc);
-
+        searchButton.setVisible(true);
+        searchPanel.add(searchButton, gbc);
 
 
         this.searchTextField.setHorizontalAlignment(10);
@@ -99,16 +121,13 @@ public class UISearchComponent implements UIComponent {
         searchPanel.add(charactersRadioButton, gbc);
 
 
-        JPanel searchResultsPanel = new JPanel();
-        searchResultsPanel.setLayout(new CardLayout(0, 0));
-        searchResultsPanel.setVisible(true);
-        leftWrapperPanel.add(searchResultsPanel, BorderLayout.CENTER);
+        this.searchResultsPanel = new JPanel();
+        this.searchResultsPanel.setLayout(new CardLayout(0, 0));
+        this.searchResultsPanel.setVisible(true);
+
+        leftWrapperPanel.add(this.searchResultsPanel, BorderLayout.CENTER);
 
         leftWrapperPanel.setVisible(true);
-    }
-
-    public JTextField getSearchTextField() {
-        return searchTextField;
     }
 
     @Override
@@ -125,4 +144,81 @@ public class UISearchComponent implements UIComponent {
     public void setVisible() {
 
     }
+
+    public JRadioButton getCharactersRadioButton() {
+        return charactersRadioButton;
+    }
+
+    public JRadioButton getComicsRadioButton() {
+        return comicsRadioButton;
+    }
+
+    public JTextField getSearchTextField() {
+        return searchTextField;
+    }
+
+    public SearchButtonLIstenner getSearchButtonLIstenner() {
+        return searchButtonLIstenner;
+    }
+
+    public void setSearchButtonListener(SearchButtonLIstenner searchButtonLIstenner) {
+        this.searchButtonLIstenner = searchButtonLIstenner;
+    }
+
+    public void setSelectionChangedListener(SelectionChangedListenner selectionChangedListenner) {
+        this.selectionChangedListenner = selectionChangedListenner;
+    }
+
+    public void setResultsComics(Comic[] comics) {
+        this.searchResultsPanel.removeAll();
+        JScrollPane jscrollPane = new JScrollPane();
+        JList jList = new JList();
+
+        jList.addListSelectionListener((ListSelectionEvent e) -> {
+            if (e.getValueIsAdjusting()) {
+                System.out.println(Arrays.toString(jList.getSelectedValue().toString().split("\\|")));
+                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
+            }
+        });
+
+        jscrollPane.setViewportView(jList);
+
+
+        DefaultListModel listModel = new DefaultListModel();
+
+        for (int i = 0; i < comics.length; i++) {
+            listModel.add(i, comics[i].getTitle() + "||" + comics[i].getId());
+        }
+        jList.setModel(listModel);
+
+        this.searchResultsPanel.add(jscrollPane);
+    }
+
+
+    public void setResultsCharacters(Character[] characters) {
+        this.searchResultsPanel.removeAll();
+        JScrollPane jscrollPane = new JScrollPane();
+        JList jList = new JList();
+
+        jList.addListSelectionListener((ListSelectionEvent e) -> {
+            if (e.getValueIsAdjusting()) {
+                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
+            }
+        });
+
+        jscrollPane.setViewportView(jList);
+
+
+        DefaultListModel listModel = new DefaultListModel();
+
+        for (int i = 0; i < characters.length; i++) {
+            listModel.add(i, characters[i].getName() + "||" + characters[i].getId());
+        }
+        jList.setModel(listModel);
+
+
+        this.searchResultsPanel.add(jscrollPane);
+    }
+
+
 }

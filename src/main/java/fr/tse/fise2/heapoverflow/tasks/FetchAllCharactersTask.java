@@ -1,7 +1,9 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
 import fr.tse.fise2.heapoverflow.database.CharactersTable;
+import fr.tse.fise2.heapoverflow.gui.UI;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
+import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.CharacterDataContainer;
 import fr.tse.fise2.heapoverflow.marvelapi.CharacterDataWrapper;
@@ -50,5 +52,15 @@ public class FetchAllCharactersTask implements Tasks {
             this.tasksController.emitTaskExecutionFailed(e);
         }
         return isDone;
+    }
+
+    public static void main(String[] args) {
+        UI ui = new UI();
+        Controller controller = new Controller(ui);
+        TasksController tasksController = new TasksController(controller);
+
+        FetchAllCharactersTask fetchAllCharactersTask = new FetchAllCharactersTask(tasksController);
+        fetchAllCharactersTask.doTask();
+
     }
 }

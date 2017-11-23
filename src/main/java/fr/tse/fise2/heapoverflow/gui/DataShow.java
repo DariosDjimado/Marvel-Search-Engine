@@ -1,25 +1,19 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.main.SearchListenner;
-import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
+import fr.tse.fise2.heapoverflow.marvelapi.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCreators;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 
 /**
  * Window used to display detailed datas on characters, comics ...
@@ -41,6 +35,7 @@ public class DataShow{
      * @param comic The comic to display
      */
     public static void DrawComic(JPanel panel,Comic comic) {
+        panel.removeAll();
         MarvelRequest request = new MarvelRequest();
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
@@ -286,6 +281,7 @@ public class DataShow{
      *
      */
     public static void DrawCharacter(JPanel panel, Character character) {
+        panel.removeAll();
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
@@ -450,6 +446,7 @@ public class DataShow{
         } catch (Exception e) {
             System.out.println(e);
         }
+
         //endregion
     }
 
@@ -459,6 +456,7 @@ public class DataShow{
      * @param panel The panel in which to draw the empty layout
      */
     public static void DrawEmpty(JPanel panel){
+        panel.removeAll();
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
