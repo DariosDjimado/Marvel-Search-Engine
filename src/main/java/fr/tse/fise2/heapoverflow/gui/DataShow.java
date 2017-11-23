@@ -489,6 +489,7 @@ public class DataShow{
 
 /**
  * Class to adapt marvel API elements for JList display and use
+ * TODO: Make it public
  * @author Théo Basty
  */
 class MarvelListElement{
