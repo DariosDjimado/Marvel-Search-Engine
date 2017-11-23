@@ -170,6 +170,7 @@ public class UISearchComponent implements UIComponent {
     }
 
     public void setResultsComics(Comic[] comics) {
+        this.searchResultsPanel.removeAll();
         JScrollPane jscrollPane = new JScrollPane();
         JList jList = new JList();
 
@@ -195,6 +196,7 @@ public class UISearchComponent implements UIComponent {
 
 
     public void setResultsCharacters(Character[] characters) {
+        this.searchResultsPanel.removeAll();
         JScrollPane jscrollPane = new JScrollPane();
         JList jList = new JList();
 

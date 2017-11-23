@@ -56,7 +56,7 @@ public class UIExtraComponent implements UIComponent {
         }
         jList.setModel(listModel);
 
-        this.rightWrapperPanel.add(jscrollPane, BorderLayout.WEST);
+        this.rightWrapperPanel.add(jscrollPane, BorderLayout.CENTER);
     }
 
 
