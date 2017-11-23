@@ -38,7 +38,7 @@ public class ComicsTable {
     public List<ComicRow> findComics() throws SQLException {
         PreparedStatement preparedStatement = this.connectionDB
                 .getConnection()
-                .prepareStatement("SELECT * FROM COMICS");
+                .prepareStatement("SELECT * FROM comics");
 
         ResultSet resultSet = preparedStatement.executeQuery();
         List<ComicRow> comicRowList = new ArrayList<>();
@@ -54,7 +54,7 @@ public class ComicsTable {
     public ComicRow findComicById(int id) throws SQLException {
         PreparedStatement preparedStatement = this.connectionDB
                 .getConnection()
-                .prepareStatement("SELECT * FROM COMICS WHERE ID = ?");
+                .prepareStatement("SELECT * FROM comics WHERE ID = ?");
 
         preparedStatement.setInt(1, id);
 
@@ -74,7 +74,7 @@ public class ComicsTable {
     public ComicRow findComicByTitle(String comicTitle) throws SQLException {
         PreparedStatement preparedStatement = this.connectionDB
                 .getConnection()
-                .prepareStatement("SELECT * FROM COMICS WHERE NAME = ? OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
+                .prepareStatement("SELECT * FROM comics WHERE TITLE = ? OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
 
         preparedStatement.setString(1, comicTitle);
 
@@ -93,7 +93,7 @@ public class ComicsTable {
 
         PreparedStatement preparedStatement = this.connectionDB
                 .getConnection()
-                .prepareStatement("SELECT * FROM COMICS WHERE TITLE LIKE ? ORDER BY NAME OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+                .prepareStatement("SELECT * FROM comics WHERE TITLE LIKE ? ORDER BY TITLE OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
 
         pattern = pattern
                 .replace("!", "!!")
@@ -115,6 +115,25 @@ public class ComicsTable {
 
         return comicRowList;
 
+    }
+
+
+    public boolean exists(int id) throws SQLException {
+        boolean found = false;
+        PreparedStatement preparedStatement = this.connectionDB
+                .getConnection()
+                .prepareStatement("SELECT COUNT(*) FROM COMICS WHERE ID = ?");
+
+        preparedStatement.setInt(1,id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while(resultSet.next()){
+            if(resultSet.getInt(1)>0){
+                found = true;
+                System.out.println(id);
+            }
+        }
+       return found;
     }
 
 

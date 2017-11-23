@@ -10,10 +10,13 @@ public class UISearchComponent implements UIComponent {
     private JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
+    private final JPanel leftWrapperPanel;
 
 
-    public UISearchComponent() {
+    public UISearchComponent(JPanel leftWrapperPanel) {
         this.charactersRadioButton = new JRadioButton();
+        // select character by default
+        this.charactersRadioButton.setSelected(true);
         this.comicsRadioButton =  new JRadioButton();
         this.searchTextField = new JTextField();
 
@@ -28,9 +31,12 @@ public class UISearchComponent implements UIComponent {
                 this.charactersRadioButton.setSelected(false);
             }
         });
+
+        //
+        this.leftWrapperPanel = leftWrapperPanel;
     }
 
-    public void setup(JPanel leftWrapperPanel) {
+    public void setup() {
         JPanel SearchWrapperPanel = new JPanel();
         SearchWrapperPanel.setLayout(new BorderLayout(0, 0));
         SearchWrapperPanel.setAlignmentX(0.5f);
@@ -107,10 +113,6 @@ public class UISearchComponent implements UIComponent {
         leftWrapperPanel.setVisible(true);
     }
 
-    public JTextField getSearchTextField() {
-        return searchTextField;
-    }
-
     @Override
     public void setSize() {
 
@@ -124,5 +126,17 @@ public class UISearchComponent implements UIComponent {
     @Override
     public void setVisible() {
 
+    }
+
+    public JRadioButton getCharactersRadioButton() {
+        return charactersRadioButton;
+    }
+
+    public JRadioButton getComicsRadioButton() {
+        return comicsRadioButton;
+    }
+
+    public JTextField getSearchTextField() {
+        return searchTextField;
     }
 }

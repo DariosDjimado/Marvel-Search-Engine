@@ -44,7 +44,7 @@ public class CreateTables {
     /**
      * @return boolean. True if comics table is successfully creates otherwise false will be returned.
      */
-    private boolean createComicsTable() {
+    public boolean createComicsTable() {
         boolean execute;
         try {
             execute = connectionDB.getConnection()

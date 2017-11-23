@@ -1,21 +1,17 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 
 public class UI extends JFrame {
     private JPanel container;
+    private UISearchComponent uiSearchComponent;
+    private JPanel centerWrapperPanel;
 
     public UI() {
         super("Marvel Search");
-    }
-
-    public static void main(String[] args) {
-        UI ui = new UI();
-
-        ui.init();
+        this.init();
     }
 
     private void init() {
@@ -60,8 +56,8 @@ public class UI extends JFrame {
         leftWrapperPanel.setMinimumSize(new Dimension(300, 500));
         leftWrapperPanel.setPreferredSize(new Dimension(300, 500));
 
-        UISearchComponent uiSearchComponent = new UISearchComponent();
-        uiSearchComponent.setup(leftWrapperPanel);
+        this.uiSearchComponent = new UISearchComponent(leftWrapperPanel);
+        uiSearchComponent.setup();
 
 
         container.add(leftWrapperPanel, BorderLayout.WEST);
@@ -70,12 +66,17 @@ public class UI extends JFrame {
     }
 
     public void createCenterWrapperPanel() {
-        JPanel centerWrapperPanel = new JPanel();
+        this.centerWrapperPanel = new JPanel();
         centerWrapperPanel.setLayout(new GridBagLayout());
-        centerWrapperPanel.setMinimumSize(new Dimension(300, 500));
-        centerWrapperPanel.setPreferredSize(new Dimension(300, 500));
+        centerWrapperPanel.setMinimumSize(new Dimension(600, 500));
+        centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
-        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,1,Color.BLUE));
+        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,1,Color.gray));
+
+
+       // DataShow.DrawEmpty(centerWrapperPanel);
+
+
 
         container.add(centerWrapperPanel, BorderLayout.CENTER);
 
@@ -93,7 +94,13 @@ public class UI extends JFrame {
         container.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
+    public UISearchComponent getUiSearchComponent() {
+        return uiSearchComponent;
+    }
 
+    public JPanel getCenterWrapperPanel() {
+        return centerWrapperPanel;
+    }
 }
 
 
