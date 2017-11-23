@@ -12,11 +12,12 @@ import java.security.NoSuchAlgorithmException;
 
 public class MarvelRequest extends UrlBuilder {
     // string that is returned when the rateLimit is reached
-    public static String requestCanceled = "More than"+ Authentication.getRateLimit() + "request";
+    public static String requestCanceled = "More than" + Authentication.getRateLimit() + "request";
     private OkHttpClient client = new OkHttpClient();
 
     /**
      * This method consists exclusively to convert a json string to CharacterDataWrapper
+     *
      * @param json the string that we need to deserialize
      * @return CharacterDataWrapper object or null if the rateLimit is reached
      */
@@ -31,6 +32,7 @@ public class MarvelRequest extends UrlBuilder {
 
     /**
      * This method consists exclusively to convert a json string to ComicDataWrapper.
+     *
      * @param json the string that we need to deserialize
      * @return ComicDataWrapper object or null if the rateLimit is reached
      */
@@ -45,6 +47,7 @@ public class MarvelRequest extends UrlBuilder {
 
     /**
      * This method consists exclusively to convert a json string to ComicDataWrapper.
+     *
      * @param json the string that we need to deserialize
      * @return ComicDataWrapper object or null if the rateLimit is reached
      */
@@ -58,10 +61,27 @@ public class MarvelRequest extends UrlBuilder {
     }
 
     /**
+     *
+     */
+    public static SeriesDataWrapper deserializeSeries(String json) {
+        if (json.equals(requestCanceled)) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            return gson.fromJson(json, SeriesDataWrapper.class);
+        }
+    }
+
+    public static BufferedImage getImage(Image image, ImageVariant imageVariant) throws IOException {
+        return ImageIO.read(imageUrl(image, imageVariant));
+    }
+
+    /**
      * This method takes the required partialUrl and makes a request from the entire url and returns the response.
+     *
      * @param partialUrl the part of the url that will be concatenate with the keys and the timestamp
      * @return String. If the rateLimit is reached this method will return the specified string <i>requestCanceled</i>
-     * @throws IOException from okHttp3
+     * @throws IOException              from okHttp3
      * @throws NoSuchAlgorithmException from MD5
      */
     public String getData(String partialUrl) throws IOException, NoSuchAlgorithmException {
@@ -76,9 +96,5 @@ public class MarvelRequest extends UrlBuilder {
         } else {
             return requestCanceled;
         }
-    }
-
-    public static BufferedImage getImage(Image image, ImageVariant imageVariant) throws IOException {
-        return ImageIO.read(imageUrl(image,imageVariant));
     }
 }

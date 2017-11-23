@@ -7,6 +7,7 @@ import java.awt.*;
 public class UI extends JFrame {
     private JPanel container;
     private UISearchComponent uiSearchComponent;
+    private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
 
     public UI() {
@@ -15,6 +16,7 @@ public class UI extends JFrame {
     }
 
     private void init() {
+
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
 
@@ -87,9 +89,13 @@ public class UI extends JFrame {
 
     public void createRightWrapperPanel() {
         JPanel rightWrapperPanel = new JPanel();
-        rightWrapperPanel.setLayout(new GridBagLayout());
+        rightWrapperPanel.setLayout(new BorderLayout());
         rightWrapperPanel.setMinimumSize(new Dimension(300, 500));
         rightWrapperPanel.setPreferredSize(new Dimension(300, 500));
+
+        this.uiExtraComponent = new UIExtraComponent(rightWrapperPanel);
+        this.uiExtraComponent.build();
+
 
         container.add(rightWrapperPanel, BorderLayout.EAST);
     }
@@ -100,6 +106,10 @@ public class UI extends JFrame {
 
     public JPanel getCenterWrapperPanel() {
         return centerWrapperPanel;
+    }
+
+    public UIExtraComponent getUiExtraComponent() {
+        return uiExtraComponent;
     }
 }
 

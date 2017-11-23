@@ -395,7 +395,7 @@ class SuggestionLabel extends JLabel {
 
             if(this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()){
                 SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
-                this.controller.emitSearchCracterById(tmp);
+                this.controller.emitSearchCharacterById(tmp);
             }
 
         } catch (SQLException e) {
