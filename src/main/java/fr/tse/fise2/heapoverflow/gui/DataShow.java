@@ -280,7 +280,7 @@ public class DataShow{
      * @param character The Character to draw
      *
      */
-    public static void DrawCharacter(JPanel panel, Character character) {
+    public static void DrawCharacter(JPanel panel, final Character character) {
         panel.removeAll();
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
@@ -329,28 +329,38 @@ public class DataShow{
         //endregion
         //region Series
         MarvelRequest request = new MarvelRequest();
-        try {
-            ComicDataWrapper responseObj;
-            int reqCount = 0;
-            Set<Comic> fetched = new TreeSet<>();
-            do {
-                String response = request.getData(character.getSeries().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
-                responseObj = deserializeComics(response);
-                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
-                reqCount++;
-            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
-            for (Comic comic : fetched) {
-                comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Serie));
+
+        DefaultListModel<MarvelListElement> seriesListModel = new DefaultListModel<>();
+        seriesListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> series = new JList<>(seriesListModel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ComicDataWrapper responseObj;
+                    int reqCount = 0;
+                    Set<Comic> fetched = new TreeSet<>();
+                    do {
+                        String response = request.getData(character.getSeries().getCollectionURI().substring(36) + "?limit=100&offset=" + 100 * reqCount);
+                        responseObj = deserializeComics(response);
+                        fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                        reqCount++;
+                    }
+                    while (responseObj.getData().getOffset() + responseObj.getData().getCount() < responseObj.getData().getTotal());
+
+                    DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
+                    for (Comic comic : fetched) {
+                        comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Serie));
+                    }
+                    series.setModel(comicListModel);
+                } catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
             }
-            JList<MarvelListElement> comics = new JList<>(comicListModel);
-            tabs.addTab("Series", new JScrollPane(comics));
-        }
-        catch (Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
+        });
+        tabs.addTab("Series", new JScrollPane(series));
 
 //        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
 //        for(SeriesSummary serie : character.getSeries().getItems()){
@@ -360,81 +370,104 @@ public class DataShow{
 //        tabs.addTab("Series", new JScrollPane(series));
         //endregion
         //region Comics
-        try {
-            ComicDataWrapper responseObj;
-            int reqCount = 0;
-            Set<Comic> fetched = new TreeSet<>();
-            do {
-                String response = request.getData(character.getComics().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
-                responseObj = deserializeComics(response);
-                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
-                reqCount++;
-            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+        DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
+        comicListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> comics = new JList<>(comicListModel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ComicDataWrapper responseObj;
+                    int reqCount = 0;
+                    Set<Comic> fetched = new TreeSet<>();
+                    do {
+                        String response = request.getData(character.getComics().getCollectionURI().substring(36) + "?limit=100&offset=" + 100 * reqCount);
+                        responseObj = deserializeComics(response);
+                        fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                        reqCount++;
+                    }
+                    while (responseObj.getData().getOffset() + responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
-            for (Comic comic : fetched) {
-                comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Comic));
+                    comicListModel.clear();
+                    for (Comic comic : fetched) {
+                        comicListModel.addElement(new MarvelListElement(comic.getTitle(), comic.getRessourceURI(), MarvelType.Comic));
+                    }
+                } catch (SocketTimeoutException ex) {
+                    comicListModel.clear();
+                    comicListModel.addElement(new MarvelListElement("Request Timeout", null, null));
+                } catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
             }
-            JList<MarvelListElement> comics = new JList<>(comicListModel);
-            tabs.addTab("Comics", new JScrollPane(comics));
-        } catch (SocketTimeoutException ex) {
-            tabs.addTab("Comics", new JLabel("Request timeout"));
-        }
-        catch (Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
+        });
+        tabs.addTab("Comics", new JScrollPane(comics));
         //endregion
         //region Stories
-        try {
-            ComicDataWrapper responseObj;
-            int reqCount = 0;
-            Set<Comic> fetched = new TreeSet<>();
-            do {
-                String response = request.getData(character.getStories().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
-                responseObj = deserializeComics(response);
-                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
-                reqCount++;
-            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+        DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
+        storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> stories = new JList<>(storiesListModel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ComicDataWrapper responseObj;
+                    int reqCount = 0;
+                    Set<Comic> fetched = new TreeSet<>();
+                    do {
+                        String response = request.getData(character.getStories().getCollectionURI().substring(36) + "?limit=100&offset=" + 100 * reqCount);
+                        responseObj = deserializeComics(response);
+                        fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                        reqCount++;
+                    }
+                    while (responseObj.getData().getOffset() + responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
-            for (Comic story : fetched) {
-                storiesListModel.addElement(new MarvelListElement(story.getTitle(), story.getRessourceURI(), MarvelType.Story));
+                    storiesListModel.clear();
+                    for (Comic story : fetched) {
+                        storiesListModel.addElement(new MarvelListElement(story.getTitle(), story.getRessourceURI(), MarvelType.Story));
+                    }
+                } catch (SocketTimeoutException ex) {
+                    comicListModel.clear();
+                    comicListModel.addElement(new MarvelListElement("Request Timeout", null, null));
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                    ex.printStackTrace();
+                }
             }
-            JList<MarvelListElement> stories = new JList<>(storiesListModel);
-            tabs.addTab("Stories", new JScrollPane(stories));
-        }
-        catch (SocketTimeoutException ex){
-            tabs.addTab("Stories", new JLabel("Request timeout"));
-        }
-        catch (Exception ex){
-            System.out.println(ex);
-            ex.printStackTrace();
-        }
+        });
+        tabs.addTab("Stories", new JScrollPane(stories));
         //endregion
         //region Events
-        try {
-            ComicDataWrapper responseObj;
-            int reqCount = 0;
-            Set<Comic> fetched = new TreeSet<>();
-            do {
-                String response = request.getData(character.getEvents().getCollectionURI().substring(36) + "?limit=100&offset=" + 100*reqCount);
-                responseObj = deserializeComics(response);
-                fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
-                reqCount++;
-            } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
+        DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
+        eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> events = new JList<>(eventsListModel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ComicDataWrapper responseObj;
+                    int reqCount = 0;
+                    Set<Comic> fetched = new TreeSet<>();
+                    do {
+                        String response = request.getData(character.getEvents().getCollectionURI().substring(36) + "?limit=100&offset=" + 100 * reqCount);
+                        responseObj = deserializeComics(response);
+                        fetched.addAll(Arrays.asList(responseObj.getData().getResults()));
+                        reqCount++;
+                    }
+                    while (responseObj.getData().getOffset() + responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
-            for (Comic event : fetched) {
-                eventsListModel.addElement(new MarvelListElement(event.getTitle(), event.getRessourceURI(), MarvelType.Story));
+                    eventsListModel.clear();
+                    for (Comic event : fetched) {
+                        eventsListModel.addElement(new MarvelListElement(event.getTitle(), event.getRessourceURI(), MarvelType.Story));
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
             }
-            JList<MarvelListElement> events = new JList<>(eventsListModel);
-            tabs.addTab("Events", new JScrollPane(events));
-        }
-        catch (Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
+        });
+
+        tabs.addTab("Events", new JScrollPane(events));
         //endregion
 
         panel.add(tabs, BorderLayout.SOUTH);
