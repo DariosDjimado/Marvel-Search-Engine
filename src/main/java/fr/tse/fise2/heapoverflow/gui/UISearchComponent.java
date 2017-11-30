@@ -1,8 +1,8 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
-import fr.tse.fise2.heapoverflow.main.SearchButtonLIstenner;
-import fr.tse.fise2.heapoverflow.main.SelectionChangedListenner;
+import fr.tse.fise2.heapoverflow.events.SearchButtonListener;
+import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 
@@ -18,9 +18,9 @@ public class UISearchComponent implements UIComponent {
     private JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
-    private SearchButtonLIstenner searchButtonLIstenner;
+    private SearchButtonListener searchButtonListener;
     private JPanel searchResultsPanel;
-    private SelectionChangedListenner selectionChangedListenner;
+    private SelectionChangedListener selectionChangedListener;
 
 
     public UISearchComponent(JPanel leftWrapperPanel) {
@@ -68,7 +68,7 @@ public class UISearchComponent implements UIComponent {
 
 
         searchButton.addActionListener((ActionEvent e) -> {
-            this.searchButtonLIstenner.emitNewSearch(this.getSearchTextField().getText());
+            this.searchButtonListener.emitNewSearch(this.getSearchTextField().getText());
         });
 
 
@@ -157,16 +157,16 @@ public class UISearchComponent implements UIComponent {
         return searchTextField;
     }
 
-    public SearchButtonLIstenner getSearchButtonLIstenner() {
-        return searchButtonLIstenner;
+    public SearchButtonListener getSearchButtonListener() {
+        return searchButtonListener;
     }
 
-    public void setSearchButtonListener(SearchButtonLIstenner searchButtonLIstenner) {
-        this.searchButtonLIstenner = searchButtonLIstenner;
+    public void setSearchButtonListener(SearchButtonListener searchButtonListener) {
+        this.searchButtonListener = searchButtonListener;
     }
 
-    public void setSelectionChangedListener(SelectionChangedListenner selectionChangedListenner) {
-        this.selectionChangedListenner = selectionChangedListenner;
+    public void setSelectionChangedListener(SelectionChangedListener selectionChangedListener) {
+        this.selectionChangedListener = selectionChangedListener;
     }
 
     public void setResultsComics(Comic[] comics) {
@@ -177,7 +177,6 @@ public class UISearchComponent implements UIComponent {
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
                 System.out.println(Arrays.toString(jList.getSelectedValue().toString().split("\\|")));
-                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
             }
         });
 
@@ -197,16 +196,16 @@ public class UISearchComponent implements UIComponent {
 
     public void setResultsCharacters(Character[] characters) {
         this.searchResultsPanel.removeAll();
-        JScrollPane jscrollPane = new JScrollPane();
+        JScrollPane scrollPane = new JScrollPane();
         JList jList = new JList();
 
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
-                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
+               // this.selectionChangedListener.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
             }
         });
 
-        jscrollPane.setViewportView(jList);
+        scrollPane.setViewportView(jList);
 
 
         DefaultListModel listModel = new DefaultListModel();
@@ -217,7 +216,7 @@ public class UISearchComponent implements UIComponent {
         jList.setModel(listModel);
 
 
-        this.searchResultsPanel.add(jscrollPane);
+        this.searchResultsPanel.add(scrollPane);
     }
 
 

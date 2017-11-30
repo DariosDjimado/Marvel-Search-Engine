@@ -12,10 +12,10 @@ public class UI extends JFrame {
 
     public UI() {
         super("Marvel Search");
-        this.init();
+
     }
 
-    private void init() {
+    public void init() {
 
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
@@ -73,16 +73,13 @@ public class UI extends JFrame {
         centerWrapperPanel.setMinimumSize(new Dimension(600, 500));
         centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
-        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,1,Color.gray));
+        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
 
 
-       // DataShow.DrawEmpty(centerWrapperPanel);
-
+        // DataShow.DrawEmpty(centerWrapperPanel);
 
 
         container.add(centerWrapperPanel, BorderLayout.CENTER);
-
-
 
 
     }
