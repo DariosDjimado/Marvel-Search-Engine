@@ -377,6 +377,8 @@ public class DataShow{
             }
             JList<MarvelListElement> comics = new JList<>(comicListModel);
             tabs.addTab("Comics", new JScrollPane(comics));
+        } catch (SocketTimeoutException ex) {
+            tabs.addTab("Comics", new JLabel("Request timeout"));
         }
         catch (Exception e){
             System.out.println(e);
