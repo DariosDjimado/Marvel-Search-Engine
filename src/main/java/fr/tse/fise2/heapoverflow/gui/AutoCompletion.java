@@ -42,7 +42,7 @@ public class AutoCompletion {
         }
     };
 
-    public AutoCompletion(Controller controller,ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoCompletion(Controller controller, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
 
         this.controller = controller;
 
@@ -280,17 +280,16 @@ public class AutoCompletion {
         boolean suggestionAdded = false;
 
 
-
         try {
-            if(this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()){
-                for(ComicRow a: this.controller.getComicsTable().findComicsLike(typedWord,0,20)){
+            if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
+                for (ComicRow a : this.controller.getComicsTable().findComicsLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getTitle());
                     suggestionAdded = true;
                 }
             }
 
-            if(this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()){
-                for(CharacterRow a: this.controller.getCharactersTable().findCharactersLike(typedWord,0,20)){
+            if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
+                for (CharacterRow a : this.controller.getCharactersTable().findCharactersLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getName());
                     suggestionAdded = true;
                 }
@@ -361,7 +360,7 @@ class SuggestionLabel extends JLabel {
             }
         });
 
-        this.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        this.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     }
 
     public boolean isFocused() {
@@ -386,22 +385,23 @@ class SuggestionLabel extends JLabel {
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
         textField.setText(tmp + " ");
 
-        try {
+        EventQueue.invokeLater(() -> {
+            try {
 
-            if(this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()){
-                SearchHandler.setCurrentSearch(String.valueOf(this.controller.getComicsTable().findComicByTitle(tmp).getId()));
-                this.controller.emitSearchComicById(tmp);
+                if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
+                    SearchHandler.setCurrentSearch(String.valueOf(this.controller.getComicsTable().findComicByTitle(tmp).getId()));
+                    this.controller.emitSearchComicById(tmp);
+                }
+
+                if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
+                    SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
+                    this.controller.emitSearchCharacterById(tmp);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            if(this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()){
-                SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
-                this.controller.emitSearchCharacterById(tmp);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        });
 
 
     }
