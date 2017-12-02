@@ -1,11 +1,17 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.AppConfig;
+import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
+import fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
-    private static final ImageIcon icon = new ImageIcon(ComicsListRenderer.class.getResource("portrait_fantastic.jpg"));
     protected final JPanel mainPanel;
     protected final JLabel cardTitle;
     private final TemplatePreviewListRenderer.ImagePanel imagePanel;
@@ -75,7 +81,12 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
         @Override
         public void paintComponent(Graphics graphics) {
-            graphics.drawImage(icon.getImage(), 0, 0, 84, 126, null);
+            try {
+                final BufferedImage imageIcon = MarvelRequest.getImage(((Comic) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
+                graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
