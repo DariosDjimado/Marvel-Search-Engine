@@ -9,7 +9,9 @@ public class main {
         UI ui = new UI();
 
         EventQueue.invokeLater(ui::init);
-        Controller controller = new Controller(ui);
+        AppLogger appLogger = new AppLogger();
+        appLogger.configureLogging();
+        Controller controller = new Controller(ui, appLogger);
 
 
     }
