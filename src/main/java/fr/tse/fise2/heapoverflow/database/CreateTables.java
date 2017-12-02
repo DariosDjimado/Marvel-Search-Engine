@@ -27,13 +27,14 @@ public class CreateTables {
     private boolean createCharactersTable() {
         boolean execute;
         try {
-            execute = connectionDB.getConnection()
+            connectionDB.getConnection()
                     .createStatement()
                     .execute("CREATE TABLE characters(" +
                             "id INTEGER PRIMARY KEY NOT NULL," +
                             "name VARCHAR(255) NOT NULL," +
                             "wikipedia_en_url VARCHAR(255)," +
                             "wikipedia_fr_url VARCHAR(255))");
+            execute = true;
         } catch (SQLException e) {
             connectionDB.getErrorHandler().emitCreateCharactersTableFailed(e);
             execute = false;
@@ -47,12 +48,14 @@ public class CreateTables {
     public boolean createComicsTable() {
         boolean execute;
         try {
-            execute = connectionDB.getConnection()
+            connectionDB.getConnection()
                     .createStatement()
                     .execute("CREATE TABLE comics(" +
                             "id INTEGER PRIMARY KEY NOT NULL," +
                             "title VARCHAR(255) NOT NULL)");
+            execute = true;
         } catch (SQLException e) {
+            e.printStackTrace();
             connectionDB.getErrorHandler().emitCreateComicsTableFailed(e);
             execute = false;
         }
