@@ -51,7 +51,7 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
 
             isDone = true;
 
-        } catch (IOException  e) {
+        } catch (IOException e) {
             isDone = false;
             e.printStackTrace();
         }

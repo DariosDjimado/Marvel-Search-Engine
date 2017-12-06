@@ -56,7 +56,7 @@ public class TestMarvelRequest {
             // check that the comic sent is the good one
             assertEquals(resultsToId[0].getId(), 1011334);
 
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -108,7 +108,7 @@ public class TestMarvelRequest {
             assertEquals(resultsToId[0].getId(), 21486);
 
 
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -122,7 +122,7 @@ public class TestMarvelRequest {
             String data = request.getData("creators");
             assertTrue(data.contains("\"code\":200,\"status\":\"Ok\",\"copyright\":\"© 2017 MARVEL"));
 
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

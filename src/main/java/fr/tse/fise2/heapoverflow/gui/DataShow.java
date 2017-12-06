@@ -1,5 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.AppConfig;
+import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Image;
@@ -33,6 +35,8 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  */
 public class DataShow{
     //region Attributes
+//    Controller controllerLink;
+
     private JPanel panel;
 
     private ShowThumbnail thumbnail;
@@ -51,6 +55,7 @@ public class DataShow{
 
     //region Constructors
     public DataShow(JPanel panel_) {
+//        this.controllerLink = controller;
         this.panel = panel_;
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
@@ -510,7 +515,7 @@ public class DataShow{
 
     public void setThumbnail(Image ThumbPartialUrl) {
         try {
-            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
+            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
         } catch (Exception e) {
             System.out.println(e);
         }

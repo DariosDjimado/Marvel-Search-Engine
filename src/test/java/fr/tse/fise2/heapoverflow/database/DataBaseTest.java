@@ -29,7 +29,8 @@ public class DataBaseTest {
                 assertEquals(lists.get(i),comics[i].getTitle());
             }
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+//        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
