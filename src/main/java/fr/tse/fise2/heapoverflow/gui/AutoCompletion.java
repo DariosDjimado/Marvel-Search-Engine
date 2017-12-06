@@ -12,19 +12,39 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+/**The AutoCompletion class handles all sorts of suggestions & completion when a user is searching a comic or a character
+ *
+ * @author Darios Djimado & Lionel Rajaona
+*/
 public class AutoCompletion {
+    // We choose a VCM architecture
     private final Controller controller;
 
+    // Text Field where searching can be typed
     private final JTextField textField;
+
+    // The windows which contains the searching
     private final Window container;
+
     private final ArrayList<String> dictionary = new ArrayList<>();
+
+    // Design parameters
     private final Color suggestionsTextColor;
     private final Color suggestionFocusedColor;
+
+    //
     private JPanel suggestionsPanel;
+
+    //
     private JWindow autoSuggestionPopUpWindow;
+
+    //User data entry
     private String typedWord;
+
+    //
     private int currentIndexOfSpace, tW, tH;
+
+    //registration & notifications of changes
     private DocumentListener documentListener = new DocumentListener() {
         @Override
         public void insertUpdate(DocumentEvent de) {
@@ -42,6 +62,7 @@ public class AutoCompletion {
         }
     };
 
+    // Constructor
     public AutoCompletion(Controller controller,ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
 
         this.controller = controller;
@@ -55,6 +76,7 @@ public class AutoCompletion {
         this.suggestionFocusedColor = suggestionFocusedColor;
         this.textField.getDocument().addDocumentListener(documentListener);
 
+        // words
         setDictionary(words);
 
         typedWord = "";
@@ -96,6 +118,7 @@ public class AutoCompletion {
 
 
     }
+
 
     private void addKeyBindingToRequestFocusInPopUpWindow() {
         textField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true), "Down released");
@@ -160,12 +183,14 @@ public class AutoCompletion {
         });
     }
 
+    // show the request focus in front of the window (and not behind)
     private void setFocusToTextField() {
         container.toFront();
         container.requestFocusInWindow();
         textField.requestFocusInWindow();
     }
 
+    //all words or parts of words are added in this Arraylist
     public ArrayList<SuggestionLabel> getAddedSuggestionLabels() {
         ArrayList<SuggestionLabel> sls = new ArrayList<>();
         for (int i = 0; i < suggestionsPanel.getComponentCount(); i++) {
@@ -177,10 +202,11 @@ public class AutoCompletion {
         return sls;
     }
 
+    // this method gets the typed word, remove previous words/jlabels that were added, and show suggestions
     private void checkForAndShowSuggestions() {
         typedWord = getCurrentlyTypedWord();
 
-        suggestionsPanel.removeAll();//remove previos words/jlabels that were added
+        suggestionsPanel.removeAll();//
 
         //used to calcualte size of JWindow as new Jlabels are added
         tW = 0;
@@ -198,6 +224,7 @@ public class AutoCompletion {
         }
     }
 
+    //add a word to the suggestions
     protected void addWordToSuggestions(String word) {
         SuggestionLabel suggestionLabel = new SuggestionLabel(this.controller, word, suggestionFocusedColor, suggestionsTextColor, this);
 
@@ -206,7 +233,8 @@ public class AutoCompletion {
         suggestionsPanel.add(suggestionLabel);
     }
 
-    public String getCurrentlyTypedWord() {//get newest word after last white space if any or the first word if no white spaces
+    //get newest word after last white space if any or the first word if no white spaces
+    public String getCurrentlyTypedWord() {
         String text = textField.getText();
         String wordBeingTyped = "";
         wordBeingTyped = text;
@@ -214,6 +242,7 @@ public class AutoCompletion {
         return wordBeingTyped.trim();
     }
 
+    //calculate pop-up window size
     private void calculatePopUpWindowSize(JLabel label) {
         //so we can size the JWindow correctly
         if (tW < label.getPreferredSize().width) {
@@ -222,6 +251,8 @@ public class AutoCompletion {
         tH += label.getPreferredSize().height;
     }
 
+
+    //display the popup window
     private void showPopUpWindow() {
         autoSuggestionPopUpWindow.getContentPane().add(suggestionsPanel);
         autoSuggestionPopUpWindow.setMinimumSize(new Dimension(textField.getWidth(), 30));
@@ -245,6 +276,7 @@ public class AutoCompletion {
 
     }
 
+    //update dictionary with words
     public void setDictionary(ArrayList<String> words) {
         dictionary.clear();
         if (words == null) {
@@ -254,6 +286,8 @@ public class AutoCompletion {
             dictionary.add(word);
         }
     }
+
+    //getters
 
     public JWindow getAutoSuggestionPopUpWindow() {
         return autoSuggestionPopUpWindow;
@@ -267,10 +301,14 @@ public class AutoCompletion {
         return textField;
     }
 
+
+    //add a word to the dictionary
     public void addToDictionary(String word) {
         dictionary.add(word);
     }
 
+    // main method of this class : compare typed word with comics and characters in the database
+    // with a "findcomiclike" and a findcharacterslike"
     boolean wordTyped(String typedWord) {
 
         if (typedWord.isEmpty()) {
@@ -314,6 +352,7 @@ public class AutoCompletion {
     }
 }
 
+// method handling events (mouse click, ...)
 class SuggestionLabel extends JLabel {
     private final Controller controller;
 
