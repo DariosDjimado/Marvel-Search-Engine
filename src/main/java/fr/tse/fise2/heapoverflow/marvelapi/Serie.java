@@ -3,7 +3,7 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
-public class Series {
+public class Serie {
 
     private int endYear;
 
@@ -177,7 +177,7 @@ public class Series {
 
     @Override
     public String toString() {
-        return "Series{" +
+        return "Serie{" +
                 "endYear=" + endYear +
                 ", previous=" + previous +
                 ", events=" + events +
