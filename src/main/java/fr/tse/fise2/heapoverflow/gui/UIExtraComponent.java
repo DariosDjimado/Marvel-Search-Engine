@@ -17,7 +17,7 @@ public class UIExtraComponent implements UIComponent {
         this.rightWrapperPanel = rightWrapperPanel;
     }
 
-    public void setSelectionChangedListenner(SelectionChangedListener selectionChangedListener) {
+    public void setSelectionChangedListener(SelectionChangedListener selectionChangedListener) {
         this.selectionChangedListener = selectionChangedListener;
     }
 
@@ -44,7 +44,7 @@ public class UIExtraComponent implements UIComponent {
             listModel.addElement(comic);
         }
         JList<Comic> jList = new JList<>(listModel);
-        jList.setCellRenderer(new ComicsListRenderer(jList));
+        jList.setCellRenderer(new ComicsListRenderer());
         jList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
@@ -66,7 +66,7 @@ public class UIExtraComponent implements UIComponent {
                 listModel.addElement(character);
             }
             JList<Character> jList = new JList<>(listModel);
-            jList.setCellRenderer(new CharactersListRenderer(jList));
+            jList.setCellRenderer(new CharactersListRenderer());
             jList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             jList.addListSelectionListener((ListSelectionEvent e) -> {
                 if (e.getValueIsAdjusting()) {

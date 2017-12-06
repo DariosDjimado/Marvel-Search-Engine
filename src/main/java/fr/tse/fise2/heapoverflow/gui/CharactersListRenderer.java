@@ -10,12 +10,13 @@ public class CharactersListRenderer extends DefaultListCellRenderer implements L
     private TemplatePreviewListRenderer renderer;
 
 
-    public CharactersListRenderer(final JList list) {
+    public CharactersListRenderer() {
         super();
         renderer = new TemplatePreviewListRenderer() {
             @Override
             protected void fillCardData() {
-                this.cardTitle.setText(((Character) this.data).getName().substring(0, 10));
+                Character character = (Character) this.data;
+                this.cardTitle.setText(character.getName().substring(0, 4) + "..." + character.getId());
             }
 
             @Override

@@ -10,13 +10,13 @@ public class ComicsListRenderer extends DefaultListCellRenderer implements ListC
     private TemplatePreviewListRenderer renderer;
 
 
-    public ComicsListRenderer(final JList list) {
+    public ComicsListRenderer() {
         super();
         renderer = new TemplatePreviewListRenderer() {
             @Override
             protected void fillCardData() {
                 Comic comic = (Comic) this.data;
-                this.cardTitle.setText(comic.getTitle().substring(0, 10) + "..." + comic.getIssueNumber());
+                this.cardTitle.setText(comic.getTitle().substring(0, 4) + "..." + comic.getIssueNumber());
             }
 
             @Override
