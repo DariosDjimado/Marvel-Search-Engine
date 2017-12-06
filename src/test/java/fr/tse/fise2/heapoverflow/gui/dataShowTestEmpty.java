@@ -16,8 +16,9 @@ public class dataShowTestEmpty {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
-        DataShow.DrawEmpty(panel);
         frame.setContentPane(panel);
+        DataShow dataShow = new DataShow(panel);
         frame.setVisible(true);
+        dataShow.DrawEmpty();
     }
 }

@@ -43,7 +43,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
         this.connectionDB = new ConnectionDB(dataBaseErrorHandler);
         // create tables
         CreateTables tables = new CreateTables(this.connectionDB);
-        tables.createComicsTable();
+        tables.createAllTables();
         // init charactersTable
         this.charactersTable = new CharactersTable(this.connectionDB);
         // init comics table
@@ -51,6 +51,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
         // store ui
         this.ui = ui;
         this.autoCompletion = new AutoCompletion(this, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
+        //
+        this.dataShow = new DataShow(this.getUi().getCenterWrapperPanel());
         //
         this.searchButtonListener = new SearchButtonListener(this);
         ui.getUiSearchComponent().setSearchButtonListener(this.searchButtonListener);
@@ -95,7 +97,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
 
 
             EventQueue.invokeLater(() -> {
-                DataShow.DrawCharacter(this.getUi().getCenterWrapperPanel(), character);
+                dataShow.DrawCharacter(character);
                 this.ui.revalidate();
                 this.ui.repaint();
             });
@@ -141,7 +143,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
 
 
             EventQueue.invokeLater(() -> {
-                DataShow.DrawComic(this.getUi().getCenterWrapperPanel(), fetched);
+                dataShow.DrawComic(fetched);
                 this.ui.revalidate();
                 this.ui.repaint();
             });
@@ -206,7 +208,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
         EventQueue.invokeLater(() -> {
             try {
                 EventQueue.invokeLater(() -> {
-                    DataShow.DrawComic(this.ui.getCenterWrapperPanel(), comic);
+                    dataShow.DrawComic(comic);
                     this.ui.revalidate();
                     this.ui.repaint();
                 });
@@ -223,7 +225,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener {
         EventQueue.invokeLater(() -> {
             try {
                 EventQueue.invokeLater(() -> {
-                    DataShow.DrawCharacter(this.ui.getCenterWrapperPanel(), character);
+                    dataShow.DrawCharacter(character);
                     this.ui.revalidate();
                     this.ui.repaint();
                 });

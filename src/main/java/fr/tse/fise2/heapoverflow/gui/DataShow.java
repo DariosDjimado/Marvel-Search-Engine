@@ -2,16 +2,17 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
+import fr.tse.fise2.heapoverflow.marvelapi.Image;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.List;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 
@@ -25,34 +26,103 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  *
  * @author Théo Basty
  * @version 2.0
- * TODO move all subrequests to EDT
+ * TODO move all subrequests to Thread
+ * TODO reduce repetition in code
+ * TODO Review JavaDocs annotations
+ *
  */
 public class DataShow{
-    /**
-     * Function to draw comic details on the window
-     *
-     * @param panel The panel in which to draw comic infos
-     * @param comic The comic to display
-     */
-    public static void DrawComic(JPanel panel,Comic comic) {
-        panel.removeAll();
-        MarvelRequest request = new MarvelRequest();
+    //region Attributes
+    private JPanel panel;
+
+    private ShowThumbnail thumbnail;
+
+    private JLabel head;
+
+    private JPanel detail;
+    private JPanel detailPane;
+    private JPanel referencesPane;
+    private JEditorPane description;
+    private Map<String, JPanel> detailLines;
+
+    private JTabbedPane tabs;
+    private Map<String, JList> tabsJLists;
+    //endregion
+
+    //region Constructors
+    public DataShow(JPanel panel_) {
+        this.panel = panel_;
         panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
 
-        //region title display
-        JLabel head = new JLabel();
+        thumbnail = new ShowThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
+        thumbnail.setPreferredSize(new Dimension(200, 274));
+        thumbnail.setBorder(new EmptyBorder(10, 10, 0, 5));
+        panel.add(thumbnail, BorderLayout.WEST);
+
+        head = new JLabel();
+        panel.add(head, BorderLayout.NORTH);
         head.setBorder(new EmptyBorder(10, 10, 0, 10));
         head.setFont(Fonts.title1);
-        head.setText(comic.getTitle());
-        panel.add(head, BorderLayout.NORTH);
-        //endregion
-        //region detail display
-        JPanel detail = new JPanel();
+
+        detail = new JPanel();
         detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
+        JPanel detailWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        detailWrapper.add(detail);
+        panel.add(detailWrapper, BorderLayout.CENTER);
+
+        description = new JEditorPane();
+        description.setEditable(false);
+
+        referencesPane = new JPanel();
+        referencesPane.setLayout(new GridLayout(3, 2));
+        referencesPane.setBackground(Color.lightGray);
+        referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2, 2, 2, 2), BorderFactory.createLineBorder(Color.darkGray)));
+        JPanel alignedRefLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        alignedRefLeft.add(referencesPane);
+        detail.add(referencesPane);
+
+        detailPane = new JPanel();
+        detailLines = new HashMap<>();
+        detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
+        detailPane.setBorder(new EmptyBorder(5, 0, 0, 0));
+        detail.add(detailPane);
+
+        tabs = new JTabbedPane();
+        tabsJLists = new HashMap<>();
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
+        panel.add(tabs, BorderLayout.SOUTH);
+
+        panel.setVisible(true);
+    }
+
+    public DataShow(JPanel panel, Comic comic) {
+        this(panel);
+        this.DrawComic(comic);
+    }
+
+    public DataShow(JPanel panel, Character character) {
+        this(panel);
+        this.DrawCharacter(character);
+    }
+    //endregion
+
+    /**
+     * Function to draw comic details on the window
+     *
+     * @param comic The comic to display
+     */
+    public void DrawComic(Comic comic) {
+        MarvelRequest request = new MarvelRequest();
+
+        //region title display
+        head.setText(comic.getTitle());
+        //endregion
+        //region detail display
 
         //region references
+        referencesPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : "        , comic.getIsbn());
         references.put("UPC : "         , comic.getUpc());
@@ -60,25 +130,7 @@ public class DataShow{
         references.put("EAN : "         , comic.getEan());
         references.put("ISSN : "        , comic.getIssn());
 
-        JPanel referencesPane = new JPanel();
-        referencesPane.setLayout(new GridLayout(3, 2));
-        referencesPane.setBackground(Color.lightGray);
-        referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2,2,2,2), BorderFactory.createLineBorder(Color.darkGray)));
-        for(String reference : references.keySet()){
-            JLabel title = new JLabel(reference);
-            title.setFont(Fonts.boldRef);
-            JLabel content = new JLabel(references.get(reference));
-            content.setFont(Fonts.ref);
-            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-            refLine.setOpaque(false);
-            refLine.add(title);
-            refLine.add(content);
-            referencesPane.add(refLine);
-        }
-//        referencesPane.setMaximumSize(referencesPane.getLayout().minimumLayoutSize(referencesPane));
-        JPanel alignedRefLeft = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
-        alignedRefLeft.add(referencesPane);
-        detail.add(alignedRefLeft);
+        fillPaneWithLabels(referencesPane, references);
         //endregion
         //region detail content
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
@@ -98,38 +150,20 @@ public class DataShow{
         }
         details.put("Page Count : ", Integer.valueOf(comic.getPageCount()).toString());
 
-        JPanel detailPane = new JPanel();
-        detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
-        for(String detailLine : details.keySet()){
-            JLabel title = new JLabel(detailLine);
-            title.setFont(Fonts.boldContent);
-            JLabel content = new JLabel(details.get(detailLine));
-            content.setFont(Fonts.content);
-            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            refLine.setOpaque(false);
-            refLine.add(title);
-            refLine.add(content);
-            detailPane.add(refLine);
-        }
-        detailPane.setBorder(new EmptyBorder(5,0,0,0));
-        detail.add(detailPane);
+        fillPaneWithLabels(detailPane, details);
         //endregion
-
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        wrapper.add(detail);
-        panel.add(wrapper, BorderLayout.CENTER);
-//        panel.add(detailOld, BorderLayout.CENTER);
+        detail.revalidate();
         //endregion
         //region Tabs display
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
         //region Description
-        JEditorPane description = new JEditorPane();
         description.setText(comic.getDescription());
-        description.setEditable(false);
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
         //region Character
+        DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
+        JList<MarvelListElement> characters = new JList<>(characterListModel);
+        tabsJLists.put("Character", characters);
+
         try {
             CharacterDataWrapper responseObj;
             int reqCount = 0;
@@ -141,19 +175,20 @@ public class DataShow{
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
             for (Character character : fetched) {
                 characterListModel.addElement(new MarvelListElement(character.getName(), character.getResourceURI(), MarvelType.Character));
             }
-            JList<MarvelListElement> characters = new JList<>(characterListModel);
             tabs.addTab("Character", new JScrollPane(characters));
-        }
-        catch (Exception e){
+        } catch (Exception e){
             System.out.println(e);
             e.printStackTrace();
         }
         //endregion
         //region Creators
+        DefaultListModel<MarvelListElement> creatorListModel = new DefaultListModel<>();
+        JList<MarvelListElement> creators = new JList<>(creatorListModel);
+        tabsJLists.put("Creators", creators);
+
         try {
             CreatorDataWrapper responseObj;
             int reqCount = 0;
@@ -165,52 +200,58 @@ public class DataShow{
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> creatorListModel = new DefaultListModel<>();
             for (Creator oneCreator : fetched) {
                 creatorListModel.addElement(new MarvelListElement(oneCreator.getFullName(), oneCreator.getResourceURI(), MarvelType.Creator));
             }
-            JList<MarvelListElement> creators = new JList<>(creatorListModel);
             tabs.addTab("Creators", new JScrollPane(creators));
-        }
-        catch (Exception e){
+        } catch (Exception e){
             System.out.println(e);
             e.printStackTrace();
         }
 
         //endregion
         //region variants
-        if(comic.getVariants().length > 0) {
-            DefaultListModel<MarvelListElement> variantsListModel = new DefaultListModel<>();
+        DefaultListModel<MarvelListElement> variantsListModel = new DefaultListModel<>();
+        JList<MarvelListElement> variants = new JList<>(variantsListModel);
+        tabsJLists.put("Variants", variants);
+        if (comic.getVariants().length > 0) {
             for (ComicSummary comicVariant : comic.getVariants()) {
                 variantsListModel.addElement(new MarvelListElement(comicVariant.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<MarvelListElement> variants = new JList<>(variantsListModel);
             tabs.addTab("Variants", new JScrollPane(variants));
         }
         //endregion
         //region collections
 //        if(true) {
-        if(comic.getCollections().length > 0) {
-            DefaultListModel<MarvelListElement> CollectionsListModel = new DefaultListModel<>();
+        DefaultListModel<MarvelListElement> CollectionsListModel = new DefaultListModel<>();
+        JList<MarvelListElement> collections = new JList<>(CollectionsListModel);
+        tabsJLists.put("Collections", collections);
+
+        if (comic.getCollections().length > 0) {
             for (ComicSummary comicCollection : comic.getCollections()) {
                 CollectionsListModel.addElement(new MarvelListElement(comicCollection.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<MarvelListElement> collections = new JList<>(CollectionsListModel);
             tabs.addTab("Collections", new JScrollPane(collections));
         }
         //endregion
         //region collected issues
 //        if(true) {
-        if(comic.getCollectedIssues().length > 0) {
-            DefaultListModel<MarvelListElement> CollectedListModel = new DefaultListModel<>();
+        DefaultListModel<MarvelListElement> CollectedListModel = new DefaultListModel<>();
+        JList<MarvelListElement> collected = new JList<>(CollectedListModel);
+        tabsJLists.put("Collected Issues", collected);
+
+        if (comic.getCollectedIssues().length > 0) {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
                 CollectedListModel.addElement(new MarvelListElement(comicCollected.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            JList<MarvelListElement> collected = new JList<>(CollectedListModel);
             tabs.addTab("Collected Issues", new JScrollPane(collected));
         }
         //endregion
         //region stories
+        DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
+        JList<MarvelListElement> stories = new JList<>(storiesListModel);
+        tabsJLists.put("Stories", stories);
+
         try {
             ComicDataWrapper responseObj;
             int reqCount = 0;
@@ -222,19 +263,19 @@ public class DataShow{
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
             for (Comic oneComic : fetched) {
                 storiesListModel.addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Story));
             }
-            JList<MarvelListElement> stories = new JList<>(storiesListModel);
             tabs.addTab("Stories", new JScrollPane(stories));
-        }
-        catch (Exception e){
+        } catch (Exception e){
             System.out.println(e);
             e.printStackTrace();
         }
         //endregion
         //region events
+        DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
+        JList<MarvelListElement> events = new JList<>(eventsListModel);
+        tabsJLists.put("Events", events);
         try {
             ComicDataWrapper responseObj;
             int reqCount = 0;
@@ -246,94 +287,60 @@ public class DataShow{
                 reqCount++;
             } while (responseObj.getData().getOffset()+responseObj.getData().getCount() < responseObj.getData().getTotal());
 
-            DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
             for (Comic oneComic : fetched) {
                 eventsListModel.addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Story));
             }
-            JList<MarvelListElement> events = new JList<>(eventsListModel);
             tabs.addTab("Events", new JScrollPane(events));
-        }
-        catch (Exception e){
+        } catch (Exception e){
             System.out.println(e);
             e.printStackTrace();
         }
         //endregion
-
-        panel.add(tabs, BorderLayout.SOUTH);
+        tabs.revalidate();
         //endregion
         //region thumbnail display
-        try {
-            ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(comic.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
-            thumb.setPreferredSize(new Dimension(200, 274));
-            thumb.setBorder(new EmptyBorder(10,10,0,5));
-            panel.add(thumb, BorderLayout.WEST);
-        } catch (Exception e){
-            System.out.println(e);
-        }
+        setThumbnail(comic.getThumbnail());
         //endregion
+
+        panel.repaint();
 
     }
 
     /**
      * Function to draw character details on the window
-     * @param panel The panel in which to draw Character infos
      * @param character The Character to draw
      *
      */
-    public static void DrawCharacter(JPanel panel, final Character character) {
-        panel.removeAll();
-        panel.setMinimumSize(new Dimension(600, 500));
-        panel.setLayout(new BorderLayout());
+    public void DrawCharacter(final Character character) {
 
         //region title display
-        JLabel head = new JLabel();
-        head.setBorder(new EmptyBorder(10, 10, 0, 10));
-        head.setFont(Fonts.title1);
         head.setText(character.getName());
-        panel.add(head, BorderLayout.NORTH);
         //endregion
         //region detail display
-        JPanel detail = new JPanel();
-        detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
-        detail.setBorder(new EmptyBorder(10, 5, 0, 10));
-
+        referencesPane.setVisible(false);
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
         details.put("Appears in : ", "");
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Series");
         details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
         details.put("Last Modification : ", character.getModified().substring(0, 10));
 
-        for(String detailLine : details.keySet()){
-            JLabel title = new JLabel(detailLine);
-            title.setFont(Fonts.boldContent);
-            JLabel content = new JLabel(details.get(detailLine));
-            content.setFont(Fonts.content);
-            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            refLine.setOpaque(false);
-            refLine.add(title);
-            refLine.add(content);
-            detail.add(refLine);
-        }
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        wrapper.add(detail);
-        panel.add(wrapper, BorderLayout.CENTER);
+        fillPaneWithLabels(detailPane, details);
+        detail.revalidate();
         //endregion
         //region Tabs display
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
+        tabsJLists.clear();
+        tabs.removeAll();
         //region Description
-        JEditorPane description = new JEditorPane();
         description.setText(character.getDescription());
-        description.setEditable(false);
         tabs.addTab("Description", new JScrollPane(description));
         //endregion
         //region Series
         MarvelRequest request = new MarvelRequest();
 
-
         DefaultListModel<MarvelListElement> seriesListModel = new DefaultListModel<>();
         seriesListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> series = new JList<>(seriesListModel);
+        tabsJLists.put("Series", series);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -361,18 +368,12 @@ public class DataShow{
             }
         });
         tabs.addTab("Series", new JScrollPane(series));
-
-//        DefaultListModel<SerieListElement> seriesListModel = new DefaultListModel<>();
-//        for(SeriesSummary serie : character.getSeries().getItems()){
-//            seriesListModel.addElement(new SerieListElement(serie));
-//        }
-//        JList<SerieListElement> series = new JList<>(seriesListModel);
-//        tabs.addTab("Series", new JScrollPane(series));
         //endregion
         //region Comics
         DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
         comicListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> comics = new JList<>(comicListModel);
+        tabsJLists.put("Comics", comics);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -407,6 +408,7 @@ public class DataShow{
         DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
         storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
+        tabsJLists.put("Stories", stories);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -441,6 +443,7 @@ public class DataShow{
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> events = new JList<>(eventsListModel);
+        tabsJLists.put("Events", events);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -469,54 +472,52 @@ public class DataShow{
 
         tabs.addTab("Events", new JScrollPane(events));
         //endregion
-
-        panel.add(tabs, BorderLayout.SOUTH);
         //endregion
+        tabs.revalidate();
         //region thumbnail display
-        try {
-            ShowThumbnail thumb = new ShowThumbnail(MarvelRequest.getImage(character.getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
-            thumb.setPreferredSize(new Dimension(200, 274));
-            thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
-            panel.add(thumb, BorderLayout.WEST);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+        setThumbnail(character.getThumbnail());
         //endregion
+
+        panel.repaint();
     }
 
     /**
      * Function to draw an empty layout on a panel
-     *
-     * @param panel The panel in which to draw the empty layout
      */
-    public static void DrawEmpty(JPanel panel){
-        panel.removeAll();
-        panel.setMinimumSize(new Dimension(600, 500));
-        panel.setLayout(new BorderLayout());
-
+    public void DrawEmpty() {
         //region title display
-        JLabel head = new JLabel();
-        head.setBorder(new EmptyBorder(10, 10, 0, 10));
-        head.setFont(Fonts.title1);
         head.setText("Choose something to display");
-        panel.add(head, BorderLayout.NORTH);
-        //endregion
-        //region Tabs display
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
-        panel.add(tabs, BorderLayout.SOUTH);
         //endregion
         //region thumbnail display
+        setThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
+        //endregion
+    }
+
+    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m) {
+        pane.removeAll();
+        for (String detailLine : m.keySet()) {
+            JLabel title = new JLabel(detailLine);
+            title.setFont(Fonts.boldContent);
+            JLabel content = new JLabel(m.get(detailLine));
+            content.setFont(Fonts.content);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            refLine.setOpaque(false);
+            refLine.add(title);
+            refLine.add(content);
+            pane.add(refLine);
+        }
+    }
+
+    public void setThumbnail(Image ThumbPartialUrl) {
         try {
-            ShowThumbnail thumb = new ShowThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
-            thumb.setPreferredSize(new Dimension(200, 274));
-            thumb.setBorder(new EmptyBorder(10, 10, 0, 5));
-            panel.add(thumb, BorderLayout.WEST);
+            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC));
         } catch (Exception e) {
             System.out.println(e);
         }
-        //endregion
+    }
+
+    public void setThumbnail(BufferedImage thumbnail) {
+        this.thumbnail.setImage_(thumbnail);
     }
 }
 

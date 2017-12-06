@@ -24,10 +24,11 @@ public class dataShowTestComic {
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            JPanel panel = new JPanel();
-            DataShow.DrawComic(panel, fetched);
-            frame.setContentPane(panel);
+            JPanel pane = new JPanel();
+            frame.setContentPane(pane);
+            DataShow dataShow = new DataShow(pane);
             frame.setVisible(true);
+            dataShow.DrawComic(fetched);
         }
         catch(Exception e)  {
             System.out.println(e);

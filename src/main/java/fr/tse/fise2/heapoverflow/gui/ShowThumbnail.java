@@ -37,4 +37,9 @@ public class ShowThumbnail extends JPanel {
         g.drawRect(this.getBorder().getBorderInsets(this).left+5,5,179,263);
         g.drawImage(image_, this.getBorder().getBorderInsets(this).left+11, 11, null);
     }
+
+    public void setImage_(BufferedImage image_) {
+        this.image_ = image_;
+        repaint();
+    }
 }
