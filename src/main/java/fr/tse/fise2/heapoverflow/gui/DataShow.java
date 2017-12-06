@@ -19,11 +19,10 @@ import java.util.List;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 
 /**
- * Window used to display detailed datas on characters, comics ...
- * <br/>
- * can display :
+ * Class used to manage à {@link JPanel} used to show detailed datas on characters and comics. Can display :
  * <ul>
  *     <li>Comics</li>
+ *     <li>Characters</li>
  * </ul>
  *
  * @author Théo Basty
@@ -33,37 +32,83 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  * TODO Review JavaDocs annotations
  *
  */
-public class DataShow{
+public class DataShow {
     //region Attributes
 //    Controller controllerLink;
 
+
+    /**
+     * The panel used to show the data (Character or Comic)
+     */
     private JPanel panel;
 
+    /**
+     * The thumbnail od the element displayed
+     */
     private ShowThumbnail thumbnail;
 
+    /**
+     * The title of the Panel
+     */
     private JLabel head;
 
+    /**
+     * The panel containing all the details about the element
+     */
     private JPanel detail;
-    private JPanel detailPane;
-    private JPanel referencesPane;
-    private JEditorPane description;
-    private Map<String, JPanel> detailLines;
 
+    /**
+     * The subpanel of {@link DataShow#detail} containing the details about the element
+     */
+    private JPanel detailPane;
+
+    /**
+     * The subpanel of {@link DataShow#detail} containing the reference of the comic. Hidden when a character is displayed
+     */
+    private JPanel referencesPane;
+
+    /**
+     * The component used to display the description
+     */
+    private JEditorPane description;
+
+    /**
+     * The component containing all the tabs displying different lists (depend on the type of element displayed)
+     */
     private JTabbedPane tabs;
+
+    /**
+     * A map referring to all tabs displayed in the panel
+     */
     private Map<String, JList> tabsJLists;
     //endregion
 
     //region Constructors
+
+    /**
+     * Constructor, initialize every subpanel which will contain the informations on the element displayed.
+     *
+     * @param panel_ The panel on which the element will be displayed
+     */
     public DataShow(JPanel panel_) {
 //        this.controllerLink = controller;
         this.panel = panel_;
-        panel.setMinimumSize(new Dimension(600, 500));
         panel.setLayout(new BorderLayout());
+
+        JPanel leftPane = new JPanel();
+        leftPane.setLayout(new BoxLayout(leftPane, BoxLayout.PAGE_AXIS));
+        leftPane.setBorder(new EmptyBorder(10, 10, 0, 5));
+        panel.add(leftPane, BorderLayout.WEST);
 
         thumbnail = new ShowThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
         thumbnail.setPreferredSize(new Dimension(200, 274));
-        thumbnail.setBorder(new EmptyBorder(10, 10, 0, 5));
-        panel.add(thumbnail, BorderLayout.WEST);
+        leftPane.add(thumbnail);
+
+        referencesPane = new JPanel();
+        referencesPane.setLayout(new GridLayout(5, 1));
+        referencesPane.setBackground(Color.lightGray);
+        referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2, 2, 2, 2), BorderFactory.createLineBorder(Color.darkGray)));
+        leftPane.add(referencesPane);
 
         head = new JLabel();
         panel.add(head, BorderLayout.NORTH);
@@ -79,42 +124,27 @@ public class DataShow{
 
         description = new JEditorPane();
         description.setEditable(false);
-
-        referencesPane = new JPanel();
-        referencesPane.setLayout(new GridLayout(3, 2));
-        referencesPane.setBackground(Color.lightGray);
-        referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2, 2, 2, 2), BorderFactory.createLineBorder(Color.darkGray)));
-        JPanel alignedRefLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        alignedRefLeft.add(referencesPane);
-        detail.add(referencesPane);
+        JScrollPane descriptionScroll = new JScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        descriptionScroll.setPreferredSize(new Dimension(200, 100));
+        detail.add(new JScrollPane(descriptionScroll));
 
         detailPane = new JPanel();
-        detailLines = new HashMap<>();
         detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
         detailPane.setBorder(new EmptyBorder(5, 0, 0, 0));
         detail.add(detailPane);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
-        tabs.setPreferredSize(new Dimension(panel.getWidth(), 150));
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 120));
         panel.add(tabs, BorderLayout.SOUTH);
 
+        panel.setMinimumSize(panel.getLayout().minimumLayoutSize(panel));
         panel.setVisible(true);
-    }
-
-    public DataShow(JPanel panel, Comic comic) {
-        this(panel);
-        this.DrawComic(comic);
-    }
-
-    public DataShow(JPanel panel, Character character) {
-        this(panel);
-        this.DrawCharacter(character);
     }
     //endregion
 
     /**
-     * Function to draw comic details on the window
+     * Function to draw informations for comics
      *
      * @param comic The comic to display
      */
@@ -126,6 +156,9 @@ public class DataShow{
         //endregion
         //region detail display
 
+        //region Description
+        description.setText(comic.getDescription());
+        //endregion
         //region references
         referencesPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
@@ -135,7 +168,7 @@ public class DataShow{
         references.put("EAN : "         , comic.getEan());
         references.put("ISSN : "        , comic.getIssn());
 
-        fillPaneWithLabels(referencesPane, references);
+        fillPaneWithLabels(referencesPane, references, Fonts.boldRef, Fonts.ref);
         //endregion
         //region detail content
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
@@ -160,10 +193,6 @@ public class DataShow{
         detail.revalidate();
         //endregion
         //region Tabs display
-        //region Description
-        description.setText(comic.getDescription());
-        tabs.addTab("Description", new JScrollPane(description));
-        //endregion
         //region Character
         DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
         JList<MarvelListElement> characters = new JList<>(characterListModel);
@@ -312,8 +341,8 @@ public class DataShow{
     }
 
     /**
-     * Function to draw character details on the window
-     * @param character The Character to draw
+     * Function to draw informations for characters
+     * @param character The Character to display
      *
      */
     public void DrawCharacter(final Character character) {
@@ -477,8 +506,8 @@ public class DataShow{
 
         tabs.addTab("Events", new JScrollPane(events));
         //endregion
-        //endregion
         tabs.revalidate();
+        //endregion
         //region thumbnail display
         setThumbnail(character.getThumbnail());
         //endregion
@@ -487,24 +516,19 @@ public class DataShow{
     }
 
     /**
-     * Function to draw an empty layout on a panel
+     * Method to fill a JPanel with lines containin couples content title, content
+     * @param pane The {@link JPanel} to fill
+     * @param m The {@link Map} containing the couples to add
+     * @param titleFont font for the title of the element
+     * @param contentFont font for the conten
      */
-    public void DrawEmpty() {
-        //region title display
-        head.setText("Choose something to display");
-        //endregion
-        //region thumbnail display
-        setThumbnail(new BufferedImage(168, 252, BufferedImage.TYPE_INT_ARGB));
-        //endregion
-    }
-
-    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m) {
+    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m, Font titleFont, Font contentFont) {
         pane.removeAll();
         for (String detailLine : m.keySet()) {
             JLabel title = new JLabel(detailLine);
-            title.setFont(Fonts.boldContent);
+            title.setFont(titleFont);
             JLabel content = new JLabel(m.get(detailLine));
-            content.setFont(Fonts.content);
+            content.setFont(contentFont);
             JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
             refLine.setOpaque(false);
             refLine.add(title);
@@ -513,6 +537,21 @@ public class DataShow{
         }
     }
 
+    /**
+     * Method to fill a JPanel with lines containin couples content title, content
+     *
+     * @param pane The {@link JPanel} to fill
+     * @param m    The {@link Map} containing the couples to add
+     */
+    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m) {
+        fillPaneWithLabels(pane, m, Fonts.boldContent, Fonts.content);
+    }
+
+    /**
+     * Method to change the thumbnail of the panel
+     *
+     * @param ThumbPartialUrl the partial URI from the API
+     */
     public void setThumbnail(Image ThumbPartialUrl) {
         try {
             thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
@@ -521,6 +560,10 @@ public class DataShow{
         }
     }
 
+    /**
+     * Method to change the thumbnail of panel
+     * @param thumbnail the {@link BufferedImage} of the image
+     */
     public void setThumbnail(BufferedImage thumbnail) {
         this.thumbnail.setImage_(thumbnail);
     }

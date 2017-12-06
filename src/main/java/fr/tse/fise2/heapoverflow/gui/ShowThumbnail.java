@@ -32,10 +32,10 @@ public class ShowThumbnail extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(Color.GRAY);
-        g.fillRect(this.getBorder().getBorderInsets(this).left+5,5,179,263);
+        g.fillRect(5, 5, 179, 263);
         g.setColor(Color.black);
-        g.drawRect(this.getBorder().getBorderInsets(this).left+5,5,179,263);
-        g.drawImage(image_, this.getBorder().getBorderInsets(this).left+11, 11, null);
+        g.drawRect(5, 5, 179, 263);
+        g.drawImage(image_, 11, 11, null);
     }
 
     public void setImage_(BufferedImage image_) {

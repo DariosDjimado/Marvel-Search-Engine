@@ -20,7 +20,7 @@ public class dataShowTestComic {
             Comic fetched = deserializeComics(response).getData().getResults()[0];
             JFrame frame = new JFrame();
             frame.setTitle("Comic 39595 - " + fetched.getTitle());
-            frame.setSize(600, 500);
+            frame.setSize(600, 600);
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

@@ -19,7 +19,7 @@ public class dataShowTestCharacter {
             Character fetched = deserializeCharacters(response).getData().getResults()[0];
             JFrame frame = new JFrame();
             frame.setTitle("Comic 39595 - " + fetched.getName());
-            frame.setSize(600, 500);
+            frame.setSize(600, 600);
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
