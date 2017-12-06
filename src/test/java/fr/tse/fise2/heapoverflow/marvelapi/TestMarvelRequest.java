@@ -1,10 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import fr.tse.fise2.heapoverflow.main.AppConfig;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 import static org.junit.Assert.*;
@@ -56,7 +56,7 @@ public class TestMarvelRequest {
             // check that the comic sent is the good one
             assertEquals(resultsToId[0].getId(), 1011334);
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -108,7 +108,7 @@ public class TestMarvelRequest {
             assertEquals(resultsToId[0].getId(), 21486);
 
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -122,7 +122,7 @@ public class TestMarvelRequest {
             String data = request.getData("creators");
             assertTrue(data.contains("\"code\":200,\"status\":\"Ok\",\"copyright\":\"© 2017 MARVEL"));
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -137,7 +137,7 @@ public class TestMarvelRequest {
         // find an existing image
         Image comicImage = deserializeComics(responseComics).getData().getResults()[2].getImages()[0];
         // fetch the image
-        BufferedImage bufferedImage = getImage(comicImage, ImageVariant.PORTRAIT_MEDIUM);
+        BufferedImage bufferedImage = getImage(comicImage, ImageVariant.PORTRAIT_MEDIUM, AppConfig.tmpDir);
 
         assertEquals(bufferedImage.getHeight(), 150);
         assertEquals(bufferedImage.getWidth(), 100);

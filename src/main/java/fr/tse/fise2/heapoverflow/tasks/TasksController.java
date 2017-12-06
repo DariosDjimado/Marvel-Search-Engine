@@ -1,36 +1,34 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
-import fr.tse.fise2.heapoverflow.interfaces.ITasksController;
-import fr.tse.fise2.heapoverflow.main.Controller;
+import fr.tse.fise2.heapoverflow.database.CharactersTable;
+import fr.tse.fise2.heapoverflow.database.ComicsTable;
+import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.main.DataBaseErrorHandler;
 
-public class TasksController implements ITasksController {
-    private final Controller controller;
+public class TasksController {
+    private final ConnectionDB connectionDB;
+    private final CharactersTable charactersTable;
+    private final ComicsTable comicsTable;
 
-    public TasksController(Controller controller) {
-        this.controller = controller;
+    public TasksController() {
+        DataBaseErrorHandler dataBaseErrorHandler = new DataBaseErrorHandler();
+        // init connection to database
+        this.connectionDB = new ConnectionDB(dataBaseErrorHandler);
+        // init charactersTable
+        this.charactersTable = new CharactersTable(this.connectionDB);
+        // init comics table
+        this.comicsTable = new ComicsTable(this.connectionDB);
     }
 
-    @Override
-    public void emitTaskExecutionFailed(Exception e) {
-
+    public ConnectionDB getConnectionDB() {
+        return connectionDB;
     }
 
-    @Override
-    public void onTaskExecutionFailed(Exception e) {
-
+    public CharactersTable getCharactersTable() {
+        return charactersTable;
     }
 
-    @Override
-    public void emitTaskSuccessfullyExecuted() {
-
-    }
-
-    @Override
-    public void onTaskSuccessfullyExecuted() {
-
-    }
-
-    public Controller getController() {
-        return controller;
+    public ComicsTable getComicsTable() {
+        return comicsTable;
     }
 }
