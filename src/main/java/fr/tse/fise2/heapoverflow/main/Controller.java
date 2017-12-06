@@ -1,43 +1,44 @@
 package fr.tse.fise2.heapoverflow.main;
 
-import fr.tse.fise2.heapoverflow.database.CharactersTable;
-import fr.tse.fise2.heapoverflow.database.ComicsTable;
-import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
-import fr.tse.fise2.heapoverflow.events.SearchButtonListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.AutoCompletion;
 import fr.tse.fise2.heapoverflow.gui.DataShow;
-import fr.tse.fise2.heapoverflow.gui.SearchHandler;
 import fr.tse.fise2.heapoverflow.gui.UI;
 import fr.tse.fise2.heapoverflow.interfaces.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
+import okhttp3.Cache;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.SQLException;
+import java.util.Iterator;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
 public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     private static LoggerObserver LOGGER_OBSERVER;
-    private static DataShow dataShow;
+    private final DataShow dataShow;
+    private static Controller con;
     private final ConnectionDB connectionDB;
     private final CharactersTable charactersTable;
     private final ComicsTable comicsTable;
+    private final CacheUrlsTable cacheUrlsTable;
     private final UI ui;
-    private final SearchButtonListener searchButtonListener;
-    private final SelectionChangedListener selectionChangedListener;
     private final SelectionChangedListener selectionChangedListenerExtra;
     private final AutoCompletion autoCompletion;
     private final RequestListener requestListener;
+    private final Cache urlsCache;
     private MarvelRequest request;
 
-
     public Controller(UI ui, final LoggerObserver loggerObserver) {
+        con = this;
 
         DataBaseErrorHandler dataBaseErrorHandler = new DataBaseErrorHandler();
         // init connection to database
@@ -48,20 +49,16 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         this.comicsTable = new ComicsTable(this.connectionDB);
         // store ui
         this.ui = ui;
-        this.autoCompletion = new AutoCompletion(this, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
+        this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
         //
         this.dataShow = new DataShow(this.getUi().getCenterWrapperPanel());
         //
-        this.searchButtonListener = new SearchButtonListener(this);
-        ui.getUiSearchComponent().setSearchButtonListener(this.searchButtonListener);
-        //
-        this.selectionChangedListener = new SelectionChangedListener(this);
-        this.ui.getUiSearchComponent().setSelectionChangedListener(this.selectionChangedListener);
+        this.ui.getUiSearchComponent().setController(this);
         //
         this.selectionChangedListenerExtra = new SelectionChangedListener(this);
         this.ui.getUiExtraComponent().setSelectionChangedListener(this.selectionChangedListenerExtra);
         //
-        this.request = new MarvelRequest();
+        this.request = new MarvelRequest(this);
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
@@ -74,8 +71,63 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.cacheUrlsTable = new CacheUrlsTable(this.connectionDB);
+        urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
+        this.initCacheUrlsTable();
     }
 
+    public static Controller getController() {
+        return con;
+    }
+
+    public static LoggerObserver getLoggerObserver() {
+        System.out.println("comparing");
+        System.out.println(LOGGER_OBSERVER == null);
+        return LOGGER_OBSERVER;
+    }
+
+    public static void setLoggerObserver(LoggerObserver loggerObserver) {
+        LOGGER_OBSERVER = loggerObserver;
+    }
+
+    void init() {
+        System.out.println(LOGGER_OBSERVER);
+
+    }
+
+    private void initCacheUrlsTable() {
+
+
+        try {
+
+            this.cacheUrlsTable.empty();
+
+
+            Iterator<String> urls = this.urlsCache.urls();
+
+            while (urls.hasNext()) {
+                final String completeUrl = urls.next();
+                if (!this.cacheUrlsTable.exists(completeUrl)) {
+                    String shortenUrl;
+                    if (completeUrl.contains("&apikey")) {
+                        System.out.println(completeUrl);
+                        shortenUrl = completeUrl.substring(0, completeUrl.indexOf("&apikey"));
+                    } else {
+                        System.out.println(completeUrl);
+                        shortenUrl = completeUrl.substring(0, completeUrl.indexOf("?apikey"));
+                    }
+                    System.out.println("inserting -----> ");
+                    System.out.println(shortenUrl + "--------------->" + completeUrl);
+                }
+            }
+
+
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
     public void searchStartsWith(String text) {
         this.autoCompletion.getAutoSuggestionPopUpWindow().setVisible(false);
@@ -87,7 +139,9 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 this.ui.revalidate();
             }
             if (this.ui.getUiSearchComponent().getComicsRadioButton().isSelected()) {
+                System.out.println("tex-------------------------------------------------------------------------------t" + text);
                 String response = this.request.getData("comics?titleStartsWith=" + text.toLowerCase() + "&limit=50");
+                System.out.println("response" + response);
                 Comic[] fetched = deserializeComics(response).getData().getResults();
                 this.ui.getUiSearchComponent().setResultsComics(fetched);
                 this.ui.revalidate();
@@ -97,25 +151,30 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         }
     }
 
-    public void emitSearchCharacterById(String id) {
-        Thread fetchCharacterById = new FetchData(this, "characters/" + SearchHandler.getCurrentSearch(), FetchData.CharactersType.CHARACTER_BY_ID);
-        fetchCharacterById.run();
+    public void emitSearchCharacterById(String word) {
+
 
         try {
-
-
-        } catch (Exception e) {
+            final String id = String.valueOf(this.getCharactersTable().findCharacterByName(word).getId());
+            Thread fetchCharacterById = new FetchData(this, "characters/" + id, FetchData.CharactersType.CHARACTER_BY_ID);
+            fetchCharacterById.run();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void emitSearchComicById(String id) {
-        Thread fetchComic = new FetchData(this, "comics/" + SearchHandler.getCurrentSearch(), FetchData.ComicsType.COMIC_BY_ID);
-        fetchComic.run();
-    }
+    public void emitSearchComicById(String word) {
+        try {
 
-    public ConnectionDB getConnectionDB() {
-        return connectionDB;
+            final String id = String.valueOf(getComicsTable().findComicByTitle(word).getId());
+
+            System.out.println(getComicsTable().findComicByTitle(word));
+
+            Thread fetchComic = new FetchData(this, "comics/" + id, FetchData.ComicsType.COMIC_BY_ID);
+            fetchComic.run();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public CharactersTable getCharactersTable() {
@@ -128,14 +187,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     public UI getUi() {
         return ui;
-    }
-
-    public static LoggerObserver getLoggerObserver() {
-        return LOGGER_OBSERVER;
-    }
-
-    public static void setLoggerObserver(LoggerObserver loggerObserver) {
-        LOGGER_OBSERVER = loggerObserver;
     }
 
     @Override
@@ -199,9 +250,18 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
             this.ui.revalidate();
             this.ui.repaint();
         });
-        // since we have the comic now we are going to fetch all comics in same series by using series id returned
-        Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(42) + "/comics", FetchData.ComicsType.COMICS_IN_SAME_SERIES);
-        fetchComicsInSameSeries.run();
+        this.fetchComicsInSameSeries(comic);
+    }
+
+    public void fetchComicsInSameSeries(Comic comic) {
+        System.out.println(comic.getSeries());
+        if (comic.getSeries() != null) {
+            // since we have the comic now we are going to fetch all comics in same series by using series id returned
+            System.out.println(comic.getId());
+
+            Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(42) + "/comics", FetchData.ComicsType.COMICS_IN_SAME_SERIES);
+            fetchComicsInSameSeries.run();
+        }
     }
 
     @Override
@@ -229,19 +289,28 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
             this.ui.revalidate();
             this.ui.repaint();
         });
+        this.fetchCharactersInSameComic(character);
+    }
+
+    public void fetchCharactersInSameComic(Character character) {
         // if there are comics returned then we'll get the others characters
         if (character.getComics().getReturned() > 0) {
-            String firstComicId = character.getComics().getItems()[0].getResourceURI().substring(43);
-            Thread fetchCharactersInSameComic = new FetchData(this, "series/" + firstComicId + "/characters", FetchData.CharactersType.CHARACTERS_IN_SAME_SERIES);
+            Thread fetchCharactersInSameComic = new FetchData(this, "series/" + character.getComics().getItems()[0].getResourceURI().substring(43) + "/characters", FetchData.CharactersType.CHARACTERS_IN_SAME_SERIES);
             fetchCharactersInSameComic.run();
         }
     }
 
     @Override
     public void onFetchedCharactersInSameComic(Character[] characters) {
-        EventQueue.invokeLater(() -> {
-            this.ui.getUiExtraComponent().setResultsCharacters(characters);
-        });
+        EventQueue.invokeLater(() -> this.ui.getUiExtraComponent().setResultsCharacters(characters));
+    }
+
+    public CacheUrlsTable getCacheUrlsTable() {
+        return cacheUrlsTable;
+    }
+
+    public Cache getUrlsCache() {
+        return urlsCache;
     }
 }
 

@@ -1,6 +1,11 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
 import fr.tse.fise2.heapoverflow.database.CreateTables;
+import fr.tse.fise2.heapoverflow.gui.UI;
+import fr.tse.fise2.heapoverflow.main.AppLogger;
+import fr.tse.fise2.heapoverflow.main.Controller;
+
+import java.awt.*;
 
 public class TaskSetup {
     public static void main(String[] args) {
@@ -10,6 +15,13 @@ public class TaskSetup {
     }
 
     private void init() {
+        UI ui = new UI();
+
+        EventQueue.invokeLater(ui::init);
+        AppLogger appLogger = new AppLogger();
+        appLogger.configureLogging();
+        Controller controller = new Controller(ui, appLogger);
+
         TasksController tasksController = new TasksController();
 
         // create tables
