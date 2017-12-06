@@ -24,6 +24,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComic
 
 public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     private static LoggerObserver LOGGER_OBSERVER;
+    private final DataShow dataShow;
     private static Controller con;
     private final ConnectionDB connectionDB;
     private final CharactersTable charactersTable;
@@ -49,6 +50,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         // store ui
         this.ui = ui;
         this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
+        //
+        this.dataShow = new DataShow(this.getUi().getCenterWrapperPanel());
         //
         this.ui.getUiSearchComponent().setController(this);
         //
@@ -206,7 +209,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         EventQueue.invokeLater(() -> {
             try {
                 EventQueue.invokeLater(() -> {
-                    DataShow.DrawComic(this.ui.getCenterWrapperPanel(), comic);
+                    dataShow.DrawComic(comic);
                     this.ui.revalidate();
                     this.ui.repaint();
                 });
@@ -221,7 +224,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     public void showCharacter(Character character) {
         System.out.println(character);
         EventQueue.invokeLater(() -> {
-            DataShow.DrawCharacter(this.ui.getCenterWrapperPanel(), character);
+            dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();
         });
@@ -243,7 +246,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     public void onFetchedComicById(Comic comic) {
         // show the comic
         EventQueue.invokeLater(() -> {
-            DataShow.DrawComic(this.getUi().getCenterWrapperPanel(), comic);
+            dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
         });
@@ -282,7 +285,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     public void onFetchedCharactersById(Character character) {
         // show character
         EventQueue.invokeLater(() -> {
-            DataShow.DrawCharacter(this.getUi().getCenterWrapperPanel(), character);
+            dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();
         });
