@@ -9,13 +9,14 @@ public class UI extends JFrame {
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
+    private UIBottomComponent uiBottomComponent;
 
     public UI() {
         super("Marvel Search");
-        this.init();
+
     }
 
-    private void init() {
+    public void init() {
 
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
@@ -24,6 +25,7 @@ public class UI extends JFrame {
         createLeftWrapperPanel();
         createCenterWrapperPanel();
         createRightWrapperPanel();
+        createBottomWrapperPanel();
 
         container.setVisible(true);
         System.out.println(container.isVisible());
@@ -73,16 +75,13 @@ public class UI extends JFrame {
         centerWrapperPanel.setMinimumSize(new Dimension(600, 500));
         centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
-        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,1,Color.gray));
+        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
 
 
-       // DataShow.DrawEmpty(centerWrapperPanel);
-
+        // DataShow.DrawEmpty(centerWrapperPanel);
 
 
         container.add(centerWrapperPanel, BorderLayout.CENTER);
-
-
 
 
     }
@@ -100,6 +99,16 @@ public class UI extends JFrame {
         container.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
+    public void createBottomWrapperPanel(){
+        JPanel bottomWrapperPanel = new JPanel();
+        this.uiBottomComponent = new UIBottomComponent(bottomWrapperPanel);
+        this.uiBottomComponent.build();
+
+        container.add(bottomWrapperPanel,BorderLayout.SOUTH);
+
+
+    }
+
     public UISearchComponent getUiSearchComponent() {
         return uiSearchComponent;
     }
@@ -110,6 +119,10 @@ public class UI extends JFrame {
 
     public UIExtraComponent getUiExtraComponent() {
         return uiExtraComponent;
+    }
+
+    public UIBottomComponent getUiBottomComponent() {
+        return uiBottomComponent;
     }
 }
 

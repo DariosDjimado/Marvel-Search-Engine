@@ -1,7 +1,8 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
-import fr.tse.fise2.heapoverflow.main.SelectionChangedListenner;
+import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 
 import javax.swing.*;
@@ -10,14 +11,14 @@ import java.awt.*;
 
 public class UIExtraComponent implements UIComponent {
     private final JPanel rightWrapperPanel;
-    private SelectionChangedListenner selectionChangedListenner;
+    private SelectionChangedListener selectionChangedListener;
 
     public UIExtraComponent(JPanel rightWrapperPanel) {
         this.rightWrapperPanel = rightWrapperPanel;
     }
 
-    public void setSelectionChangedListenner(SelectionChangedListenner selectionChangedListenner) {
-        this.selectionChangedListenner = selectionChangedListenner;
+    public void setSelectionChangedListener(SelectionChangedListener selectionChangedListener) {
+        this.selectionChangedListener = selectionChangedListener;
     }
 
     @Override
@@ -37,50 +38,45 @@ public class UIExtraComponent implements UIComponent {
 
     public void setResultsComics(Comic[] comics) {
         this.rightWrapperPanel.removeAll();
-        JScrollPane jscrollPane = new JScrollPane();
-        JList jList = new JList();
+        DefaultListModel<Comic> listModel = new DefaultListModel<>();
+        for (Comic comic : comics) {
 
+            listModel.addElement(comic);
+        }
+        JList<Comic> jList = new JList<>(listModel);
+        jList.setCellRenderer(new ComicsListRenderer());
+        jList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
-                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
+                this.selectionChangedListener.showComic(jList.getSelectedValue());
             }
         });
-
-        jscrollPane.setViewportView(jList);
-
-
-        DefaultListModel listModel = new DefaultListModel();
-
-        for (int i = 0; i < comics.length; i++) {
-            listModel.add(i, comics[i].getTitle() + "||" + comics[i].getId());
-        }
-        jList.setModel(listModel);
-
-        this.rightWrapperPanel.add(jscrollPane, BorderLayout.CENTER);
+        this.rightWrapperPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+        this.rightWrapperPanel.revalidate();
+        this.rightWrapperPanel.repaint();
     }
 
 
-   /* public void setResultsCharacters(Character[] characters) {
-        JScrollPane jscrollPane = new JScrollPane();
-        JList jList = new JList();
+    public void setResultsCharacters(Character[] characters) {
+        this.rightWrapperPanel.removeAll();
 
-        jList.addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting()) {
-                this.selectionChangedListenner.emitSelectionChanged(jList.getSelectedValue().toString().split("\\|")[2]);
+        if (characters != null) {
+            DefaultListModel<Character> listModel = new DefaultListModel<>();
+            for (Character character : characters) {
+                listModel.addElement(character);
             }
-        });
-
-        jscrollPane.setViewportView(jList);
-
-
-        DefaultListModel listModel = new DefaultListModel();
-
-        for (int i = 0; i < characters.length; i++) {
-            listModel.add(i, characters[i].getName() + "||" + characters[i].getId());
+            JList<Character> jList = new JList<>(listModel);
+            jList.setCellRenderer(new CharactersListRenderer());
+            jList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            jList.addListSelectionListener((ListSelectionEvent e) -> {
+                if (e.getValueIsAdjusting()) {
+                    this.selectionChangedListener.showCharacter(jList.getSelectedValue());
+                }
+            });
+            this.rightWrapperPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
         }
-        jList.setModel(listModel);
 
-
-        this.searchResultsPanel.add(jscrollPane);
-    }*/
+        this.rightWrapperPanel.revalidate();
+        this.rightWrapperPanel.repaint();
+    }
 }

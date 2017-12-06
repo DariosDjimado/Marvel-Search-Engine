@@ -1,51 +1,62 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
-import java.math.BigInteger;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
+/**
+ * Handles url manipulation
+ *
+ * @author Darios DJIMADO
+ */
 public class UrlBuilder {
 
     /**
-     * @param partialUrl the part of the url that will be added.
+     * Appends hash, timestamp  and keys to the url
+     *
+     * @param url entire
      * @return String
-     * @throws NoSuchAlgorithmException from MessageDigest.
      */
-    public static String apiPlainDataUrl(String partialUrl) throws NoSuchAlgorithmException {
+    static String appendHash(String url) {
 
         // Queries
         String timestamp = Long.toString(System.currentTimeMillis());
         String privateKey = Authentication.getPrivateKey();
         String publicKey = Authentication.getPublicKey();
-        String toHash = timestamp + privateKey + publicKey;
-        String baseUrl = "https://gateway.marvel.com:443/v1/public/";
 
-        // get an instance of MD5, reset it and update the new string
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        messageDigest.reset();
-        messageDigest.update(toHash.getBytes());
-        byte[] digest = messageDigest.digest();
-        BigInteger bigInt = new BigInteger(1, digest);
-        StringBuilder hash = new StringBuilder(bigInt.toString(16));
-
-        // add 0 while the length of the string is less than 32
-        while (hash.length() < 32) {
-            hash.insert(0, "0");
-        }
+        // hash
+        String hash = DigestUtils.md5Hex(timestamp + privateKey + publicKey);
 
         // return the url
-        if (partialUrl.contains("?")) {
-            return baseUrl + partialUrl + "&apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
+        if (url.contains("?")) {
+            return url + "&apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
         } else {
-            return baseUrl + partialUrl + "?apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
+            return url + "?apikey=" + publicKey + "&ts=" + timestamp + "&hash=" + hash;
         }
 
     }
 
-    // TODO add comment
-    public static URL imageUrl(Image image, ImageVariant imageVariant) throws MalformedURLException {
+    /**
+     * Appends base url to partial url
+     *
+     * @param partialUrl part of url that will be added
+     * @return url with baseUrl appended
+     */
+    static String appendBaseUrl(String partialUrl) {
+        String baseUrl = "https://gateway.marvel.com:443/v1/public/";
+        return baseUrl + partialUrl;
+    }
+
+    /**
+     * Builds Url from Marvel Image and Marvel Image Variant
+     *
+     * @param image        Marvel Image format
+     * @param imageVariant Marvel Image Variant
+     * @return Url
+     * @throws MalformedURLException if Url cannot be made
+     */
+    static URL imageUrl(Image image, ImageVariant imageVariant) throws MalformedURLException {
 
         switch (imageVariant) {
             case PORTRAIT_SMALL:
@@ -91,15 +102,9 @@ public class UrlBuilder {
 
     }
 
-    // TODO test
-    public static void main(String[] args) {
-        try {
-            System.out.println(UrlBuilder.apiPlainDataUrl("comics"));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Marvel Image Variant
+     */
     public enum ImageVariant {
         PORTRAIT_SMALL,
         PORTRAIT_MEDIUM,
