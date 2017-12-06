@@ -18,31 +18,14 @@ public class AutoCompletion {
 
     private final JTextField textField;
     private final Window container;
-    private final ArrayList<String> dictionary = new ArrayList<>();
     private final Color suggestionsTextColor;
     private final Color suggestionFocusedColor;
     private JPanel suggestionsPanel;
     private JWindow autoSuggestionPopUpWindow;
     private String typedWord;
-    private int currentIndexOfSpace, tW, tH;
-    private DocumentListener documentListener = new DocumentListener() {
-        @Override
-        public void insertUpdate(DocumentEvent de) {
-            checkForAndShowSuggestions();
-        }
+    private int tW, tH;
 
-        @Override
-        public void removeUpdate(DocumentEvent de) {
-            checkForAndShowSuggestions();
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent de) {
-            checkForAndShowSuggestions();
-        }
-    };
-
-    public AutoCompletion(Controller controller, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoCompletion(Controller controller, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
 
         this.controller = controller;
 
@@ -53,12 +36,25 @@ public class AutoCompletion {
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
         this.suggestionFocusedColor = suggestionFocusedColor;
-        this.textField.getDocument().addDocumentListener(documentListener);
+        this.textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                checkForAndShowSuggestions();
+            }
 
-        setDictionary(words);
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                checkForAndShowSuggestions();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                checkForAndShowSuggestions();
+            }
+        });
+
 
         typedWord = "";
-        currentIndexOfSpace = 0;
         tW = 0;
         tH = 0;
 
@@ -85,12 +81,13 @@ public class AutoCompletion {
 
             @Override
             public void componentShown(ComponentEvent e) {
+                System.out.println("shown");
 
             }
 
             @Override
             public void componentHidden(ComponentEvent e) {
-
+                System.out.println("hidden");
             }
         });
 
@@ -166,7 +163,7 @@ public class AutoCompletion {
         textField.requestFocusInWindow();
     }
 
-    public ArrayList<SuggestionLabel> getAddedSuggestionLabels() {
+    private ArrayList<SuggestionLabel> getAddedSuggestionLabels() {
         ArrayList<SuggestionLabel> sls = new ArrayList<>();
         for (int i = 0; i < suggestionsPanel.getComponentCount(); i++) {
             if (suggestionsPanel.getComponent(i) instanceof SuggestionLabel) {
@@ -198,19 +195,14 @@ public class AutoCompletion {
         }
     }
 
-    protected void addWordToSuggestions(String word) {
+    private void addWordToSuggestions(String word) {
         SuggestionLabel suggestionLabel = new SuggestionLabel(this.controller, word, suggestionFocusedColor, suggestionsTextColor, this);
-
         calculatePopUpWindowSize(suggestionLabel);
-
         suggestionsPanel.add(suggestionLabel);
     }
 
-    public String getCurrentlyTypedWord() {//get newest word after last white space if any or the first word if no white spaces
-        String text = textField.getText();
-        String wordBeingTyped = "";
-        wordBeingTyped = text;
-
+    String getCurrentlyTypedWord() {//get newest word after last white space if any or the first word if no white spaces
+        String wordBeingTyped = textField.getText();
         return wordBeingTyped.trim();
     }
 
@@ -228,8 +220,8 @@ public class AutoCompletion {
         autoSuggestionPopUpWindow.setSize(tW, tH);
         autoSuggestionPopUpWindow.setVisible(true);
 
-        int windowX = 0;
-        int windowY = 0;
+        int windowX;
+        int windowY;
 
         windowX = container.getX() + textField.getX();
         if (suggestionsPanel.getHeight() > autoSuggestionPopUpWindow.getMinimumSize().height) {
@@ -245,33 +237,17 @@ public class AutoCompletion {
 
     }
 
-    public void setDictionary(ArrayList<String> words) {
-        dictionary.clear();
-        if (words == null) {
-            return;//so we can call constructor with null value for dictionary without exception thrown
-        }
-        for (String word : words) {
-            dictionary.add(word);
-        }
-    }
-
     public JWindow getAutoSuggestionPopUpWindow() {
         return autoSuggestionPopUpWindow;
     }
 
-    public Window getContainer() {
-        return container;
-    }
 
-    public JTextField getTextField() {
+    JTextField getTextField() {
         return textField;
     }
 
-    public void addToDictionary(String word) {
-        dictionary.add(word);
-    }
 
-    boolean wordTyped(String typedWord) {
+    private boolean wordTyped(String typedWord) {
 
         if (typedWord.isEmpty()) {
             return false;
@@ -298,17 +274,6 @@ public class AutoCompletion {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        /*for (String word : dictionary) {//get words in the dictionary which we added
-            boolean fullymatches = true;
-            if (typedWord.length() < 3 || !word.contains(typedWord)) {
-                fullymatches = false;
-            }
-            if (fullymatches) {
-                addWordToSuggestions(word);
-                suggestionAdded = true;
-            }
-        }*/
         return suggestionAdded;
     }
 }
@@ -322,7 +287,7 @@ class SuggestionLabel extends JLabel {
     private boolean focused = false;
     private Color suggestionsTextColor, suggestionBorderColor;
 
-    public SuggestionLabel(final Controller controller, String string, final Color borderColor, Color suggestionsTextColor, AutoCompletion autoCompletion) {
+    SuggestionLabel(final Controller controller, String string, final Color borderColor, Color suggestionsTextColor, AutoCompletion autoCompletion) {
         super(string);
 
         this.controller = controller;
@@ -363,11 +328,11 @@ class SuggestionLabel extends JLabel {
         this.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     }
 
-    public boolean isFocused() {
+    boolean isFocused() {
         return focused;
     }
 
-    public void setFocused(boolean focused) {
+    void setFocused(boolean focused) {
         if (focused) {
             setBorder(new LineBorder(suggestionBorderColor));
         } else {
@@ -385,23 +350,14 @@ class SuggestionLabel extends JLabel {
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
         textField.setText(tmp + " ");
 
-        EventQueue.invokeLater(() -> {
-            try {
 
-                if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
-                    SearchHandler.setCurrentSearch(String.valueOf(this.controller.getComicsTable().findComicByTitle(tmp).getId()));
-                    this.controller.emitSearchComicById(tmp);
-                }
+        if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
+            this.controller.emitSearchComicById(tmp);
+        }
 
-                if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
-                    SearchHandler.setCurrentSearch(String.valueOf(this.controller.getCharactersTable().findCharacterByName(tmp).getId()));
-                    this.controller.emitSearchCharacterById(tmp);
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
+            this.controller.emitSearchCharacterById(tmp);
+        }
 
 
     }

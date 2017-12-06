@@ -12,6 +12,7 @@ public class main {
         AppLogger appLogger = new AppLogger();
         appLogger.configureLogging();
         Controller controller = new Controller(ui, appLogger);
+        controller.init();
 
 
     }

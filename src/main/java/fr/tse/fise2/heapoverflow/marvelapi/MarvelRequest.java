@@ -1,10 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import com.google.gson.Gson;
+import com.sun.istack.internal.NotNull;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.CacheImage;
 import fr.tse.fise2.heapoverflow.main.Controller;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -27,13 +27,19 @@ public final class MarvelRequest extends UrlBuilder {
     // string that is returned when the rateLimit is reached
     private static String requestCanceled = "More than" + Authentication.getRateLimit() + "request";
     private static Set<RequestListener> requestListeners = new HashSet<>();
-    private final Cache cache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
-    private OkHttpClient client = new OkHttpClient
-            .Builder()
-            .cache(this.cache)
-            .addInterceptor(new MarvelRequestInterceptor(this.cache))
-            .build();
+    private final OkHttpClient client;
 
+    public MarvelRequest() {
+        this(Controller.getController());
+    }
+
+    public MarvelRequest(@NotNull Controller controller) {
+        this.client = new OkHttpClient
+                .Builder()
+                .cache(controller.getUrlsCache())
+                .addInterceptor(new MarvelRequestInterceptor(controller))
+                .build();
+    }
 
     /**
      * Converts a json string to CharacterDataWrapper
