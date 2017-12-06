@@ -123,6 +123,10 @@ public class UI extends JFrame {
     public UIExtraComponent getUiExtraComponent() {
         return uiExtraComponent;
     }
+
+    public UIBottomComponent getUiBottomComponent() {
+        return uiBottomComponent;
+    }
 }
 
 

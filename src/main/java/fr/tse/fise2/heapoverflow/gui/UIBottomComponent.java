@@ -15,10 +15,13 @@ public class UIBottomComponent implements UIComponent {
     //JProgressBar is an already existing class in swing
     private JProgressBar progressBar;
 
+    private JOptionPane errorIcon;
+
     //Constructor
     public UIBottomComponent(JPanel bottomWrapperPanel) {
         this.bottomWrapperPanel = bottomWrapperPanel;
         this.progressBar = new JProgressBar();
+        this.errorIcon = new JOptionPane();
     }
 
     //Getters/Setters
@@ -38,6 +41,20 @@ public class UIBottomComponent implements UIComponent {
         this.bottomWrapperPanel = bottomWrapperPanel;
     }
 
+
+    public JOptionPane getErrorIcon() {
+        return errorIcon;
+    }
+
+    public void setErrorIcon(JOptionPane errorIcon) {
+        this.errorIcon = errorIcon;
+    }
+
+    public void displayErrorPopup(){
+        this.errorIcon.showMessageDialog(null, "Error: probably timeout", "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+
     //Override methods existing from UIComponent
 
     @Override
@@ -55,7 +72,11 @@ public class UIBottomComponent implements UIComponent {
         this.progressBar.setSize(new Dimension(300,25));
         this.progressBar.setPreferredSize(new Dimension(300,25));
 
+
+
+
         this.bottomWrapperPanel.add(this.progressBar);
+        //this.bottomWrapperPanel.add(this.errorIcon);
 
     }
 
