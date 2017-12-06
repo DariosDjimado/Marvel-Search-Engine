@@ -20,14 +20,15 @@ public class dataShowTestComic {
             Comic fetched = deserializeComics(response).getData().getResults()[0];
             JFrame frame = new JFrame();
             frame.setTitle("Comic 39595 - " + fetched.getTitle());
-            frame.setSize(600, 500);
+            frame.setSize(600, 600);
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            JPanel panel = new JPanel();
-            DataShow.DrawComic(panel, fetched);
-            frame.setContentPane(panel);
+            JPanel pane = new JPanel();
+            frame.setContentPane(pane);
+            DataShow dataShow = new DataShow(pane);
             frame.setVisible(true);
+            dataShow.DrawComic(fetched);
         }
         catch(Exception e)  {
             System.out.println(e);
