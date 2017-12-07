@@ -451,7 +451,7 @@ public class DataShow {
                 default:
                     break;
             }
-            if(elements.isEmpty()){
+            if(elements.isEmpty() & !elementType.equals("TimeOut")){
                 ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("<Empty>", null, MarvelType.Void));
             }
 
