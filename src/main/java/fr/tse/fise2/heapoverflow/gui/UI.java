@@ -9,6 +9,7 @@ public class UI extends JFrame {
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
+    private UIBottomComponent uiBottomComponent;
 
     public UI() {
         super("Marvel Search");
@@ -24,6 +25,7 @@ public class UI extends JFrame {
         createLeftWrapperPanel();
         createCenterWrapperPanel();
         createRightWrapperPanel();
+        createBottomWrapperPanel();
 
         container.setVisible(true);
         System.out.println(container.isVisible());
@@ -97,6 +99,16 @@ public class UI extends JFrame {
         container.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
+    public void createBottomWrapperPanel(){
+        JPanel bottomWrapperPanel = new JPanel();
+        this.uiBottomComponent = new UIBottomComponent(bottomWrapperPanel);
+        this.uiBottomComponent.build();
+
+        container.add(bottomWrapperPanel,BorderLayout.SOUTH);
+
+
+    }
+
     public UISearchComponent getUiSearchComponent() {
         return uiSearchComponent;
     }
@@ -108,7 +120,10 @@ public class UI extends JFrame {
     public UIExtraComponent getUiExtraComponent() {
         return uiExtraComponent;
     }
-}
 
+    public UIBottomComponent getUiBottomComponent() {
+        return uiBottomComponent;
+    }
+}
 
 
