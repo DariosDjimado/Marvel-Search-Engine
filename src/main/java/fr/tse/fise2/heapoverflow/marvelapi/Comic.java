@@ -1,8 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
+
 import java.util.Arrays;
 
-public class Comic implements Comparable {
+public class Comic implements Comparable, IMarvelElement {
 
     private int id;
 
@@ -369,11 +371,10 @@ public class Comic implements Comparable {
      */
     @Override
     public int compareTo(Object o) {
-        if((o == null) || (this.getClass() != o.getClass())) {
+        if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
-        }
-        else{
-            return this.getTitle().compareTo(((Comic)o).getTitle());
+        } else {
+            return this.getTitle().compareTo(((Comic) o).getTitle());
         }
     }
 }

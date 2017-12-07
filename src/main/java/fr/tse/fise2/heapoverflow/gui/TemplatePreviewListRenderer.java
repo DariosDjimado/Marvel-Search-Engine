@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
@@ -82,7 +83,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         @Override
         public void paintComponent(Graphics graphics) {
             try {
-                final BufferedImage imageIcon = MarvelRequest.getImage(((Comic) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
+                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
                 graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
             } catch (IOException e) {
                 e.printStackTrace();
