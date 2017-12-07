@@ -30,7 +30,7 @@ public class UI extends JFrame {
         this.add(container);
 
         this.pack();
-        this.setVisible(true);
+        this.setVisible(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 

@@ -92,6 +92,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     void init() {
         System.out.println(LOGGER_OBSERVER);
+        this.ui.setVisible(true);
 
     }
 
