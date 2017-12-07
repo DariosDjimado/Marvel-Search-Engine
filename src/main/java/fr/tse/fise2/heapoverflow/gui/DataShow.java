@@ -6,18 +6,13 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
 import fr.tse.fise2.heapoverflow.marvelapi.Image;
+import org.apache.log4j.Logger;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.net.SocketTimeoutException;
 import java.util.*;
-import java.util.List;
-
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 
 /**
  * Class used to manage à {@link JPanel} used to show detailed datas on characters and comics. Can display :
@@ -28,14 +23,12 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  *
  * @author Théo Basty
  * @version 2.0
- * TODO move all subrequests to Thread
- * TODO reduce repetition in code
- * TODO Review JavaDocs annotations
  *
  */
 public class DataShow {
     //region Attributes
 //    Controller controllerLink;
+    public static final Logger logger = Logger.getLogger(DataShow.class);
 
     /**
      * The object managing background requests
@@ -161,9 +154,8 @@ public class DataShow {
      *
      * @param comic The comic to display
      */
-    public void DrawComic(Comic comic) {
-        MarvelRequest request = new MarvelRequest();
-
+    synchronized public void DrawComic(Comic comic) {
+        elementToken = comic.hashCode();
         //region title display
         head.setText(comic.getTitle());
         //endregion
@@ -206,6 +198,7 @@ public class DataShow {
         detail.revalidate();
         //endregion
         //region Tabs display
+        tabs.removeAll();
         //region Character
         DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
         characterListModel.addElement(new MarvelListElement("Loading...", null, null));
@@ -291,7 +284,8 @@ public class DataShow {
      * @param character The Character to display
      *
      */
-    public void DrawCharacter(final Character character) {
+    synchronized public void DrawCharacter(final Character character) {
+        elementToken = character.hashCode();
 
         //region title display
         head.setText(character.getName());
@@ -398,6 +392,7 @@ public class DataShow {
             thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
         } catch (Exception e) {
             System.out.println(e);
+            Controller.getLoggerObserver().onError(logger, e);
         }
     }
 
@@ -452,12 +447,15 @@ public class DataShow {
                     }
                     break;
                 case "TimeOut":
-                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", "", MarvelType.Error));
+                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", null, MarvelType.Error));
                 default:
                     break;
             }
-            tabs.revalidate();
-            tabs.repaint();
+            if(elements.isEmpty() & !elementType.equals("TimeOut")){
+                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("<Empty>", null, MarvelType.Void));
+            }
+
+            panel.repaint();
         }
     }
 }
@@ -533,5 +531,5 @@ class MarvelListElement{
     }
 }
 enum MarvelType{
-    Character, Comic, Serie, Creator, Story, Event, Error
+    Character, Comic, Serie, Creator, Story, Event, Error, Void
 }

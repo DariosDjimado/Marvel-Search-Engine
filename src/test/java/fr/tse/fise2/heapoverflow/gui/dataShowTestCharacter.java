@@ -1,6 +1,5 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.gui.DataShow;
 import fr.tse.fise2.heapoverflow.main.AppLogger;
 import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;

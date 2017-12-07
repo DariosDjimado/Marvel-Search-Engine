@@ -1,18 +1,39 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
+import org.apache.log4j.Logger;
 
+import javax.sound.sampled.Line;
 import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 
+/**
+ * Object to manage subrequest thread for datashow panel
+ */
 public class InfoSubRequestsThread implements Runnable {
+
+    private static final Logger logger = Logger.getLogger(InfoSubRequestsThread.class);
+    /**
+     * the datashow element to callback
+     */
     DataShow caller;
+    /**
+     * The thread executing the queries
+     */
     Thread th;
+    /**
+     * A FIFO stack of jobs to do
+     */
     Queue<Job> jobs;
 
+    /**
+     * Constructor, initialize job stack and start thread
+     * @param caller
+     */
     public InfoSubRequestsThread(DataShow caller) {
         this.caller = caller;
         this.jobs = new ConcurrentLinkedQueue<>();
@@ -20,6 +41,9 @@ public class InfoSubRequestsThread implements Runnable {
         th.start();
     }
 
+    /**
+     * The program of the thread
+     */
     @Override
     public void run() {
         Job thisJob;
@@ -111,16 +135,17 @@ public class InfoSubRequestsThread implements Runnable {
                         }
                         reqCount++;
 
-                        caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash);
-                        System.out.println("----" + thisJob + " Done");
                     }
                     while (offset + count < total);
+                    caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash);
+                    System.out.println("----" + thisJob + " Done");
+
                 } catch (SocketTimeoutException e){
                     caller.updateList(fetched, "TimeOut", thisJob.modelKey, thisJob.elementHash);
                     System.err.println("----" + thisJob + " Timed out");
+                    Controller.getLoggerObserver().onError(logger, e);
                 } catch (Exception e) {
-                    System.out.println(e);
-                    e.printStackTrace();
+                    Controller.getLoggerObserver().onError(logger, e);
                 }
             } catch(InterruptedException e){
                 break;
@@ -128,6 +153,13 @@ public class InfoSubRequestsThread implements Runnable {
         }
     }
 
+    /**
+     * Method to add a job to the stack
+     * @param elementsClass a string representing the class of elements to get
+     * @param modelKey the key of the model to fill (key of {@link DataShow#tabsJLists})
+     * @param shortUri the short URI to request the set of datas
+     * @param elementHash a hash of the element displayed to avoid editing à list with an old request
+     */
     public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash){
         synchronized (this) {
             jobs.add(new Job(elementsClass, modelKey, shortUri, elementHash));
@@ -137,6 +169,9 @@ public class InfoSubRequestsThread implements Runnable {
     }
 }
 
+/**
+ * A class representing a job
+ */
 class Job {
     String elementType;
     String modelKey;
@@ -144,6 +179,13 @@ class Job {
     int elementHash;
 
 
+    /**
+     * Constructor
+     * @param elementType a string representing the class of elements to get
+     * @param modelKey the key of the model to fill (key of {@link DataShow#tabsJLists})
+     * @param shortUri the short URI to request the set of datas
+     * @param elementHash a hash of the element displayed to avoid editing à list with an old request
+     */
     public Job(String elementType, String modelKey, String shortUri, int elementHash) {
         this.elementType = elementType;
         this.modelKey = modelKey;
