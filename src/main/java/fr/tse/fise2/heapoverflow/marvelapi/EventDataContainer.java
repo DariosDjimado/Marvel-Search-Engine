@@ -2,20 +2,21 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
-public class SeriesDataContainer extends TemplateDataContainer {
-    private Serie[] results;
+public class EventDataContainer extends TemplateDataContainer {
+    private Event[] results;
 
-    public Serie[] getResults() {
+    public Event[] getResults() {
         return results;
     }
 
-    public void setResults(Serie[] results) {
+    public EventDataContainer setResults(Event[] results) {
         this.results = results;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "SeriesDataContainer{" +
+        return "EventDataContainer{" +
                 "results=" + Arrays.toString(results) +
                 ", total=" + total +
                 ", limit=" + limit +

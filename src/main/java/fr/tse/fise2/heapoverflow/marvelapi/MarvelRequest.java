@@ -88,11 +88,15 @@ public final class MarvelRequest extends UrlBuilder {
      * @return ComicDataWrapper object or null if the rateLimit is reached
      */
     public static CreatorDataWrapper deserializeCreators(String json) {
-        if (json.equals(requestCanceled)) {
-            return null;
+        if(json != null) {
+            if (json.equals(requestCanceled)) {
+                return null;
+            } else {
+                Gson gson = new Gson();
+                return gson.fromJson(json, CreatorDataWrapper.class);
+            }
         } else {
-            Gson gson = new Gson();
-            return gson.fromJson(json, CreatorDataWrapper.class);
+            return null;
         }
     }
 
@@ -103,11 +107,53 @@ public final class MarvelRequest extends UrlBuilder {
      * @return SeriesDataWrapper object or null if the rateLimit is reached
      */
     public static SeriesDataWrapper deserializeSeries(String json) {
-        if (json.equals(requestCanceled)) {
-            return null;
+        if(json != null) {
+            if (json.equals(requestCanceled)) {
+                return null;
+            } else {
+                Gson gson = new Gson();
+                return gson.fromJson(json, SeriesDataWrapper.class);
+            }
         } else {
-            Gson gson = new Gson();
-            return gson.fromJson(json, SeriesDataWrapper.class);
+            return null;
+        }
+    }
+
+    /**
+     * Converts a json string to EventsDataWrapper.
+     *
+     * @param json the string that we need to deserialize
+     * @return SeriesDataWrapper object or null if the rateLimit is reached
+     */
+    public static EventsDataWrapper deserializeEvents(String json) {
+        if(json != null) {
+            if (json.equals(requestCanceled)) {
+                return null;
+            } else {
+                Gson gson = new Gson();
+                return gson.fromJson(json, EventsDataWrapper.class);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Converts a json string to StoriesDataWrapper.
+     *
+     * @param json the string that we need to deserialize
+     * @return SeriesDataWrapper object or null if the rateLimit is reached
+     */
+    public static StoriesDataWrapper deserializeStories(String json) {
+        if(json != null) {
+            if (json.equals(requestCanceled)) {
+                return null;
+            } else {
+                Gson gson = new Gson();
+                return gson.fromJson(json, StoriesDataWrapper.class);
+            }
+        } else {
+            return null;
         }
     }
 

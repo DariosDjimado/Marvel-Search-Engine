@@ -1,16 +1,23 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.gui.DataShow;
+import fr.tse.fise2.heapoverflow.main.AppLogger;
+import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
-import oracle.jrockit.jfr.JFR;
 
 import javax.swing.*;
+
+import java.awt.*;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
 public class dataShowTestComic {
     public static void main(String[] args) {
+        UI ui = new UI();
+        EventQueue.invokeLater(ui::init);
+        AppLogger appLogger = new AppLogger();
+        appLogger.configureLogging();
+        Controller controller = new Controller(ui, appLogger);
         MarvelRequest request = new MarvelRequest();
 //        Path myFile = Paths.get("comicSample.json");
         try {
