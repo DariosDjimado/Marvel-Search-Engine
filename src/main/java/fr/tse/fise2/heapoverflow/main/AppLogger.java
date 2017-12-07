@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.main;
 
+import fr.tse.fise2.heapoverflow.gui.UI;
 import fr.tse.fise2.heapoverflow.interfaces.LoggerObserver;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -7,6 +8,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 public final class AppLogger implements LoggerObserver {
+    private final UI ui;
+
+    public AppLogger(UI ui) {
+        this.ui = ui;
+    }
+
     final static Logger LOGGER = Logger.getLogger(AppLogger.class);
 
     public void configureLogging() {
@@ -27,6 +34,7 @@ public final class AppLogger implements LoggerObserver {
     @Override
     public void onError(Logger logger, Exception e) {
         logger.error(e.getMessage());
+        ui.getUiBottomComponent().displayErrorPopup(e.getMessage());
     }
 
     @Override

@@ -193,6 +193,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     @Override
     public void startLoading(String name) {
         this.ui.setTitle("start loading " + name);
+        this.ui.getUiBottomComponent().getUrlLabel().setText("start: " + name);
+        this.ui.getUiBottomComponent().getProgressBar().setVisible(true);
         this.ui.repaint();
         this.ui.revalidate();
 
@@ -201,6 +203,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     @Override
     public void endLoading(String name) {
         this.ui.setTitle("end loading " + name);
+        this.ui.getUiBottomComponent().getUrlLabel().setText("end: " + name);
+        this.ui.getUiBottomComponent().getProgressBar().setVisible(false);
         this.ui.repaint();
         this.ui.revalidate();
     }

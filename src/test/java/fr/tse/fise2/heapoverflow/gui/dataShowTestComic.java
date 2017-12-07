@@ -15,7 +15,7 @@ public class dataShowTestComic {
     public static void main(String[] args) {
         UI ui = new UI();
         EventQueue.invokeLater(ui::init);
-        AppLogger appLogger = new AppLogger();
+        AppLogger appLogger = new AppLogger(ui);
         appLogger.configureLogging();
         Controller controller = new Controller(ui, appLogger);
         MarvelRequest request = new MarvelRequest();
