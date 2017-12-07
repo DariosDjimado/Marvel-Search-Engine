@@ -13,7 +13,7 @@ public final class AppLogger implements LoggerObserver {
         ConsoleAppender consoleAppender = new ConsoleAppender();
         String pattern = "%c{1}:%L %d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
         consoleAppender.setLayout(new PatternLayout(pattern));
-        consoleAppender.setThreshold(Level.INFO);
+        consoleAppender.setThreshold(Level.ERROR);
         consoleAppender.activateOptions();
         Logger.getRootLogger().addAppender(consoleAppender);
     }
