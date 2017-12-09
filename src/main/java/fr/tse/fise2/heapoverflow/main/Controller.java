@@ -6,16 +6,23 @@ import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.AutoCompletion;
 import fr.tse.fise2.heapoverflow.gui.DataShow;
 import fr.tse.fise2.heapoverflow.gui.UI;
+import fr.tse.fise2.heapoverflow.gui.UITopComponent;
 import fr.tse.fise2.heapoverflow.interfaces.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import okhttp3.Cache;
+import org.apache.log4j.Logger;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
@@ -23,18 +30,21 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeChara
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
 public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
+    private final static Logger LOGGER = Logger.getLogger(Controller.class);
     private static LoggerObserver LOGGER_OBSERVER;
-    private final DataShow dataShow;
     private static Controller con;
+    private final DataShow dataShow;
     private final ConnectionDB connectionDB;
     private final CharactersTable charactersTable;
     private final ComicsTable comicsTable;
     private final CacheUrlsTable cacheUrlsTable;
+    private final UsersTable usersTable;
     private final UI ui;
     private final SelectionChangedListener selectionChangedListenerExtra;
     private final AutoCompletion autoCompletion;
     private final RequestListener requestListener;
     private final Cache urlsCache;
+    private final UserAuthentication userAuthentication;
     private MarvelRequest request;
 
     public Controller(UI ui, final LoggerObserver loggerObserver) {
@@ -44,9 +54,26 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         // init connection to database
         this.connectionDB = new ConnectionDB(dataBaseErrorHandler);
         // init charactersTable
+
+
+        DatabaseMetaData dbm;
+        try {
+            dbm = this.connectionDB.getConnection().getMetaData();
+            ResultSet tables = dbm.getTables(null, null, "USERS", null);
+            if (!tables.next()) {
+                System.out.println(new CreateTables(this.connectionDB).createUsersTable());
+                System.out.println("--------------Table USERS was not found and was created-------------------");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
         this.charactersTable = new CharactersTable(this.connectionDB);
         // init comics table
         this.comicsTable = new ComicsTable(this.connectionDB);
+        // users table
+        this.usersTable = new UsersTable(this.connectionDB);
         // store ui
         this.ui = ui;
         this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
@@ -71,9 +98,33 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.initUserAuthentication();
+
         this.cacheUrlsTable = new CacheUrlsTable(this.connectionDB);
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
+
+        this.ui.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                if (JOptionPane.showConfirmDialog(ui,
+                        "Are you sure to close this window?", "Really Closing?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+
+                    try {
+                        connectionDB.getConnection().close();
+                        System.out.println(connectionDB.getConnection().isClosed());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                    System.exit(0);
+                }
+            }
+        });
+        userAuthentication = new UserAuthentication();
     }
 
     public static Controller getController() {
@@ -81,8 +132,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     }
 
     public static LoggerObserver getLoggerObserver() {
-        System.out.println("comparing");
-        System.out.println(LOGGER_OBSERVER == null);
         return LOGGER_OBSERVER;
     }
 
@@ -90,44 +139,95 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         LOGGER_OBSERVER = loggerObserver;
     }
 
-    void init() {
-        System.out.println(LOGGER_OBSERVER);
-        this.ui.setVisible(true);
+    private void initUserAuthentication() {
+        UserAuthentication.subscribe(this.ui.getUiTopComponent());
 
+
+        this.ui.getUiTopComponent().buildAuthenticationPanel();
+        // sign in
+        ui.getUiTopComponent().getLogInButton().addActionListener(e -> {
+            ui.getUiTopComponent().showSignUpField(false);
+
+            int option = JOptionPane.showConfirmDialog(ui,
+                    ui.getUiTopComponent().getAuthenticationPanel(), "Sign in", JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null);
+
+            if (option == JOptionPane.YES_OPTION) {
+                // find user
+                final String username = ui.getUiTopComponent().getEmailTextField().getText();
+                final char[] password = ui.getUiTopComponent().getPasswordTextField().getPassword();
+                try {
+                    UserRow user = usersTable.findUserByUsername(username);
+                    if (user != null) {
+                        if (userAuthentication.passwordsMatch(password, user.getPassword())) {
+                            userAuthentication.login(user.getUsername(), user.getPassword());
+                        }
+                    }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+
+        // sign up
+        ui.getUiTopComponent().getSignUpButton().addActionListener(e -> {
+            if (ui.getUiTopComponent().getSignUpButton().getText().equals("Sign up")) {
+                ui.getUiTopComponent().showSignUpField(true);
+
+                int option = JOptionPane.showConfirmDialog(ui,
+                        ui.getUiTopComponent().getAuthenticationPanel(), "Sign up", JOptionPane.YES_NO_OPTION,
+                        JOptionPane.PLAIN_MESSAGE, null);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    final UITopComponent tc = ui.getUiTopComponent();
+                    try {
+                        String encryptedPassword = userAuthentication
+                                .encryptPassword(tc.getPasswordTextField().getPassword());
+                        final UserRow userRow = new UserRow(tc.getUsernameTextField().getText(),
+                                tc.getEmailTextField().getText(),
+                                tc.getLastNameTextField().getText(),
+                                tc.getFirstNameTextField().getText(),
+                                encryptedPassword);
+
+                        usersTable.insertUser(userRow);
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            } else {
+                userAuthentication.logout();
+            }
+        });
+    }
+
+    void init() {
+        this.ui.getUiSearchComponent().getSearchTextField().requestFocusInWindow();
+        this.ui.setVisible(true);
     }
 
     private void initCacheUrlsTable() {
-
-
         try {
-
             this.cacheUrlsTable.empty();
-
-
-            Iterator<String> urls = this.urlsCache.urls();
-
+            final Iterator<String> urls = this.urlsCache.urls();
+            Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Importing urls from cache");
             while (urls.hasNext()) {
                 final String completeUrl = urls.next();
-                if (!this.cacheUrlsTable.exists(completeUrl)) {
-                    String shortenUrl;
-                    if (completeUrl.contains("&apikey")) {
-                        System.out.println(completeUrl);
-                        shortenUrl = completeUrl.substring(0, completeUrl.indexOf("&apikey"));
-                    } else {
-                        System.out.println(completeUrl);
-                        shortenUrl = completeUrl.substring(0, completeUrl.indexOf("?apikey"));
-                    }
-                    System.out.println("inserting -----> ");
-                    System.out.println(shortenUrl + "--------------->" + completeUrl);
+                String shortenUrl;
+                if (completeUrl.contains("&apikey")) {
+                    shortenUrl = completeUrl.substring(0, completeUrl.indexOf("&apikey"));
+                } else {
+                    shortenUrl = completeUrl.substring(0, completeUrl.indexOf("?apikey"));
+                }
+
+                if (!this.cacheUrlsTable.exists(shortenUrl)) {
+                    this.cacheUrlsTable.insertUrls(shortenUrl, completeUrl);
                 }
             }
-
-
+            Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Urls imported successfully");
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            Controller.LOGGER_OBSERVER.onError(LOGGER, e);
         }
-
-
     }
 
     public void searchStartsWith(String text) {

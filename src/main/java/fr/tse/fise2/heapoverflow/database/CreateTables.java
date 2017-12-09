@@ -5,7 +5,7 @@ import java.sql.SQLException;
 /**
  * @author Darios DJIMADO
  */
-public class CreateTables {
+public final class CreateTables {
     private final ConnectionDB connectionDB;
 
     public CreateTables(final ConnectionDB connectionDB) {
@@ -13,15 +13,17 @@ public class CreateTables {
     }
 
     /**
-     * This method creates all tables.
+     * Creates all tables.
      *
      * @return boolean. True if all tables are successfully created otherwise false will be returned.
      */
     public boolean createAllTables() {
-        return createCharactersTable() && createComicsTable() && createCacheUrlsTable();
+        return createCharactersTable() && createComicsTable() && createCacheUrlsTable() && createUsersTable();
     }
 
     /**
+     * Creates characters table.
+     *
      * @return boolean. True if characters table is successfully created otherwise false will be returned.
      */
     private boolean createCharactersTable() {
@@ -62,6 +64,11 @@ public class CreateTables {
         return execute;
     }
 
+    /**
+     * Creates cache urls table
+     *
+     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
+     */
     public boolean createCacheUrlsTable() {
         boolean execute;
         try {
@@ -78,5 +85,29 @@ public class CreateTables {
         return execute;
     }
 
-
+    /**
+     * Creates users table.
+     *
+     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
+     */
+    public boolean createUsersTable() {
+        boolean execute;
+        try {
+            this.connectionDB.getConnection()
+                    .createStatement()
+                    .execute("CREATE TABLE users(id INT NOT NULL PRIMARY KEY" +
+                            " GENERATED ALWAYS AS IDENTITY" +
+                            "(START WITH 1, INCREMENT BY 1) , " +
+                            "username VARCHAR(50) NOT NULL , " +
+                            "email VARCHAR(100) UNIQUE NOT NULL , " +
+                            "last_name VARCHAR(50) NOT NULL , " +
+                            "first_name VARCHAR(50)  NOT NULL , " +
+                            "password VARCHAR(100) NOT NULL )");
+            execute = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            execute = false;
+        }
+        return execute;
+    }
 }

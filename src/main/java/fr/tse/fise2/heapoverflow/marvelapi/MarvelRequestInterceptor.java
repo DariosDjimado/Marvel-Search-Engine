@@ -46,8 +46,6 @@ public class MarvelRequestInterceptor implements Interceptor {
 
 
         try {
-            System.out.println(request.url().toString());
-            System.out.println(this.controller.getCacheUrlsTable().exists(request.url().toString()));
             CacheUrlsRow cacheUrlsRow = this.controller.getCacheUrlsTable().findCompleteUrl(request.url().toString());
 
             if (cacheUrlsRow != null && cacheUrlsRow.getCompleteUrl() != null) {
@@ -77,11 +75,21 @@ public class MarvelRequestInterceptor implements Interceptor {
                 .header("Cache-Control", "max-age=86400")
                 .build();
 
+        if(response.code() == 504){
+            newRequest = request.newBuilder()
+                    .url(UrlBuilder.appendHash(request.url().toString()))
+                    .cacheControl(CacheControl.FORCE_NETWORK)
+                    .build();
+
+            response = chain.proceed(newRequest).newBuilder()
+                    .header("Cache-Control", "max-age=86400")
+                    .build();
+        }
+
         // log end request info
         Long t2 = nanoTime();
         Controller.getLoggerObserver().onInfo(logger, String.format("Received response for %s in %.1fms%n%s",
                 response.request().url(), (t2 - t1) / 1e6d, response.headers()));
-        System.out.println("this is the response "+ response);
         return response;
     }
 }

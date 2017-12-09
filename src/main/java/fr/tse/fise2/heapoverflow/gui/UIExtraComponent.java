@@ -11,10 +11,33 @@ import java.awt.*;
 
 public class UIExtraComponent implements UIComponent {
     private final JPanel rightWrapperPanel;
+    private final JPanel rightTitlePanel;
+    private final JPanel rightContainerPanel;
+    private final JLabel rightTitleLabel;
+
     private SelectionChangedListener selectionChangedListener;
 
     public UIExtraComponent(JPanel rightWrapperPanel) {
         this.rightWrapperPanel = rightWrapperPanel;
+        this.rightWrapperPanel.setLayout(new BorderLayout());
+        this.rightContainerPanel = new JPanel();
+
+        this.rightContainerPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+
+
+        this.rightWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+
+
+        this.rightTitlePanel = new JPanel();
+
+
+        this.rightWrapperPanel.add(this.rightTitlePanel, BorderLayout.NORTH);
+        this.rightWrapperPanel.add(this.rightContainerPanel, BorderLayout.CENTER);
+
+        this.rightTitleLabel = new JLabel("Nothing to show");
+        this.rightTitlePanel.add(this.rightTitleLabel);
+        this.rightTitlePanel.setBorder(BorderFactory.createRaisedBevelBorder());
+
     }
 
     public void setSelectionChangedListener(SelectionChangedListener selectionChangedListener) {
@@ -37,7 +60,8 @@ public class UIExtraComponent implements UIComponent {
     }
 
     public void setResultsComics(Comic[] comics) {
-        this.rightWrapperPanel.removeAll();
+        this.rightTitleLabel.setText("Appears in the same series");
+        this.rightContainerPanel.removeAll();
         DefaultListModel<Comic> listModel = new DefaultListModel<>();
         for (Comic comic : comics) {
 
@@ -51,14 +75,16 @@ public class UIExtraComponent implements UIComponent {
                 this.selectionChangedListener.showComic(jList.getSelectedValue());
             }
         });
-        this.rightWrapperPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+        this.rightContainerPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
         this.rightWrapperPanel.revalidate();
         this.rightWrapperPanel.repaint();
     }
 
 
     public void setResultsCharacters(Character[] characters) {
-        this.rightWrapperPanel.removeAll();
+
+        this.rightTitleLabel.setText("Appears in the same comic");
+        this.rightContainerPanel.removeAll();
 
         if (characters != null) {
             DefaultListModel<Character> listModel = new DefaultListModel<>();
@@ -73,7 +99,7 @@ public class UIExtraComponent implements UIComponent {
                     this.selectionChangedListener.showCharacter(jList.getSelectedValue());
                 }
             });
-            this.rightWrapperPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+            this.rightContainerPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
         }
 
         this.rightWrapperPanel.revalidate();

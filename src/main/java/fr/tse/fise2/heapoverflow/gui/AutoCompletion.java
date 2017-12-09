@@ -68,7 +68,7 @@ public class AutoCompletion {
 
 
         AutoCompletion that = this;
-        this.container.addComponentListener(new ComponentListener() {
+        this.container.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 that.autoSuggestionPopUpWindow.setVisible(false);
@@ -77,17 +77,6 @@ public class AutoCompletion {
             @Override
             public void componentMoved(ComponentEvent e) {
                 that.autoSuggestionPopUpWindow.setVisible(false);
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-                System.out.println("shown");
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                System.out.println("hidden");
             }
         });
 

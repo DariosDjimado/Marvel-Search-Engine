@@ -13,7 +13,7 @@ import java.awt.event.ItemEvent;
 public class UISearchComponent {
     private final JPanel leftWrapperPanel;
     private Controller controller;
-    private JRadioButton charactersRadioButton;
+    private  JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
     private JPanel searchResultsPanel;
@@ -25,6 +25,8 @@ public class UISearchComponent {
         this.charactersRadioButton.setSelected(true);
         this.comicsRadioButton = new JRadioButton();
         this.searchTextField = new JTextField();
+
+        this.searchTextField.requestFocusInWindow();
 
         charactersRadioButton.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -40,13 +42,14 @@ public class UISearchComponent {
 
         //
         this.leftWrapperPanel = leftWrapperPanel;
+        this.leftWrapperPanel.setBackground(new Color(158, 158, 158));
     }
 
     void setup() {
         JPanel SearchWrapperPanel = new JPanel();
         SearchWrapperPanel.setLayout(new BorderLayout(0, 0));
         SearchWrapperPanel.setAlignmentX(0.5f);
-        SearchWrapperPanel.setVisible(true);
+        SearchWrapperPanel.setOpaque(true);
         leftWrapperPanel.add(SearchWrapperPanel, BorderLayout.NORTH);
 
 
@@ -54,10 +57,8 @@ public class UISearchComponent {
         searchPanel.setLayout(new GridBagLayout());
         searchPanel.setMinimumSize(new Dimension(42, 100));
         searchPanel.setPreferredSize(new Dimension(64, 100));
-        searchPanel.setVisible(true);
+        searchPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
         SearchWrapperPanel.add(searchPanel, BorderLayout.NORTH);
-
-        SearchWrapperPanel.setVisible(true);
 
 
         JButton searchButton = new JButton();
@@ -119,7 +120,7 @@ public class UISearchComponent {
 
         this.searchResultsPanel = new JPanel();
         this.searchResultsPanel.setLayout(new CardLayout(0, 0));
-        this.searchResultsPanel.setVisible(true);
+        this.searchResultsPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
 
         leftWrapperPanel.add(this.searchResultsPanel, BorderLayout.CENTER);
 

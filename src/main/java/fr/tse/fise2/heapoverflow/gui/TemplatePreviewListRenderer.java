@@ -2,7 +2,6 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
 import fr.tse.fise2.heapoverflow.main.AppConfig;
-import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder;
 
