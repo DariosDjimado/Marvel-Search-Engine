@@ -45,6 +45,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     private final RequestListener requestListener;
     private final Cache urlsCache;
     private final UserAuthentication userAuthentication;
+    private final MarvelElementTable marvelElementTable;
     private MarvelRequest request;
 
     public Controller(UI ui, final LoggerObserver loggerObserver) {
@@ -124,7 +125,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 }
             }
         });
-        userAuthentication = new UserAuthentication();
+        userAuthentication = new UserAuthentication(this.connectionDB);
+        marvelElementTable = new MarvelElementTable(this.connectionDB);
     }
 
     public static Controller getController() {
@@ -256,7 +258,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
 
         try {
-            final String id = String.valueOf(this.getCharactersTable().findCharacterByName(word).getId());
+            final String id = String.valueOf(this.marvelElementTable.findCharacterByName(word).getId());
             Thread fetchCharacterById = new FetchData(this, "characters/" + id, FetchData.CharactersType.CHARACTER_BY_ID);
             fetchCharacterById.run();
         } catch (SQLException e) {
@@ -267,9 +269,9 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     public void emitSearchComicById(String word) {
         try {
 
-            final String id = String.valueOf(getComicsTable().findComicByTitle(word).getId());
+            final String id = String.valueOf(marvelElementTable.findComicByTitle(word).getId());
 
-            System.out.println(getComicsTable().findComicByTitle(word));
+            System.out.println(marvelElementTable.findComicByTitle(word));
 
             Thread fetchComic = new FetchData(this, "comics/" + id, FetchData.ComicsType.COMIC_BY_ID);
             fetchComic.run();
@@ -416,6 +418,10 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     public Cache getUrlsCache() {
         return urlsCache;
+    }
+
+    public MarvelElementTable getMarvelElementTable() {
+        return marvelElementTable;
     }
 }
 

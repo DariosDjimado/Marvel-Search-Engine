@@ -80,6 +80,19 @@ public class AutoCompletion {
             }
         });
 
+        this.controller.getUi().addMouseListener(new MouseAdapter() {
+            /**
+             * {@inheritDoc}
+             *
+             * @param e
+             */
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                autoSuggestionPopUpWindow.setVisible(false);
+                super.mouseClicked(e);
+            }
+        });
+
 
     }
 
@@ -219,7 +232,7 @@ public class AutoCompletion {
             windowY = container.getY() + textField.getY() + textField.getHeight() + autoSuggestionPopUpWindow.getHeight();
         }
 
-        autoSuggestionPopUpWindow.setLocation(windowX + this.textField.getMargin().left, windowY + this.textField.getHeight() - this.textField.getMargin().bottom);
+        autoSuggestionPopUpWindow.setLocation(windowX + this.textField.getMargin().left, 50 + windowY + this.textField.getHeight() - this.textField.getMargin().bottom);
         autoSuggestionPopUpWindow.setMinimumSize(new Dimension(350, 30));
         autoSuggestionPopUpWindow.revalidate();
         autoSuggestionPopUpWindow.repaint();
@@ -247,14 +260,14 @@ public class AutoCompletion {
 
         try {
             if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
-                for (ComicRow a : this.controller.getComicsTable().findComicsLike(typedWord, 0, 20)) {
+                for (ComicRow a : this.controller.getMarvelElementTable().findComicsLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getTitle());
                     suggestionAdded = true;
                 }
             }
 
             if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
-                for (CharacterRow a : this.controller.getCharactersTable().findCharactersLike(typedWord, 0, 20)) {
+                for (CharacterRow a : this.controller.getMarvelElementTable().findCharactersLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getName());
                     suggestionAdded = true;
                 }

@@ -12,9 +12,10 @@ import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
-    protected final JPanel mainPanel;
-    protected final JLabel cardTitle;
+    final JLabel cardTitle;
+    private final JPanel mainPanel;
     private final TemplatePreviewListRenderer.ImagePanel imagePanel;
+    private final JButton favoriteButton;
     protected Object data;
     private boolean selected;
 
@@ -23,6 +24,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.imagePanel = new TemplatePreviewListRenderer.ImagePanel();
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
+        this.favoriteButton = new JButton("*");
         this.init();
     }
 
@@ -33,11 +35,13 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.setMaximumSize(fixedDimension);
         this.setLayout(new BorderLayout());
         this.add(imagePanel, BorderLayout.WEST);
-        this.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 0));
 
         this.mainPanel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, Color.GRAY));
         this.mainPanel.add(this.cardTitle, BorderLayout.CENTER);
         this.add(mainPanel, BorderLayout.CENTER);
+
+        this.mainPanel.add(this.favoriteButton);
 
     }
 
@@ -56,6 +60,11 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
     public void setSelected(boolean selected) {
         this.selected = selected;
         this.mainPanel.setBackground(this.selected ? selectionColor : Color.WHITE);
+    }
+
+
+    public JButton getFavoriteButton() {
+        return favoriteButton;
     }
 
     @Override
@@ -77,6 +86,8 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
             this.setMinimumSize(fixedDimension);
             this.setPreferredSize(fixedDimension);
             this.setMaximumSize(fixedDimension);
+
+
         }
 
         @Override
@@ -87,6 +98,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
     }
 }

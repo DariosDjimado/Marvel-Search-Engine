@@ -8,13 +8,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 public final class AppLogger implements LoggerObserver {
+    final static Logger LOGGER = Logger.getLogger(AppLogger.class);
     private final UI ui;
 
     public AppLogger(UI ui) {
         this.ui = ui;
     }
-
-    final static Logger LOGGER = Logger.getLogger(AppLogger.class);
 
     public void configureLogging() {
         ConsoleAppender consoleAppender = new ConsoleAppender();
@@ -25,6 +24,11 @@ public final class AppLogger implements LoggerObserver {
         Logger.getRootLogger().addAppender(consoleAppender);
     }
 
+
+    @Override
+    public void onDebug(Logger logger, String debug) {
+        logger.debug(debug);
+    }
 
     @Override
     public void onFatal(Logger logger, Exception e) {

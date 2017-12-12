@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.main.DataBaseErrorHandler;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

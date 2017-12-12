@@ -39,7 +39,7 @@ public class MarvelRequestInterceptor implements Interceptor {
 
         // log sending request info
         Long t1 = nanoTime();
-        Controller.getLoggerObserver().onInfo(logger, String.format("Sending request %s on %s%n%s",
+        Controller.getLoggerObserver().onDebug(logger, String.format("Sending request %s on %s%n%s",
                 request.url(), chain.connection(), request.headers()));
 
         // try to find the url in cache
@@ -54,7 +54,7 @@ public class MarvelRequestInterceptor implements Interceptor {
                         .url(cacheUrlsRow.getCompleteUrl())
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();
-                Controller.getLoggerObserver().onInfo(logger, newRequest.url() + " load from cache");
+                Controller.getLoggerObserver().onDebug(logger, newRequest.url() + " load from cache");
 
             } else {
                 // if the url is not found at runtime we add it to cacheUrlsTable dynamically
@@ -75,7 +75,7 @@ public class MarvelRequestInterceptor implements Interceptor {
                 .header("Cache-Control", "max-age=86400")
                 .build();
 
-        if(response.code() == 504){
+        if (response.code() == 504) {
             newRequest = request.newBuilder()
                     .url(UrlBuilder.appendHash(request.url().toString()))
                     .cacheControl(CacheControl.FORCE_NETWORK)
@@ -88,7 +88,7 @@ public class MarvelRequestInterceptor implements Interceptor {
 
         // log end request info
         Long t2 = nanoTime();
-        Controller.getLoggerObserver().onInfo(logger, String.format("Received response for %s in %.1fms%n%s",
+        Controller.getLoggerObserver().onDebug(logger, String.format("Received response for %s in %.1fms%n%s",
                 response.request().url(), (t2 - t1) / 1e6d, response.headers()));
         return response;
     }

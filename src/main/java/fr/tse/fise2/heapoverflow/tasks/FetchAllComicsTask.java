@@ -28,8 +28,7 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
         MarvelRequest request = new MarvelRequest();
 
         try {
-            int offset = 101;
-            int total;
+            int offset = 2000;
             do {
                 if (offset == 0) {
                     System.out.println(offset);
@@ -39,15 +38,14 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
 
 
                     offset = offset + 100;
-                    total = dataContainer.getTotal();
                 } else {
                     offset += 100;
-                    Thread fetchComics = new FetchData(this, "comics?offset=" + offset + "&limit=100", FetchData.ComicsType.COMICS);
+                    Thread fetchComics = new FetchData(this, "comics?offset=" + offset + "&limit=100" + "&orderBy=title", FetchData.ComicsType.COMICS);
                     fetchComics.run();
                 }
 
 
-            } while (offset < 2000);
+            } while (offset < 4000);
 
             isDone = true;
 
@@ -68,8 +66,8 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
         try {
             System.out.println("saving " + comics.length + " new comics");
             for (Comic c : comics) {
-                if (!this.tasksController.getComicsTable().exists(c.getId())) {
-                    this.tasksController.getComicsTable().insertIntoComics(c.getId(), c.getTitle().toLowerCase());
+                if (!this.tasksController.getMarvelElementTable().comicExists(c.getId())) {
+                    this.tasksController.getMarvelElementTable().insertComic(c.getId(), c.getTitle().toLowerCase());
                 } else {
                     System.out.println(c.getTitle() + " has already registered");
                 }

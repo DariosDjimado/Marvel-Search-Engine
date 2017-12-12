@@ -167,7 +167,7 @@ public final class MarvelRequest extends UrlBuilder {
     public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath) throws IOException {
         File imageTmp = new File(tmpPath + image.getPath().substring(image.getPath().lastIndexOf('/') + 1) + '.' + image.getExtension());
         if (imageTmp.isFile()) {
-            Controller.getLoggerObserver().onInfo(LOGGER, "reading file from disk");
+            Controller.getLoggerObserver().onDebug(LOGGER, "reading file from disk");
             return ImageIO.read(imageTmp);
         } else {
             for (RequestListener requestListener : requestListeners) {

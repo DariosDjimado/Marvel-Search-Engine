@@ -12,4 +12,6 @@ public interface LoggerObserver {
 
     void onInfo(Logger logger, String info);
 
+    void onDebug(Logger logger, String debug);
+
 }

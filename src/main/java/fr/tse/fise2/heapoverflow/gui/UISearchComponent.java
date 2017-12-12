@@ -8,41 +8,30 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
 
 public class UISearchComponent {
     private final JPanel leftWrapperPanel;
     private Controller controller;
-    private  JRadioButton charactersRadioButton;
+    private JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
     private JPanel searchResultsPanel;
 
 
     UISearchComponent(JPanel leftWrapperPanel) {
-        this.charactersRadioButton = new JRadioButton();
+        this.charactersRadioButton = new CustomRadioButton();
         // select character by default
         this.charactersRadioButton.setSelected(true);
-        this.comicsRadioButton = new JRadioButton();
+        this.comicsRadioButton = new CustomRadioButton();
         this.searchTextField = new JTextField();
 
         this.searchTextField.requestFocusInWindow();
 
-        charactersRadioButton.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                this.comicsRadioButton.setSelected(false);
-            }
-        });
+        this.charactersRadioButton.setSelected(true);
 
-        this.comicsRadioButton.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                this.charactersRadioButton.setSelected(false);
-            }
-        });
 
         //
         this.leftWrapperPanel = leftWrapperPanel;
-        this.leftWrapperPanel.setBackground(new Color(158, 158, 158));
     }
 
     void setup() {
@@ -116,6 +105,10 @@ public class UISearchComponent {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.NORTHEAST;
         searchPanel.add(charactersRadioButton, gbc);
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(this.comicsRadioButton);
+        buttonGroup.add(this.charactersRadioButton);
 
 
         this.searchResultsPanel = new JPanel();
@@ -207,3 +200,4 @@ public class UISearchComponent {
         this.controller = controller;
     }
 }
+

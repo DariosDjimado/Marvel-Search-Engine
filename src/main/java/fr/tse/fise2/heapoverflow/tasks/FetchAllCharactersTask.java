@@ -43,7 +43,7 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
 
                 } else {
                     offset += 100;
-                    Thread fetchCharacters = new FetchData(this, "characters?offset=" + offset + "&limit=100", FetchData.CharactersType.CHARACTERS);
+                    Thread fetchCharacters = new FetchData(this, "characters?offset=" + offset + "&limit=100" + "&orderBy=name", FetchData.CharactersType.CHARACTERS);
                     fetchCharacters.run();
                 }
 
@@ -67,7 +67,7 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
     public void onFetchedCharacters(Character[] characters) {
         for (Character c : characters) {
             try {
-                this.tasksController.getCharactersTable().insertIntoCharacters(c.getId(), c.getName().toLowerCase());
+                this.tasksController.getMarvelElementTable().insertCharacter(c.getId(), c.getName().toLowerCase());
             } catch (SQLException e) {
                 e.printStackTrace();
             }

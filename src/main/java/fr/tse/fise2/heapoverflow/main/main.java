@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.gui.UI;
+import org.apache.shiro.SecurityUtils;
 
 import java.awt.*;
 

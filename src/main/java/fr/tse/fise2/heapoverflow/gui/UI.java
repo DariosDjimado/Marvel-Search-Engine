@@ -97,8 +97,8 @@ public class UI extends JFrame {
 
     private void createRightWrapperPanel() {
         JPanel rightWrapperPanel = new JPanel();
-        rightWrapperPanel.setMinimumSize(new Dimension(300, 500));
-        rightWrapperPanel.setPreferredSize(new Dimension(300, 500));
+        rightWrapperPanel.setMinimumSize(new Dimension(320, 500));
+        rightWrapperPanel.setPreferredSize(new Dimension(320, 500));
 
         this.uiExtraComponent = new UIExtraComponent(rightWrapperPanel);
         this.uiExtraComponent.build();
