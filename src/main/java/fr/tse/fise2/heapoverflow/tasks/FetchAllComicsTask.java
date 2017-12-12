@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
+import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.interfaces.ComicsRequestObserver;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
 import fr.tse.fise2.heapoverflow.main.FetchData;
@@ -16,10 +17,8 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComic
 //import fr.tse.fise2.heapoverflow.database.ComicRow;
 
 public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
-    private final TasksController tasksController;
 
-    public FetchAllComicsTask(TasksController tasksController) {
-        this.tasksController = tasksController;
+    public FetchAllComicsTask() {
     }
 
     @Override
@@ -66,8 +65,8 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
         try {
             System.out.println("saving " + comics.length + " new comics");
             for (Comic c : comics) {
-                if (!this.tasksController.getMarvelElementTable().comicExists(c.getId())) {
-                    this.tasksController.getMarvelElementTable().insertComic(c.getId(), c.getTitle().toLowerCase());
+                if (!MarvelElementTable.comicExists(c.getId())) {
+                    MarvelElementTable.insertComic(c.getId(), c.getTitle().toLowerCase());
                 } else {
                     System.out.println(c.getTitle() + " has already registered");
                 }

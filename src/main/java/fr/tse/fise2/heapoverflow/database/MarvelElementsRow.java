@@ -2,7 +2,7 @@ package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
 
-public class MarvelElementsRow {
+public final class MarvelElementsRow {
     private int uid;
     private int id;
     private MarvelElements type;

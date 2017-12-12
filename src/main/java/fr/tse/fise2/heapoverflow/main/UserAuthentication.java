@@ -1,7 +1,6 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.SaltRealm;
-import fr.tse.fise2.heapoverflow.database.ConnectionDB;
 import fr.tse.fise2.heapoverflow.interfaces.IUserObserver;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -13,6 +12,7 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +22,16 @@ import java.util.Set;
 public class UserAuthentication implements PasswordService {
     private static final transient Logger log = LoggerFactory.getLogger(UserAuthentication.class);
     private static Set<IUserObserver> userObservers = new HashSet<>();
+    private static UserAuthentication userAuthentication;
     private final PasswordService passwordService;
     private Subject currentUser = null;
 
-    UserAuthentication(ConnectionDB connectionDB) {
+
+    private UserAuthentication() {
         Ini ini = new Ini();
         passwordService = new DefaultPasswordService();
         Factory<SecurityManager> factory = new IniSecurityManagerFactory(ini);
-        SaltRealm saltRealm = new SaltRealm(connectionDB);
+        SaltRealm saltRealm = new SaltRealm();
         SecurityManager securityManager = new DefaultSecurityManager(saltRealm);
         SecurityUtils.setSecurityManager(securityManager);
         currentUser = SecurityUtils.getSubject();
@@ -41,6 +43,15 @@ public class UserAuthentication implements PasswordService {
 
     public static void unsubscribe(IUserObserver userObserver) {
         userObservers.remove(userObserver);
+    }
+
+    @NotNull
+    public static UserAuthentication getUserAuthentication() {
+        if (userAuthentication == null) {
+            return new UserAuthentication();
+        } else {
+            return userAuthentication;
+        }
     }
 
     public boolean isAuthenticated() {
@@ -56,8 +67,8 @@ public class UserAuthentication implements PasswordService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            for (IUserObserver observer : userObservers) {
-                if (this.currentUser.isAuthenticated()) {
+            if (currentUser.isAuthenticated()) {
+                for (IUserObserver observer : userObservers) {
                     observer.onLogin(username);
                 }
             }

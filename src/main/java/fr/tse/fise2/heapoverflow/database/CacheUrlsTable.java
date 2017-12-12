@@ -3,19 +3,11 @@ package fr.tse.fise2.heapoverflow.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public final class CacheUrlsTable {
-    private final ConnectionDB connectionDB;
+    public static void insertUrls(String shortenUrl, String completeUrl) throws SQLException {
 
-    public CacheUrlsTable(ConnectionDB connectionDB) {
-        this.connectionDB = connectionDB;
-    }
-
-
-    public final void insertUrls(String shortenUrl, String completeUrl) throws SQLException {
-
-        final PreparedStatement preparedStatement = this.connectionDB
+        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
                 .getConnection().prepareStatement("INSERT INTO cache_urls VALUES(?,?)");
 
         preparedStatement.setString(1, shortenUrl);
@@ -23,8 +15,8 @@ public final class CacheUrlsTable {
         preparedStatement.execute();
     }
 
-    public final CacheUrlsRow findCompleteUrl(String shortenUrl) throws SQLException {
-        final PreparedStatement preparedStatement = this.connectionDB.getConnection()
+    public static CacheUrlsRow findCompleteUrl(String shortenUrl) throws SQLException {
+        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB().getConnection()
                 .prepareStatement("SELECT * FROM cache_urls WHERE shorten_url = ?");
 
         preparedStatement.setString(1, shortenUrl);
@@ -37,10 +29,9 @@ public final class CacheUrlsTable {
         return cacheUrlsRow;
     }
 
-
-    public boolean exists(String shortenUrl) throws SQLException {
+    public static boolean exists(String shortenUrl) throws SQLException {
         boolean found = false;
-        PreparedStatement preparedStatement = this.connectionDB
+        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
                 .getConnection()
                 .prepareStatement("SELECT COUNT(*) FROM cache_urls WHERE shorten_url = ?");
 
@@ -55,9 +46,8 @@ public final class CacheUrlsTable {
         return found;
     }
 
-    public void empty() throws SQLException {
-        this.connectionDB.getConnection().createStatement().execute("DELETE FROM CACHE_URLS WHERE 1=1");
+    public static void empty() throws SQLException {
+        ConnectionDB.getConnectionDB().getConnection().createStatement().execute("DELETE FROM CACHE_URLS WHERE 1=1");
     }
-
 
 }

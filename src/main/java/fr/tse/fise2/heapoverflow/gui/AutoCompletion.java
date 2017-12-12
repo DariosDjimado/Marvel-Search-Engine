@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.database.CharacterRow;
 import fr.tse.fise2.heapoverflow.database.ComicRow;
+import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.main.Controller;
 
 import javax.swing.*;
@@ -260,14 +261,14 @@ public class AutoCompletion {
 
         try {
             if (this.controller.getUi().getUiSearchComponent().getComicsRadioButton().isSelected()) {
-                for (ComicRow a : this.controller.getMarvelElementTable().findComicsLike(typedWord, 0, 20)) {
+                for (ComicRow a : MarvelElementTable.findComicsLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getTitle());
                     suggestionAdded = true;
                 }
             }
 
             if (this.controller.getUi().getUiSearchComponent().getCharactersRadioButton().isSelected()) {
-                for (CharacterRow a : this.controller.getMarvelElementTable().findCharactersLike(typedWord, 0, 20)) {
+                for (CharacterRow a : MarvelElementTable.findCharactersLike(typedWord, 0, 20)) {
                     addWordToSuggestions(a.getName());
                     suggestionAdded = true;
                 }

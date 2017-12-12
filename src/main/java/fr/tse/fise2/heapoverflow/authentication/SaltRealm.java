@@ -10,10 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SaltRealm extends JdbcRealm {
-    private final ConnectionDB connectionDB;
 
-    public SaltRealm(ConnectionDB connectionDB) {
-        this.connectionDB = connectionDB;
+    public SaltRealm(){
     }
 
 
@@ -37,7 +35,7 @@ public class SaltRealm extends JdbcRealm {
 
     private String getPasswordForUser(String username) {
         String password = null;
-        try (PreparedStatement preparedStatement = this.connectionDB.getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = ConnectionDB.getConnectionDB().getConnection().prepareStatement(
                 "SELECT PASSWORD FROM USERS WHERE USERNAME = ?")) {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();

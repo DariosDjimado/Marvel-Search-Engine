@@ -8,14 +8,8 @@ import java.sql.SQLException;
  * @author Darios DJIMADO
  */
 public class UsersTable {
-    private final ConnectionDB connectionDB;
-
-    public UsersTable(ConnectionDB connectionDB) {
-        this.connectionDB = connectionDB;
-    }
-
-    public void insertUser(UserRow userRow) throws SQLException {
-        PreparedStatement preparedStatement = this.connectionDB
+    public static void insertUser(UserRow userRow) throws SQLException {
+        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
                 .getConnection()
                 .prepareStatement("INSERT INTO users(username,email,last_name,first_name,password) VALUES (?,?,?,?,?)");
         preparedStatement.setString(1, userRow.getUsername());
@@ -33,7 +27,7 @@ public class UsersTable {
      * @return UserRow user's info
      * @throws SQLException if any sql exception
      */
-    public UserRow findUserById(int id) throws SQLException {
+    public static UserRow findUserById(int id) throws SQLException {
         return getUserRow(id, "SELECT * FROM users WHERE id = ?");
     }
 
@@ -44,7 +38,7 @@ public class UsersTable {
      * @return UserRow user's info
      * @throws SQLException if any sql exception
      */
-    public UserRow findUserByUsername(String username) throws SQLException {
+    public static UserRow findUserByUsername(String username) throws SQLException {
         return getUserRow(username, "SELECT * FROM users WHERE username = ?");
     }
 
@@ -56,20 +50,20 @@ public class UsersTable {
      * @return UserRow user's info
      * @throws SQLException if any sql exception
      */
-    public UserRow findUserByEmail(String email) throws SQLException {
+    public static UserRow findUserByEmail(String email) throws SQLException {
         return getUserRow(email, "SELECT * FROM users WHERE email = ?");
     }
 
-    private UserRow getUserRow(int id, String s) throws SQLException {
+    private static UserRow getUserRow(int id, String s) throws SQLException {
         return getUserRow(id, null, s);
     }
 
-    private UserRow getUserRow(String uniqueConstraint, String s) throws SQLException {
+    private static UserRow getUserRow(String uniqueConstraint, String s) throws SQLException {
         return getUserRow(Integer.MIN_VALUE, uniqueConstraint, s);
     }
 
-    private UserRow getUserRow(int id, String uniqueConstraint, String s) throws SQLException {
-        final PreparedStatement preparedStatement = this.connectionDB
+    private static UserRow getUserRow(int id, String uniqueConstraint, String s) throws SQLException {
+        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
                 .getConnection()
                 .prepareStatement(s);
 

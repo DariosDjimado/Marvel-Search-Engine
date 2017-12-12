@@ -21,60 +21,49 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
-public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
+public class Controller extends InternalController implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
+    // Model
     private final static Logger LOGGER = Logger.getLogger(Controller.class);
     private static LoggerObserver LOGGER_OBSERVER;
     private static Controller con;
-    private final DataShow dataShow;
-    private final ConnectionDB connectionDB;
-    private final CharactersTable charactersTable;
-    private final ComicsTable comicsTable;
-    private final CacheUrlsTable cacheUrlsTable;
-    private final UsersTable usersTable;
-    private final UI ui;
     private final SelectionChangedListener selectionChangedListenerExtra;
-    private final AutoCompletion autoCompletion;
     private final RequestListener requestListener;
-    private final Cache urlsCache;
+    private static Cache urlsCache;
     private final UserAuthentication userAuthentication;
-    private final MarvelElementTable marvelElementTable;
+    // Vue
+    private final DataShow dataShow;
+    private final UI ui;
+    private final AutoCompletion autoCompletion;
     private MarvelRequest request;
+
 
     public Controller(UI ui, final LoggerObserver loggerObserver) {
         con = this;
 
         DataBaseErrorHandler dataBaseErrorHandler = new DataBaseErrorHandler();
         // init connection to database
-        this.connectionDB = new ConnectionDB(dataBaseErrorHandler);
+
         // init charactersTable
 
-
+/*
         DatabaseMetaData dbm;
         try {
-            dbm = this.connectionDB.getConnection().getMetaData();
+            dbm = ConnectionDB.getConnectionDB().getConnection().getMetaData();
             ResultSet tables = dbm.getTables(null, null, "USERS", null);
             if (!tables.next()) {
-                System.out.println(new CreateTables(this.connectionDB).createUsersTable());
+                System.out.println(new CreateTables(ConnectionDB.getConnectionDB()).createUsersTable());
                 System.out.println("--------------Table USERS was not found and was created-------------------");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
 
-
-        this.charactersTable = new CharactersTable(this.connectionDB);
-        // init comics table
-        this.comicsTable = new ComicsTable(this.connectionDB);
-        // users table
-        this.usersTable = new UsersTable(this.connectionDB);
         // store ui
         this.ui = ui;
         this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
@@ -86,7 +75,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         this.selectionChangedListenerExtra = new SelectionChangedListener(this);
         this.ui.getUiExtraComponent().setSelectionChangedListener(this.selectionChangedListenerExtra);
         //
-        this.request = new MarvelRequest(this);
+        this.request = new MarvelRequest();
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
@@ -102,7 +91,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
         this.initUserAuthentication();
 
-        this.cacheUrlsTable = new CacheUrlsTable(this.connectionDB);
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
 
@@ -115,8 +103,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                         JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 
                     try {
-                        connectionDB.getConnection().close();
-                        System.out.println(connectionDB.getConnection().isClosed());
+                        ConnectionDB.getConnectionDB().getConnection().close();
+                        System.out.println(ConnectionDB.getConnectionDB().getConnection().isClosed());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -125,8 +113,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 }
             }
         });
-        userAuthentication = new UserAuthentication(this.connectionDB);
-        marvelElementTable = new MarvelElementTable(this.connectionDB);
+        userAuthentication = UserAuthentication.getUserAuthentication();
     }
 
     public static Controller getController() {
@@ -159,7 +146,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 final String username = ui.getUiTopComponent().getEmailTextField().getText();
                 final char[] password = ui.getUiTopComponent().getPasswordTextField().getPassword();
                 try {
-                    UserRow user = usersTable.findUserByUsername(username);
+                    UserRow user = UsersTable.findUserByUsername(username);
                     if (user != null) {
                         if (userAuthentication.passwordsMatch(password, user.getPassword())) {
                             userAuthentication.login(user.getUsername(), user.getPassword());
@@ -192,7 +179,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                                 tc.getFirstNameTextField().getText(),
                                 encryptedPassword);
 
-                        usersTable.insertUser(userRow);
+                        UsersTable.insertUser(userRow);
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
@@ -210,8 +197,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     private void initCacheUrlsTable() {
         try {
-            this.cacheUrlsTable.empty();
-            final Iterator<String> urls = this.urlsCache.urls();
+            CacheUrlsTable.empty();
+            final Iterator<String> urls = urlsCache.urls();
             Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Importing urls from cache");
             while (urls.hasNext()) {
                 final String completeUrl = urls.next();
@@ -222,8 +209,8 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                     shortenUrl = completeUrl.substring(0, completeUrl.indexOf("?apikey"));
                 }
 
-                if (!this.cacheUrlsTable.exists(shortenUrl)) {
-                    this.cacheUrlsTable.insertUrls(shortenUrl, completeUrl);
+                if (!CacheUrlsTable.exists(shortenUrl)) {
+                    CacheUrlsTable.insertUrls(shortenUrl, completeUrl);
                 }
             }
             Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Urls imported successfully");
@@ -258,7 +245,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
 
         try {
-            final String id = String.valueOf(this.marvelElementTable.findCharacterByName(word).getId());
+            final String id = String.valueOf(MarvelElementTable.findCharacterByName(word).getId());
             Thread fetchCharacterById = new FetchData(this, "characters/" + id, FetchData.CharactersType.CHARACTER_BY_ID);
             fetchCharacterById.run();
         } catch (SQLException e) {
@@ -269,23 +256,15 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     public void emitSearchComicById(String word) {
         try {
 
-            final String id = String.valueOf(marvelElementTable.findComicByTitle(word).getId());
+            final String id = String.valueOf(MarvelElementTable.findComicByTitle(word).getId());
 
-            System.out.println(marvelElementTable.findComicByTitle(word));
+            System.out.println(MarvelElementTable.findComicByTitle(word));
 
             Thread fetchComic = new FetchData(this, "comics/" + id, FetchData.ComicsType.COMIC_BY_ID);
             fetchComic.run();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public CharactersTable getCharactersTable() {
-        return charactersTable;
-    }
-
-    public ComicsTable getComicsTable() {
-        return comicsTable;
     }
 
     public UI getUi() {
@@ -412,17 +391,11 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         EventQueue.invokeLater(() -> this.ui.getUiExtraComponent().setResultsCharacters(characters));
     }
 
-    public CacheUrlsTable getCacheUrlsTable() {
-        return cacheUrlsTable;
-    }
 
-    public Cache getUrlsCache() {
+    public static Cache getUrlsCache() {
         return urlsCache;
     }
 
-    public MarvelElementTable getMarvelElementTable() {
-        return marvelElementTable;
-    }
 }
 
 

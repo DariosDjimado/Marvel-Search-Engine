@@ -1,14 +1,14 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import com.google.gson.Gson;
-import com.sun.istack.internal.NotNull;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.CacheImage;
 import fr.tse.fise2.heapoverflow.main.Controller;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,21 +23,17 @@ import java.util.Set;
  * @author Darios DJIMADO
  */
 public final class MarvelRequest extends UrlBuilder {
-    private static final Logger LOGGER = Logger.getLogger(MarvelRequest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarvelRequest.class);
     // string that is returned when the rateLimit is reached
     private static String requestCanceled = "More than" + Authentication.getRateLimit() + "request";
     private static Set<RequestListener> requestListeners = new HashSet<>();
     private final OkHttpClient client;
 
     public MarvelRequest() {
-        this(Controller.getController());
-    }
-
-    public MarvelRequest(@NotNull Controller controller) {
         this.client = new OkHttpClient
                 .Builder()
-                .cache(controller.getUrlsCache())
-                .addInterceptor(new MarvelRequestInterceptor(controller))
+                .cache(Controller.getUrlsCache())
+                .addInterceptor(new MarvelRequestInterceptor())
                 .build();
     }
 
@@ -88,7 +84,7 @@ public final class MarvelRequest extends UrlBuilder {
      * @return ComicDataWrapper object or null if the rateLimit is reached
      */
     public static CreatorDataWrapper deserializeCreators(String json) {
-        if(json != null) {
+        if (json != null) {
             if (json.equals(requestCanceled)) {
                 return null;
             } else {
@@ -107,7 +103,7 @@ public final class MarvelRequest extends UrlBuilder {
      * @return SeriesDataWrapper object or null if the rateLimit is reached
      */
     public static SeriesDataWrapper deserializeSeries(String json) {
-        if(json != null) {
+        if (json != null) {
             if (json.equals(requestCanceled)) {
                 return null;
             } else {
@@ -126,7 +122,7 @@ public final class MarvelRequest extends UrlBuilder {
      * @return SeriesDataWrapper object or null if the rateLimit is reached
      */
     public static EventsDataWrapper deserializeEvents(String json) {
-        if(json != null) {
+        if (json != null) {
             if (json.equals(requestCanceled)) {
                 return null;
             } else {
@@ -145,7 +141,7 @@ public final class MarvelRequest extends UrlBuilder {
      * @return SeriesDataWrapper object or null if the rateLimit is reached
      */
     public static StoriesDataWrapper deserializeStories(String json) {
-        if(json != null) {
+        if (json != null) {
             if (json.equals(requestCanceled)) {
                 return null;
             } else {
@@ -167,7 +163,9 @@ public final class MarvelRequest extends UrlBuilder {
     public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath) throws IOException {
         File imageTmp = new File(tmpPath + image.getPath().substring(image.getPath().lastIndexOf('/') + 1) + '.' + image.getExtension());
         if (imageTmp.isFile()) {
-            Controller.getLoggerObserver().onDebug(LOGGER, "reading file from disk");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("reading file from disk");
+            }
             return ImageIO.read(imageTmp);
         } else {
             for (RequestListener requestListener : requestListeners) {

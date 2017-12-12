@@ -1,6 +1,6 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
-import fr.tse.fise2.heapoverflow.database.CharactersTable;
+import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.interfaces.CharactersRequestObserver;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
 import fr.tse.fise2.heapoverflow.main.FetchData;
@@ -16,16 +16,13 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeChara
 
 
 public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver {
-    private final TasksController tasksController;
 
-    public FetchAllCharactersTask(TasksController tasksController) {
-        this.tasksController = tasksController;
+    public FetchAllCharactersTask() {
     }
 
     @Override
     public boolean doTask() {
         boolean isDone;
-        CharactersTable charactersTable = this.tasksController.getCharactersTable();
         MarvelRequest request = new MarvelRequest();
 
         try {
@@ -39,7 +36,6 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
 
                     total = dataContainer.getTotal();
                     offset = offset + 100;
-
 
                 } else {
                     offset += 100;
@@ -67,7 +63,7 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
     public void onFetchedCharacters(Character[] characters) {
         for (Character c : characters) {
             try {
-                this.tasksController.getMarvelElementTable().insertCharacter(c.getId(), c.getName().toLowerCase());
+                MarvelElementTable.insertCharacter(c.getId(), c.getName().toLowerCase());
             } catch (SQLException e) {
                 e.printStackTrace();
             }

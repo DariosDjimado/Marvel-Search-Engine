@@ -9,44 +9,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesTable {
-    private final ConnectionDB connectionDB;
+public final class FavoritesTable {
 
-    public FavoritesTable(ConnectionDB connectionDB) {
-        this.connectionDB = connectionDB;
-    }
-
-    public void insertFavorite(FavoriteRow favoriteRow) throws SQLException {
+    public static void insertFavorite(FavoriteRow favoriteRow) throws SQLException {
         internalManipulation(favoriteRow, "INSERT INTO favorites(id,type,user_id) VALUES(?,?,?)");
     }
 
-    public void deleteFavorite(FavoriteRow favoriteRow) throws SQLException {
+    public static void deleteFavorite(FavoriteRow favoriteRow) throws SQLException {
         internalManipulation(favoriteRow, "DELETE FROM favorites WHERE id = ? AND type = ? AND user_id = ?");
     }
 
-    private void internalManipulation(FavoriteRow favoriteRow, @Language("Derby") String s) throws SQLException {
-        PreparedStatement preparedStatement = this.connectionDB
-                .getConnection()
-                .prepareStatement(s);
-        preparedStatement.setInt(1, favoriteRow.getId());
-        preparedStatement.setInt(2, favoriteRow.getType());
-        preparedStatement.setInt(3, favoriteRow.getUserId());
-        preparedStatement.execute();
-    }
-
-
-    public List<FavoriteRow> findFavoriteComicsByUser(int userId) throws SQLException {
+    public static List<FavoriteRow> findFavoriteComicsByUser(int userId) throws SQLException {
         return getFavoriteRows(userId, MarvelElements.COMIC.getValue());
 
     }
 
-    public List<FavoriteRow> findFavoriteCharactersByUser(int userId) throws SQLException {
+    public static List<FavoriteRow> findFavoriteCharactersByUser(int userId) throws SQLException {
         return getFavoriteRows(userId, MarvelElements.CHARACTER.getValue());
 
     }
 
-    private List<FavoriteRow> getFavoriteRows(int userId, int type) throws SQLException {
-        final PreparedStatement preparedStatement = this.connectionDB
+    private static List<FavoriteRow> getFavoriteRows(int userId, int type) throws SQLException {
+        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
                 .getConnection()
                 .prepareStatement("SELECT * FROM FAVORITES WHERE user_id = ? AND TYPE = ?");
         preparedStatement.setInt(1, userId);
@@ -58,5 +42,15 @@ public class FavoritesTable {
                     resultSet.getInt("user_id")));
         }
         return favorites;
+    }
+
+    private static void internalManipulation(FavoriteRow favoriteRow, @Language("Derby") String s) throws SQLException {
+        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+                .getConnection()
+                .prepareStatement(s);
+        preparedStatement.setInt(1, favoriteRow.getId());
+        preparedStatement.setInt(2, favoriteRow.getType());
+        preparedStatement.setInt(3, favoriteRow.getUserId());
+        preparedStatement.execute();
     }
 }

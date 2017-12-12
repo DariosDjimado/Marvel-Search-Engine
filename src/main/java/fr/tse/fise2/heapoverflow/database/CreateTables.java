@@ -8,18 +8,12 @@ import java.sql.SQLException;
  * @author Darios DJIMADO
  */
 public final class CreateTables {
-    private final ConnectionDB connectionDB;
-
-    public CreateTables(final ConnectionDB connectionDB) {
-        this.connectionDB = connectionDB;
-    }
-
     /**
      * Creates all tables.
      *
      * @return boolean. True if all tables are successfully created otherwise false will be returned.
      */
-    public boolean createAllTables() {
+    public static boolean createAllTables() {
         return createUsersTable() && createElementsTable() &&
                 createCharactersTable() && createComicsTable()
                 && createFavorites() &&
@@ -31,7 +25,7 @@ public final class CreateTables {
      *
      * @return boolean. True if characters table is successfully created otherwise false will be returned.
      */
-    private boolean createCharactersTable() {
+    private static boolean createCharactersTable() {
         return createTable("CREATE TABLE characters(" +
                 "id INTEGER NOT NULL REFERENCES elements(uid)," +
                 "wikipedia_en_url VARCHAR(255)," +
@@ -41,7 +35,7 @@ public final class CreateTables {
     /**
      * @return boolean. True if comics table is successfully creates otherwise false will be returned.
      */
-    public boolean createComicsTable() {
+    public static boolean createComicsTable() {
         return createTable("CREATE TABLE comics(" +
                 "id INTEGER NOT NULL REFERENCES ELEMENTS(UID)," +
                 "title VARCHAR(255) NOT NULL)");
@@ -52,7 +46,7 @@ public final class CreateTables {
      *
      * @return boolean. True if comics table is successfully creates otherwise false will be returned.
      */
-    public boolean createCacheUrlsTable() {
+    public static boolean createCacheUrlsTable() {
         return createTable("CREATE TABLE cache_urls(" +
                 "shorten_url VARCHAR(255) PRIMARY KEY NOT NULL," +
                 " complete_url VARCHAR (255) NOT NULL )");
@@ -63,7 +57,7 @@ public final class CreateTables {
      *
      * @return boolean. True if comics table is successfully creates otherwise false will be returned.
      */
-    public boolean createUsersTable() {
+    public static boolean createUsersTable() {
         return createTable("CREATE TABLE users(id INT NOT NULL PRIMARY KEY" +
                 " GENERATED ALWAYS AS IDENTITY" +
                 "(START WITH 1, INCREMENT BY 1) , " +
@@ -74,22 +68,22 @@ public final class CreateTables {
                 "password VARCHAR(100) NOT NULL )");
     }
 
-    public boolean createFavorites() {
+    public static boolean createFavorites() {
         return createTable("CREATE TABLE favorites(id INT NOT NULL, " +
                 "type INT NOT NULL, " +
                 "user_id INT NOT NULL REFERENCES USERS(ID), PRIMARY KEY (id,user_id))");
     }
 
-    public boolean createElementsTable() {
+    public static boolean createElementsTable() {
         return createTable("CREATE TABLE elements(uid INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS " +
                 "IDENTITY (START WITH 1, INCREMENT BY 1)," +
                 "id INT NOT NULL, type INT NOT NULL, name VARCHAR(255) NOT NULL ) ");
     }
 
-    private boolean createTable(@Language("Derby") String s) {
+    private static boolean createTable(@Language("Derby") String s) {
         boolean execute;
         try {
-            this.connectionDB.getConnection()
+            ConnectionDB.getConnectionDB().getConnection()
                     .createStatement()
                     .execute(s);
             execute = true;

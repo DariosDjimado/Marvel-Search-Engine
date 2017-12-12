@@ -26,24 +26,9 @@ public final class AppLogger implements LoggerObserver {
 
 
     @Override
-    public void onDebug(Logger logger, String debug) {
-        logger.debug(debug);
-    }
-
-    @Override
-    public void onFatal(Logger logger, Exception e) {
-        logger.fatal(e.getMessage());
-    }
-
-    @Override
     public void onError(Logger logger, Exception e) {
         logger.error(e.getMessage());
         ui.getUiBottomComponent().displayErrorPopup(e.getMessage());
-    }
-
-    @Override
-    public void onWarn(Logger logger, Exception e) {
-        logger.warn(e.getMessage());
     }
 
     @Override
