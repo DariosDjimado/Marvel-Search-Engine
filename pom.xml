@@ -4,6 +4,9 @@
     <groupId>fr.tse.fise2.heapoverflow</groupId>
     <artifactId>projetinfo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
     <build>
         <plugins>
             <plugin>
