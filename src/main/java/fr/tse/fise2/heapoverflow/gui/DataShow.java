@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.Controller;
+import fr.tse.fise2.heapoverflow.main.UserAuthentication;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
@@ -85,6 +86,8 @@ public class DataShow {
      */
     private Map<String, JList> tabsJLists;
 
+    private JPanel btnPane;
+
     private JButton btnOwned;
 
     private JButton btnRead;
@@ -147,8 +150,7 @@ public class DataShow {
         detailPaneWrapper.add(detailPane);
         detail.add(detailPaneWrapper, BorderLayout.CENTER);
 
-        //TODO if user logged in
-        JPanel btnPane = new JPanel();
+        btnPane = new JPanel();
         btnOwned = new JButton();
         btnOwned.setText("+Library");
         btnFaved = new JButton();
@@ -159,7 +161,7 @@ public class DataShow {
         btnPane.add(btnFaved);
         btnPane.add(btnRead);
         detail.add(btnPane, BorderLayout.SOUTH);
-//        btnPane.setVisible(false);
+        btnPane.setVisible(false);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
@@ -216,6 +218,18 @@ public class DataShow {
         details.put("Page Count : ", Integer.valueOf(comic.getPageCount()).toString());
 
         fillPaneWithLabels(detailPane, details);
+        //endregion
+        //region library buttons
+        UserAuthentication ua = UserAuthentication.getUserAuthentication();
+        System.out.println("checking authentication");
+        if(ua.isAuthenticated()){
+            System.out.println("auth ok");
+            btnPane.setVisible(true);
+        }
+        else{
+            System.out.println("auth failed");
+            btnPane.setVisible(false);
+        }
         //endregion
         detail.revalidate();
         //endregion
@@ -314,6 +328,7 @@ public class DataShow {
         //endregion
         //region detail display
         referencesPane.setVisible(false);
+        btnPane.setVisible(false);
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
         details.put("Appears in : ", "");
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Serie");
@@ -418,6 +433,18 @@ public class DataShow {
         }
     }
 
+    public JButton getBtnOwned() {
+        return btnOwned;
+    }
+
+    public JButton getBtnRead() {
+        return btnRead;
+    }
+
+    public JButton getBtnFaved() {
+        return btnFaved;
+    }
+
     /**
      * Method to change the thumbnail of panel
      * @param thumbnail the {@link BufferedImage} of the image
@@ -482,76 +509,6 @@ public class DataShow {
     }
 }
 
-/**
- * Class to adapt marvel API elements for JList display and use
- * TODO: Make it public
- * @author Théo Basty
- */
-class MarvelListElement{
-    String dispName;
-    String shortURI;
-    MarvelType type;
-
-    public MarvelListElement(String dispName, String shortURI, MarvelType type) {
-        this.dispName = dispName;
-        if(shortURI != null && shortURI.substring(0, 4).equals("http")){
-            this.shortURI = shortURI.substring(36);
-        }
-        else {
-            this.shortURI = shortURI;
-        }
-        this.type = type;
-    }
-
-    public String getDispName() {
-        return dispName;
-    }
-
-    public void setDispName(String dispName) {
-        this.dispName = dispName;
-    }
-
-    public String getShortURI() {
-        return shortURI;
-    }
-
-    public void setShortURI(String shortURI) {
-        this.shortURI = shortURI;
-    }
-
-    public MarvelType getType() {
-        return type;
-    }
-
-    public void setType(MarvelType type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return dispName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MarvelListElement that = (MarvelListElement) o;
-
-        if (dispName != null ? !dispName.equals(that.dispName) : that.dispName != null) return false;
-        if (shortURI != null ? !shortURI.equals(that.shortURI) : that.shortURI != null) return false;
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = dispName != null ? dispName.hashCode() : 0;
-        result = 31 * result + (shortURI != null ? shortURI.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
-    }
-}
 enum MarvelType{
     Character, Comic, Serie, Creator, Story, Event, Error, Void
 }
