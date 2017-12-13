@@ -2,7 +2,7 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.Controller;
-import fr.tse.fise2.heapoverflow.main.UserAuthentication;
+import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
@@ -92,7 +92,7 @@ public class DataShow {
 
     private JButton btnRead;
 
-    private JButton btnFaved;
+    private final FavoriteButton btnFaved;
     //endregion
 
     //region Constructors
@@ -153,7 +153,7 @@ public class DataShow {
         btnPane = new JPanel();
         btnOwned = new JButton();
         btnOwned.setText("+Library");
-        btnFaved = new JButton();
+        btnFaved = new FavoriteButton();
         btnFaved.setText("+Favorite");
         btnRead = new JButton();
         btnRead.setText("+Read");
@@ -220,9 +220,8 @@ public class DataShow {
         fillPaneWithLabels(detailPane, details);
         //endregion
         //region library buttons
-        UserAuthentication ua = UserAuthentication.getUserAuthentication();
         System.out.println("checking authentication");
-        if(ua.isAuthenticated()){
+        if(UserAuthentication.isAuthenticated()){
             System.out.println("auth ok");
             btnPane.setVisible(true);
         }
@@ -441,7 +440,7 @@ public class DataShow {
         return btnRead;
     }
 
-    public JButton getBtnFaved() {
+    public FavoriteButton getBtnFaved() {
         return btnFaved;
     }
 
