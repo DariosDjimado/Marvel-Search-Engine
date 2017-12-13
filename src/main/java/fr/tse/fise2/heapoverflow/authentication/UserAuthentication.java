@@ -1,6 +1,7 @@
-package fr.tse.fise2.heapoverflow.main;
+package fr.tse.fise2.heapoverflow.authentication;
 
-import fr.tse.fise2.heapoverflow.authentication.SaltRealm;
+import fr.tse.fise2.heapoverflow.database.UserRow;
+import fr.tse.fise2.heapoverflow.database.UsersTable;
 import fr.tse.fise2.heapoverflow.interfaces.IUserObserver;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -13,9 +14,11 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,8 +26,8 @@ public class UserAuthentication implements PasswordService {
     private static final transient Logger log = LoggerFactory.getLogger(UserAuthentication.class);
     private static Set<IUserObserver> userObservers = new HashSet<>();
     private static UserAuthentication userAuthentication;
+    private static Subject currentUser = null;
     private final PasswordService passwordService;
-    private Subject currentUser = null;
 
 
     private UserAuthentication() {
@@ -48,14 +51,35 @@ public class UserAuthentication implements PasswordService {
     @NotNull
     public static UserAuthentication getUserAuthentication() {
         if (userAuthentication == null) {
-            return new UserAuthentication();
-        } else {
-            return userAuthentication;
+            userAuthentication = new UserAuthentication();
+
         }
+        return userAuthentication;
     }
 
-    public boolean isAuthenticated() {
-        return this.currentUser != null && this.currentUser.isAuthenticated();
+    public static boolean isAuthenticated() {
+        return currentUser != null && currentUser.isAuthenticated();
+    }
+
+    @Nullable
+    public static User getUser() {
+        if (!isAuthenticated()) {
+            return null;
+        }
+        User user = null;
+        try {
+            // TODO DANGEROUS DO NOT USE USERNAME
+            final UserRow userRow = UsersTable.findUserByUsername((String) currentUser.getPrincipal());
+            user = getUser(userRow);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @NotNull
+    private static User getUser(UserRow userRow) {
+        return new User(userRow.getUsername(), userRow.getId(), userRow.getFirstName(), userRow.getLastName());
     }
 
     public void login(String username, String password) {
@@ -91,4 +115,6 @@ public class UserAuthentication implements PasswordService {
     public boolean passwordsMatch(Object o, String s) {
         return passwordService.passwordsMatch(o, s);
     }
+
+
 }
