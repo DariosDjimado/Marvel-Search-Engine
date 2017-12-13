@@ -84,6 +84,12 @@ public class DataShow {
      * A map referring to all tabs displayed in the panel
      */
     private Map<String, JList> tabsJLists;
+
+    private JButton btnOwned;
+
+    private JButton btnRead;
+
+    private JButton btnFaved;
     //endregion
 
     //region Constructors
@@ -122,22 +128,38 @@ public class DataShow {
         head.setFont(Fonts.title1);
 
         detail = new JPanel();
-        detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
+        detail.setLayout(new BorderLayout());
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
         JPanel detailWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         detailWrapper.add(detail);
-        panel.add(detailWrapper, BorderLayout.CENTER);
+        panel.add(detail, BorderLayout.CENTER);
 
         description = new JEditorPane();
         description.setEditable(false);
         JScrollPane descriptionScroll = new JScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         descriptionScroll.setPreferredSize(new Dimension(200, 100));
-        detail.add(new JScrollPane(descriptionScroll));
+        detail.add(new JScrollPane(descriptionScroll), BorderLayout.NORTH);
 
         detailPane = new JPanel();
         detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
         detailPane.setBorder(new EmptyBorder(5, 0, 0, 0));
-        detail.add(detailPane);
+        JPanel detailPaneWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        detailPaneWrapper.add(detailPane);
+        detail.add(detailPaneWrapper, BorderLayout.CENTER);
+
+        //TODO if user logged in
+        JPanel btnPane = new JPanel();
+        btnOwned = new JButton();
+        btnOwned.setText("+Library");
+        btnFaved = new JButton();
+        btnFaved.setText("+Favorite");
+        btnRead = new JButton();
+        btnRead.setText("+Read");
+        btnPane.add(btnOwned);
+        btnPane.add(btnFaved);
+        btnPane.add(btnRead);
+        detail.add(btnPane, BorderLayout.SOUTH);
+//        btnPane.setVisible(false);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
@@ -400,26 +422,26 @@ public class DataShow {
      * Method to change the thumbnail of panel
      * @param thumbnail the {@link BufferedImage} of the image
      */
-    public void setThumbnail(BufferedImage thumbnail) {
-        this.thumbnail.setImage_(thumbnail);
-    }
+            public void setThumbnail(BufferedImage thumbnail) {
+                this.thumbnail.setImage_(thumbnail);
+            }
 
 
-    /**
-     * Method called by thread requested tabs content in parallel, to fill those tabs
-     * @param elements the set of elements to add
-     * @param elementType the type of elements to add
-     * @param tab the tab to fill
-     * @param token the token to check if the data correspond to the element shown
-     */
-    synchronized public void updateList(Set elements, String elementType, String tab, int token){
-        if(token == elementToken){
-            ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).clear();
-            switch(elementType){
-                case "Comic":
-                    for (Comic oneComic : (TreeSet<Comic>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
-                    }
+            /**
+             * Method called by thread requested tabs content in parallel, to fill those tabs
+             * @param elements the set of elements to add
+             * @param elementType the type of elements to add
+             * @param tab the tab to fill
+             * @param token the token to check if the data correspond to the element shown
+             */
+            synchronized public void updateList(Set elements, String elementType, String tab, int token){
+                if(token == elementToken){
+                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).clear();
+                    switch(elementType){
+                        case "Comic":
+                            for (Comic oneComic : (TreeSet<Comic>)elements) {
+                                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
+                            }
                     break;
                 case "Character":
                     for (Character oneCharacter : (TreeSet<Character>)elements) {
