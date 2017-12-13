@@ -8,7 +8,7 @@ public class UILibraryTest {
     public static void main(String[] args) {
         JFrame testWin = new JFrame();
         testWin.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        testWin.setSize(1000, 1000);
+        testWin.setSize(700, 500);
         JPanel pane = new JPanel();
         testWin.setContentPane(pane);
         UILibrary lib = new UILibrary(pane);
