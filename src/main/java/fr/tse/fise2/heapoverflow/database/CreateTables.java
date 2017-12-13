@@ -17,7 +17,7 @@ public final class CreateTables {
         return createUsersTable() && createElementsTable() &&
                 createCharactersTable() && createComicsTable()
                 && createFavorites() &&
-                createCacheUrlsTable();
+                createCacheUrlsTable() && createCollectionsListTable() && createCollectionsListTable();
     }
 
     /**
@@ -79,6 +79,21 @@ public final class CreateTables {
                 "IDENTITY (START WITH 1, INCREMENT BY 1)," +
                 "id INT NOT NULL, type INT NOT NULL, name VARCHAR(255) NOT NULL ) ");
     }
+
+    public static boolean createCollectionsListTable() {
+        return createTable("CREATE TABLE collections(" +
+                "               collection_id INT NOT NULL PRIMARY KEY, " +
+                "title VARCHAR(255) NOT NULL," +
+                "description VARCHAR(255) NOT NULL)");
+    }
+
+    public static boolean createCollectionElementTable() {
+        return createTable("CREATE TABLE collection_element_table(" +
+                "element_id INT NOT NULL REFERENCES collections(element_id), " +
+                "marvel_element_id INT NOT NULL REFERENCES elements(uid)," +
+                "PRIMARY KEY (element_id,marvel_element_id))");
+    }
+
 
     private static boolean createTable(@Language("Derby") String s) {
         boolean execute;
