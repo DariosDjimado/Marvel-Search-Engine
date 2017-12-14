@@ -5,13 +5,8 @@ public class CollectionsListRow {
     private String title;
     private String description;
 
-    public CollectionsListRow(int collection_id, String title) {
-        this.collection_id = collection_id;
-        this.title = title;
-    }
 
-    public CollectionsListRow(int collection_id, String title, String description) {
-        this.collection_id = collection_id;
+    public CollectionsListRow(String title, String description) {
         this.title = title;
         this.description = description;
     }
