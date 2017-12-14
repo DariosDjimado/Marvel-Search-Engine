@@ -1,17 +1,16 @@
 package fr.tse.fise2.heapoverflow.authentication;
 
-import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.database.UserRow;
+import fr.tse.fise2.heapoverflow.database.UsersTable;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.realm.jdbc.JdbcRealm;
 import org.apache.shiro.util.ByteSource;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SaltRealm extends JdbcRealm {
 
-    public SaltRealm(){
+    public SaltRealm() {
     }
 
 
@@ -23,34 +22,31 @@ public class SaltRealm extends JdbcRealm {
         if (username == null) {
             throw new AccountException("Null username");
         }
-        final String password = getPasswordForUser(username);
-        if (password == null) {
+        final UserRow userRow = getUser(username);
+
+        if (userRow == null) {
             throw new UnknownAccountException("No account found for user [" + username + "]");
         }
-        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(username, password, getName());
-        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(username));
+        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(username, userRow.getPassword(), getName());
+        // TODO DANGEROUS DO NOT USE USERNAME
+        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(String.valueOf(userRow.getUsername())));
         info = simpleAuthenticationInfo;
         return info;
     }
 
-    private String getPasswordForUser(String username) {
-        String password = null;
-        try (PreparedStatement preparedStatement = ConnectionDB.getConnectionDB().getConnection().prepareStatement(
-                "SELECT PASSWORD FROM USERS WHERE USERNAME = ?")) {
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            boolean found = false;
-            while (resultSet.next()) {
-                if (found) {
-                    throw new AuthenticationException("More than one user row found for user [" + username + "]. Usernames must be unique.");
-                }
-                password = resultSet.getString("password");
-                found = true;
-            }
+    @Override
+    protected Object getAuthenticationCacheKey(AuthenticationToken token) {
+        return super.getAuthenticationCacheKey(token);
+    }
+
+    private UserRow getUser(String username) {
+        UserRow userRow = null;
+        try {
+            userRow = UsersTable.findUserByUsername(username);
         } catch (SQLException e) {
             final String message = "There was a SQL error while authenticating user [" + username + "]";
             throw new AuthenticationException(message, e);
         }
-        return password;
+        return userRow;
     }
 }

@@ -4,7 +4,6 @@ import fr.tse.fise2.heapoverflow.interfaces.IUserObserver;
 import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class UITopComponent implements UIComponent, IUserObserver {

@@ -42,6 +42,23 @@ final class PrimaryButton extends JButton {
     }
 }
 
+final class PlusButton extends JButton {
+
+    /**
+     * Creates a button with text.
+     */
+    public PlusButton() {
+        super("+");
+        //this.setOpaque(true);
+        this.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        this.setFocusPainted(false);
+        this.setBorderPainted(false);
+        this.setContentAreaFilled(true);
+        this.setForeground(UIColor.MAIN_BACKGROUND_COLOR);
+        this.setBackground(UIColor.PRIMARY_COLOR);
+    }
+}
+
 final class AccentButton extends JButton {
     /**
      * Creates a button with text.

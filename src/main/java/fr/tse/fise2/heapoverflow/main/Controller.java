@@ -1,15 +1,14 @@
 package fr.tse.fise2.heapoverflow.main;
 
+import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
 import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
-import fr.tse.fise2.heapoverflow.gui.AutoCompletion;
-import fr.tse.fise2.heapoverflow.gui.DataShow;
-import fr.tse.fise2.heapoverflow.gui.UI;
-import fr.tse.fise2.heapoverflow.gui.UITopComponent;
+import fr.tse.fise2.heapoverflow.gui.*;
 import fr.tse.fise2.heapoverflow.interfaces.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import okhttp3.Cache;
 import org.apache.log4j.Logger;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Objects;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
@@ -32,9 +32,9 @@ public class Controller extends InternalController implements IRequestListener, 
     private final static Logger LOGGER = Logger.getLogger(Controller.class);
     private static LoggerObserver LOGGER_OBSERVER;
     private static Controller con;
+    private static Cache urlsCache;
     private final SelectionChangedListener selectionChangedListenerExtra;
     private final RequestListener requestListener;
-    private static Cache urlsCache;
     private final UserAuthentication userAuthentication;
     // Vue
     private final DataShow dataShow;
@@ -90,6 +90,7 @@ public class Controller extends InternalController implements IRequestListener, 
         }
 
         this.initUserAuthentication();
+        this.initFavoriteButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
@@ -126,6 +127,10 @@ public class Controller extends InternalController implements IRequestListener, 
 
     public static void setLoggerObserver(LoggerObserver loggerObserver) {
         LOGGER_OBSERVER = loggerObserver;
+    }
+
+    public static Cache getUrlsCache() {
+        return urlsCache;
     }
 
     private void initUserAuthentication() {
@@ -186,6 +191,27 @@ public class Controller extends InternalController implements IRequestListener, 
                 }
             } else {
                 userAuthentication.logout();
+            }
+        });
+    }
+
+    private void initFavoriteButton() {
+        final FavoriteButton favoriteButton = this.dataShow.getBtnFaved();
+        favoriteButton.addActionListener(e -> {
+            if (UserAuthentication.isAuthenticated()) {
+                try {
+                    if (FavoritesTable.exists(UserAuthentication.getUser().getId(), favoriteButton.getId(), favoriteButton.getType().getValue())) {
+                        LOGGER.debug("Deleting Favorite " + favoriteButton.getId());
+                        FavoritesTable.deleteFavorite(new FavoriteRow(favoriteButton.getId(), favoriteButton.getType().getValue(), Objects.requireNonNull(UserAuthentication.getUser()).getId()));
+                        favoriteButton.setState(false);
+                    } else {
+                        LOGGER.debug("Adding Favorite " + favoriteButton.getId());
+                        FavoritesTable.insertFavorite(new FavoriteRow(favoriteButton.getId(), favoriteButton.getType().getValue(), Objects.requireNonNull(UserAuthentication.getUser()).getId()));
+                        favoriteButton.setState(true);
+                    }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
@@ -294,11 +320,7 @@ public class Controller extends InternalController implements IRequestListener, 
     public void showComic(Comic comic) {
         EventQueue.invokeLater(() -> {
             try {
-                EventQueue.invokeLater(() -> {
-                    dataShow.DrawComic(comic);
-                    this.ui.revalidate();
-                    this.ui.repaint();
-                });
+                customDrawComic(comic);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -306,14 +328,20 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
-    @Override
-    public void showCharacter(Character character) {
-        System.out.println(character);
+    private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
-            dataShow.DrawCharacter(character);
+            this.dataShow.getBtnFaved().setType(MarvelElements.COMIC);
+            this.dataShow.getBtnFaved().setId(comic.getId());
+            dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
         });
+    }
+
+    @Override
+    public void showCharacter(Character character) {
+        System.out.println(character);
+        customDrawCharacter(character);
     }
 
     @Override
@@ -331,11 +359,7 @@ public class Controller extends InternalController implements IRequestListener, 
     @Override
     public void onFetchedComicById(Comic comic) {
         // show the comic
-        EventQueue.invokeLater(() -> {
-            dataShow.DrawComic(comic);
-            this.ui.revalidate();
-            this.ui.repaint();
-        });
+        customDrawComic(comic);
         this.fetchComicsInSameSeries(comic);
     }
 
@@ -370,12 +394,18 @@ public class Controller extends InternalController implements IRequestListener, 
     @Override
     public void onFetchedCharactersById(Character character) {
         // show character
+        customDrawCharacter(character);
+        this.fetchCharactersInSameComic(character);
+    }
+
+    private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
+            this.dataShow.getBtnFaved().setType(MarvelElements.CHARACTER);
+            this.dataShow.getBtnFaved().setId(character.getId());
             dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();
         });
-        this.fetchCharactersInSameComic(character);
     }
 
     public void fetchCharactersInSameComic(Character character) {
@@ -389,11 +419,6 @@ public class Controller extends InternalController implements IRequestListener, 
     @Override
     public void onFetchedCharactersInSameComic(Character[] characters) {
         EventQueue.invokeLater(() -> this.ui.getUiExtraComponent().setResultsCharacters(characters));
-    }
-
-
-    public static Cache getUrlsCache() {
-        return urlsCache;
     }
 
 }

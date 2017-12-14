@@ -53,4 +53,24 @@ public final class FavoritesTable {
         preparedStatement.setInt(3, favoriteRow.getUserId());
         preparedStatement.execute();
     }
+
+    public static boolean exists(int userID, int id, int type) throws SQLException {
+        boolean found = false;
+        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+                .getConnection()
+                .prepareStatement("SELECT COUNT(*) FROM FAVORITES WHERE ID = ? AND TYPE = ? AND USER_ID = ?");
+
+        preparedStatement.setInt(1, id);
+        preparedStatement.setInt(2, type);
+        preparedStatement.setInt(3, userID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            if (resultSet.getInt(1) > 0) {
+                found = true;
+                System.out.println(id);
+            }
+        }
+        return found;
+    }
 }

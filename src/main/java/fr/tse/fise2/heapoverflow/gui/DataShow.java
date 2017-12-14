@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.Controller;
+import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
@@ -84,6 +85,14 @@ public class DataShow {
      * A map referring to all tabs displayed in the panel
      */
     private Map<String, JList> tabsJLists;
+
+    private JPanel btnPane;
+
+    private JButton btnOwned;
+
+    private JButton btnRead;
+
+    private final FavoriteButton btnFaved;
     //endregion
 
     //region Constructors
@@ -122,22 +131,37 @@ public class DataShow {
         head.setFont(Fonts.title1);
 
         detail = new JPanel();
-        detail.setLayout(new BoxLayout(detail, BoxLayout.PAGE_AXIS));
+        detail.setLayout(new BorderLayout());
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
         JPanel detailWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         detailWrapper.add(detail);
-        panel.add(detailWrapper, BorderLayout.CENTER);
+        panel.add(detail, BorderLayout.CENTER);
 
         description = new JEditorPane();
         description.setEditable(false);
         JScrollPane descriptionScroll = new JScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         descriptionScroll.setPreferredSize(new Dimension(200, 100));
-        detail.add(new JScrollPane(descriptionScroll));
+        detail.add(new JScrollPane(descriptionScroll), BorderLayout.NORTH);
 
         detailPane = new JPanel();
         detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
         detailPane.setBorder(new EmptyBorder(5, 0, 0, 0));
-        detail.add(detailPane);
+        JPanel detailPaneWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        detailPaneWrapper.add(detailPane);
+        detail.add(detailPaneWrapper, BorderLayout.CENTER);
+
+        btnPane = new JPanel();
+        btnOwned = new JButton();
+        btnOwned.setText("+Library");
+        btnFaved = new FavoriteButton();
+        btnFaved.setText("+Favorite");
+        btnRead = new JButton();
+        btnRead.setText("+Read");
+        btnPane.add(btnOwned);
+        btnPane.add(btnFaved);
+        btnPane.add(btnRead);
+        detail.add(btnPane, BorderLayout.SOUTH);
+        btnPane.setVisible(false);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
@@ -194,6 +218,17 @@ public class DataShow {
         details.put("Page Count : ", Integer.valueOf(comic.getPageCount()).toString());
 
         fillPaneWithLabels(detailPane, details);
+        //endregion
+        //region library buttons
+        System.out.println("checking authentication");
+        if(UserAuthentication.isAuthenticated()){
+            System.out.println("auth ok");
+            btnPane.setVisible(true);
+        }
+        else{
+            System.out.println("auth failed");
+            btnPane.setVisible(false);
+        }
         //endregion
         detail.revalidate();
         //endregion
@@ -292,6 +327,7 @@ public class DataShow {
         //endregion
         //region detail display
         referencesPane.setVisible(false);
+        btnPane.setVisible(false);
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
         details.put("Appears in : ", "");
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Serie");
@@ -396,30 +432,42 @@ public class DataShow {
         }
     }
 
+    public JButton getBtnOwned() {
+        return btnOwned;
+    }
+
+    public JButton getBtnRead() {
+        return btnRead;
+    }
+
+    public FavoriteButton getBtnFaved() {
+        return btnFaved;
+    }
+
     /**
      * Method to change the thumbnail of panel
      * @param thumbnail the {@link BufferedImage} of the image
      */
-    public void setThumbnail(BufferedImage thumbnail) {
-        this.thumbnail.setImage_(thumbnail);
-    }
+            public void setThumbnail(BufferedImage thumbnail) {
+                this.thumbnail.setImage_(thumbnail);
+            }
 
 
-    /**
-     * Method called by thread requested tabs content in parallel, to fill those tabs
-     * @param elements the set of elements to add
-     * @param elementType the type of elements to add
-     * @param tab the tab to fill
-     * @param token the token to check if the data correspond to the element shown
-     */
-    synchronized public void updateList(Set elements, String elementType, String tab, int token){
-        if(token == elementToken){
-            ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).clear();
-            switch(elementType){
-                case "Comic":
-                    for (Comic oneComic : (TreeSet<Comic>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
-                    }
+            /**
+             * Method called by thread requested tabs content in parallel, to fill those tabs
+             * @param elements the set of elements to add
+             * @param elementType the type of elements to add
+             * @param tab the tab to fill
+             * @param token the token to check if the data correspond to the element shown
+             */
+            synchronized public void updateList(Set elements, String elementType, String tab, int token){
+                if(token == elementToken){
+                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).clear();
+                    switch(elementType){
+                        case "Comic":
+                            for (Comic oneComic : (TreeSet<Comic>)elements) {
+                                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
+                            }
                     break;
                 case "Character":
                     for (Character oneCharacter : (TreeSet<Character>)elements) {
@@ -460,76 +508,6 @@ public class DataShow {
     }
 }
 
-/**
- * Class to adapt marvel API elements for JList display and use
- * TODO: Make it public
- * @author Théo Basty
- */
-class MarvelListElement{
-    String dispName;
-    String shortURI;
-    MarvelType type;
-
-    public MarvelListElement(String dispName, String shortURI, MarvelType type) {
-        this.dispName = dispName;
-        if(shortURI != null && shortURI.substring(0, 4).equals("http")){
-            this.shortURI = shortURI.substring(36);
-        }
-        else {
-            this.shortURI = shortURI;
-        }
-        this.type = type;
-    }
-
-    public String getDispName() {
-        return dispName;
-    }
-
-    public void setDispName(String dispName) {
-        this.dispName = dispName;
-    }
-
-    public String getShortURI() {
-        return shortURI;
-    }
-
-    public void setShortURI(String shortURI) {
-        this.shortURI = shortURI;
-    }
-
-    public MarvelType getType() {
-        return type;
-    }
-
-    public void setType(MarvelType type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return dispName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MarvelListElement that = (MarvelListElement) o;
-
-        if (dispName != null ? !dispName.equals(that.dispName) : that.dispName != null) return false;
-        if (shortURI != null ? !shortURI.equals(that.shortURI) : that.shortURI != null) return false;
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = dispName != null ? dispName.hashCode() : 0;
-        result = 31 * result + (shortURI != null ? shortURI.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
-    }
-}
 enum MarvelType{
     Character, Comic, Serie, Creator, Story, Event, Error, Void
 }
