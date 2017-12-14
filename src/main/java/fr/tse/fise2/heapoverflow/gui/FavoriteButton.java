@@ -29,7 +29,7 @@ public class FavoriteButton extends JButton {
 
     public void setState(boolean state) {
         this.state = state;
-        if (this.state) {
+        if (!this.state) {
             this.setText("+Favorite");
         } else {
             this.setText("-Favorite");
