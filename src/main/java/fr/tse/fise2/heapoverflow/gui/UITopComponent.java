@@ -15,11 +15,12 @@ public class UITopComponent implements UIComponent, IUserObserver {
     private final JPanel topPanel;
     private final JPanel signContainer;
     private final JLabel confirmPasswordLabel;
+    private final JButton createCollectionButton;
+    private final JPanel topRightPanel;
     private JTextField usernameTextField;
     private JPasswordField passwordTextField;
     private JPasswordField confirmPasswordTextField;
     private JPanel authenticationPanel;
-
     private JLabel usernameLabel;
     private JTextField emailTextField;
     private JTextField lastNameTextField;
@@ -42,6 +43,8 @@ public class UITopComponent implements UIComponent, IUserObserver {
         this.signContainer = new JPanel();
         this.confirmPasswordLabel = new JLabel();
 
+        this.createCollectionButton = new DefaultButton("Create Collections");
+        this.topRightPanel = new JPanel();
     }
 
     public void init() {
@@ -62,6 +65,20 @@ public class UITopComponent implements UIComponent, IUserObserver {
 
     @Override
     public void build() {
+
+        this.topPanel.setLayout(new BorderLayout());
+
+        // top right panel
+        this.createCollectionButton.setForeground(UIColor.PRIMARY_COLOR);
+        this.libraryButton.setBackground(UIColor.ACCENT_COLOR);
+        this.libraryButton.setForeground(UIColor.HEADER_TEXT_COLOR);
+
+        this.topRightPanel.setLayout(new BorderLayout());
+        this.topRightPanel.add(this.libraryButton, BorderLayout.WEST);
+        this.topRightPanel.add(this.createCollectionButton, BorderLayout.EAST);
+        this.topPanel.add(this.topRightPanel, BorderLayout.WEST);
+
+
         // sign in button
         this.logInButton.setOpaque(false);
         this.logInButton.setFocusPainted(false);
@@ -77,11 +94,7 @@ public class UITopComponent implements UIComponent, IUserObserver {
         this.signContainer.add(this.signUpButton, BorderLayout.EAST);
         this.signContainer.add(this.logInButton, BorderLayout.WEST);
 
-        this.libraryButton.setBackground(UIColor.ACCENT_COLOR);
-        this.libraryButton.setForeground(UIColor.HEADER_TEXT_COLOR);
         // shadow
-        this.topPanel.setLayout(new BorderLayout());
-        this.topPanel.add(this.libraryButton, BorderLayout.WEST);
         this.topPanel.add(this.signContainer, BorderLayout.EAST);
 
 
@@ -276,6 +289,9 @@ public class UITopComponent implements UIComponent, IUserObserver {
         return emailTextField;
     }
 
+    public JButton getCreateCollectionButton() {
+        return createCollectionButton;
+    }
 
     /**
      * Notifies login

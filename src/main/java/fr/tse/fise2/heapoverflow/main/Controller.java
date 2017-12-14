@@ -91,6 +91,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
         this.initUserAuthentication();
         this.initFavoriteButton();
+        this.initCreateCollectionButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
@@ -209,6 +210,28 @@ public class Controller extends InternalController implements IRequestListener, 
                         FavoritesTable.insertFavorite(new FavoriteRow(favoriteButton.getId(), favoriteButton.getType().getValue(), Objects.requireNonNull(UserAuthentication.getUser()).getId()));
                         favoriteButton.setState(true);
                     }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void initCreateCollectionButton() {
+        this.ui.getUiTopComponent().getCreateCollectionButton().addActionListener(e -> {
+            final JLabel titleLabel = new JLabel("Title");
+            final JTextField textField = new JTextField();
+            final JLabel descLabel = new JLabel("Description");
+            final JTextArea descArea = new JTextArea(10, 1);
+
+            int option = JOptionPane.showConfirmDialog(ui, new Object[]{titleLabel, textField, descLabel, descArea},
+                    "Sign in", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null);
+
+            if (option == JOptionPane.YES_OPTION) {
+                try {
+                    CollectionsListTable.insertCollection(textField.getText(), descArea.getText());
+                    System.out.println(CollectionsListTable.findCollections());
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }

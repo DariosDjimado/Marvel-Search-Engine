@@ -1,6 +1,6 @@
 package fr.tse.fise2.heapoverflow.database;
 
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,48 +12,58 @@ public class CollectionsListTable {
     public static void insertCollection(String title, String description) throws SQLException {
         PreparedStatement statement = ConnectionDB.getConnectionDB()
                 .getConnection()
-                .prepareStatement("INSERT INTO collections(collection_id,title,description)" +
-                        " VALUES (?,?,?)");
-        statement.setString(2, title);
-        statement.setString(3, description);
+                .prepareStatement("INSERT INTO collections(title,description)" +
+                        " VALUES (?,?)");
+        statement.setString(1, title);
+        statement.setString(2, description);
 
         statement.execute();
     }
 
-    public static List<CollectionsListRow> findCollection(int id) throws Exception{
+    public static CollectionsListRow findCollection(int id) throws SQLException {
         PreparedStatement statement = ConnectionDB.getConnectionDB()
                 .getConnection()
-                .prepareStatement("SELECT FROM collections where COLLECTION_ID = ?");
-        statement.setInt(1,id);
+                .prepareStatement("SELECT * FROM collections WHERE COLLECTION_ID = ?");
+        statement.setInt(1, id);
+        ResultSet resultSet = statement.executeQuery();
+        CollectionsListRow collectionsListRow = null;
+        while (resultSet.next()) {
+            collectionsListRow = new CollectionsListRow(resultSet.getInt(1),
+                    resultSet.getString(2), resultSet.getString(3));
+        }
+        return collectionsListRow;
+    }
+
+    @NotNull
+    public static List<CollectionsListRow> findCollections() throws SQLException {
+        PreparedStatement statement = ConnectionDB.getConnectionDB()
+                .getConnection()
+                .prepareStatement("SELECT * FROM collections");
         ResultSet resultSet = statement.executeQuery();
         List<CollectionsListRow> collectionsListRows = new ArrayList<>();
         while (resultSet.next()) {
-            collectionsListRows.add(new CollectionsListRow(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3));
+            collectionsListRows.add(new CollectionsListRow(resultSet.getInt(1),
+                    resultSet.getString(2), resultSet.getString(3)));
         }
         return collectionsListRows;
-
-
-        statement.execute();
     }
 
-    public static boolean existCollection(int id) throws Exception{
-            boolean found = false;
-            PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
-                    .getConnection()
-                    .prepareStatement("SELECT COUNT(*) FROM COLLECTIONS WHERE COLLECTION_ID = ? ");
 
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
+    public static boolean existCollection(int id) throws SQLException {
+        boolean found = false;
+        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+                .getConnection()
+                .prepareStatement("SELECT COUNT(*) FROM COLLECTIONS WHERE COLLECTION_ID = ? ");
 
-            while (resultSet.next()) {
-                if (resultSet.getInt(1) > 0) {
-                    found = true;
-                    System.out.println(id);
-                }
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            if (resultSet.getInt(1) > 0) {
+                found = true;
+                System.out.println(id);
             }
-            return found;
         }
-
-
+        return found;
     }
 }

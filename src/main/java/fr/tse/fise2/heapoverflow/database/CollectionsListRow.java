@@ -6,9 +6,10 @@ public class CollectionsListRow {
     private String description;
 
 
-    public CollectionsListRow(String title, String description) {
+    public CollectionsListRow(int collection_id, String title, String description) {
         this.title = title;
         this.description = description;
+        this.collection_id = collection_id;
     }
 
     public int getId() {
