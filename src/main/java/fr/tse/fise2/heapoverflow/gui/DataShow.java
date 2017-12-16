@@ -296,6 +296,15 @@ public class DataShow {
         tabs.addTab("Stories", new JScrollPane(stories));
         isrt.addJob("Story", "Stories", comic.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
+        //external links
+        DefaultListModel<MarvelListElement> extlinkListModel = new DefaultListModel<>();
+        extlinkListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> eventtlink = new JList<>(extlinkListModel);
+        tabsJLists.put("extlink", extlink);
+        tabs.addTab("extlink", new JScrollPane(extlink));
+        isrt.addJob("extlink", "extlink", comic.getCollectionURI().substring(36), elementToken);
+        //end
+
         //region events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
@@ -369,6 +378,16 @@ public class DataShow {
         tabs.addTab("Stories", new JScrollPane(stories));
         isrt.addJob("Story", "Stories", character.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
+
+        //external links
+        DefaultListModel<MarvelListElement> extlinkListModel = new DefaultListModel<>();
+        extlinkListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> eventtlink = new JList<>(extlinkListModel);
+        tabsJLists.put("extlink", extlink);
+        tabs.addTab("extlink", new JScrollPane(extlink));
+        isrt.addJob("extlink", "extlink", comic.getCollectionURI().substring(36), elementToken);
+        //end
+
         //region Events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
@@ -489,6 +508,18 @@ public class DataShow {
                         ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneEvent.getTitle(), oneEvent.getResourceURI(), MarvelType.Event));
                     }
                     break;
+
+                case "extlink"
+                    for (extlink oneextlink : (TreeSet<extlink>)elements) {
+                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneextlinkgetTitle(),oneStorygetResourceURI(),MarvelType.extlink));
+                        break;
+                    }
+
+
+
+
+
+
                 case "Serie":
                     for (Serie oneSerie : (TreeSet<Serie>)elements) {
                         ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneSerie.getTitle(), oneSerie.getResourceURI(), MarvelType.Serie));
@@ -509,5 +540,5 @@ public class DataShow {
 }
 
 enum MarvelType{
-    Character, Comic, Serie, Creator, Story, Event, Error, Void
+    Character, Comic, Serie, Creator, Story, Event,extlink, Error, Void
 }
