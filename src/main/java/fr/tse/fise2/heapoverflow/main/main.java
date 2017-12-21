@@ -1,7 +1,6 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.gui.UI;
-import org.apache.shiro.SecurityUtils;
 
 import java.awt.*;
 
@@ -10,9 +9,8 @@ public class main {
         UI ui = new UI();
 
         EventQueue.invokeLater(ui::init);
-        AppLogger appLogger = new AppLogger(ui);
-        appLogger.configureLogging();
-        Controller controller = new Controller(ui, appLogger);
+        AppErrorHandler.configureLogging();
+        Controller controller = new Controller(ui);
         controller.init();
 
 

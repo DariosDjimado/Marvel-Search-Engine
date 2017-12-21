@@ -1,6 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.main.AppLogger;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
@@ -15,9 +15,7 @@ public class dataShowTestComic {
     public static void main(String[] args) {
         UI ui = new UI();
         EventQueue.invokeLater(ui::init);
-        AppLogger appLogger = new AppLogger(ui);
-        appLogger.configureLogging();
-        Controller controller = new Controller(ui, appLogger);
+        Controller controller = new Controller(ui);
         MarvelRequest request = new MarvelRequest();
 //        Path myFile = Paths.get("comicSample.json");
         try {

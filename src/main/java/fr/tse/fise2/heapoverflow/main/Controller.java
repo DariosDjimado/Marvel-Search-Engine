@@ -5,13 +5,17 @@ import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.*;
-import fr.tse.fise2.heapoverflow.interfaces.*;
+import fr.tse.fise2.heapoverflow.interfaces.CharactersRequestObserver;
+import fr.tse.fise2.heapoverflow.interfaces.ComicsRequestObserver;
+import fr.tse.fise2.heapoverflow.interfaces.IRequestListener;
+import fr.tse.fise2.heapoverflow.interfaces.ISelectionChangedListener;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import okhttp3.Cache;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,8 +33,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComic
 
 public class Controller extends InternalController implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     // Model
-    private final static Logger LOGGER = Logger.getLogger(Controller.class);
-    private static LoggerObserver LOGGER_OBSERVER;
+    private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     private static Controller con;
     private static Cache urlsCache;
     private final SelectionChangedListener selectionChangedListenerExtra;
@@ -43,7 +46,7 @@ public class Controller extends InternalController implements IRequestListener, 
     private MarvelRequest request;
 
 
-    public Controller(UI ui, final LoggerObserver loggerObserver) {
+    public Controller(UI ui) {
         con = this;
 
         DataBaseErrorHandler dataBaseErrorHandler = new DataBaseErrorHandler();
@@ -79,8 +82,6 @@ public class Controller extends InternalController implements IRequestListener, 
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
-        // init logger
-        LOGGER_OBSERVER = loggerObserver;
 
 
         try {
@@ -105,8 +106,8 @@ public class Controller extends InternalController implements IRequestListener, 
                         JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 
                     try {
-                        ConnectionDB.getConnectionDB().getConnection().close();
-                        System.out.println(ConnectionDB.getConnectionDB().getConnection().isClosed());
+                        ConnectionDB.getInstance().getConnection().close();
+                        System.out.println(ConnectionDB.getInstance().getConnection().isClosed());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -116,18 +117,12 @@ public class Controller extends InternalController implements IRequestListener, 
             }
         });
         userAuthentication = UserAuthentication.getUserAuthentication();
+
+        //Launcher.checkDatabase();
     }
 
     public static Controller getController() {
         return con;
-    }
-
-    public static LoggerObserver getLoggerObserver() {
-        return LOGGER_OBSERVER;
-    }
-
-    public static void setLoggerObserver(LoggerObserver loggerObserver) {
-        LOGGER_OBSERVER = loggerObserver;
     }
 
     public static Cache getUrlsCache() {
@@ -201,13 +196,21 @@ public class Controller extends InternalController implements IRequestListener, 
         favoriteButton.addActionListener(e -> {
             if (UserAuthentication.isAuthenticated()) {
                 try {
-                    if (FavoritesTable.exists(UserAuthentication.getUser().getId(), favoriteButton.getId(), favoriteButton.getType().getValue())) {
+                    if (favoriteButton.getState()) {
+                        FavoriteRow favRow = FavoritesTable
+                                .existsFavorite(Objects.requireNonNull(UserAuthentication.getUser()).getId(),
+                                        favoriteButton.getId(), favoriteButton.getType().getValue());
                         LOGGER.debug("Deleting Favorite " + favoriteButton.getId());
-                        FavoritesTable.deleteFavorite(new FavoriteRow(favoriteButton.getId(), favoriteButton.getType().getValue(), Objects.requireNonNull(UserAuthentication.getUser()).getId()));
+                        FavoritesTable.deleteFavorite(favRow);
                         favoriteButton.setState(false);
                     } else {
                         LOGGER.debug("Adding Favorite " + favoriteButton.getId());
-                        FavoritesTable.insertFavorite(new FavoriteRow(favoriteButton.getId(), favoriteButton.getType().getValue(), Objects.requireNonNull(UserAuthentication.getUser()).getId()));
+                        int id = Objects.requireNonNull(UserAuthentication.getUser()).getId();
+                        FavoriteRow favoriteRow = new FavoriteRow(favoriteButton.getId(),
+                                id,
+                                favoriteButton.getType().getValue(),
+                                favoriteButton.getElementName());
+                        FavoritesTable.insertFavorite(favoriteRow);
                         favoriteButton.setState(true);
                     }
                 } catch (SQLException e1) {
@@ -231,7 +234,7 @@ public class Controller extends InternalController implements IRequestListener, 
             if (option == JOptionPane.YES_OPTION) {
                 try {
                     CollectionsListTable.insertCollection(textField.getText(), descArea.getText());
-                    System.out.println(CollectionsListTable.findCollections());
+
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -248,7 +251,9 @@ public class Controller extends InternalController implements IRequestListener, 
         try {
             CacheUrlsTable.empty();
             final Iterator<String> urls = urlsCache.urls();
-            Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Importing urls from cache");
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Importing urls from cache");
+            }
             while (urls.hasNext()) {
                 final String completeUrl = urls.next();
                 String shortenUrl;
@@ -262,9 +267,14 @@ public class Controller extends InternalController implements IRequestListener, 
                     CacheUrlsTable.insertUrls(shortenUrl, completeUrl);
                 }
             }
-            Controller.LOGGER_OBSERVER.onInfo(LOGGER, "Urls imported successfully");
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Urls imported successfully");
+            }
         } catch (IOException | SQLException e) {
-            Controller.LOGGER_OBSERVER.onError(LOGGER, e);
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -354,6 +364,7 @@ public class Controller extends InternalController implements IRequestListener, 
     private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
             this.dataShow.getBtnFaved().setType(MarvelElements.COMIC);
+            this.dataShow.getBtnFaved().setElementName(comic.getTitle());
             this.dataShow.getBtnFaved().setId(comic.getId());
             dataShow.DrawComic(comic);
             this.ui.revalidate();
@@ -424,6 +435,7 @@ public class Controller extends InternalController implements IRequestListener, 
     private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
             this.dataShow.getBtnFaved().setType(MarvelElements.CHARACTER);
+            this.dataShow.getBtnFaved().setElementName(character.getName());
             this.dataShow.getBtnFaved().setId(character.getId());
             dataShow.DrawCharacter(character);
             this.ui.revalidate();

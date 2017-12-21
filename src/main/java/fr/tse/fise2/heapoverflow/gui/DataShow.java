@@ -1,13 +1,15 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
 import fr.tse.fise2.heapoverflow.marvelapi.Image;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -29,7 +31,7 @@ import java.util.*;
 public class DataShow {
     //region Attributes
 //    Controller controllerLink;
-    public static final Logger logger = Logger.getLogger(DataShow.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
 
     /**
      * The object managing background requests
@@ -428,7 +430,10 @@ public class DataShow {
             thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
         } catch (Exception e) {
             System.out.println(e);
-            Controller.getLoggerObserver().onError(logger, e);
+            AppErrorHandler.onError(e);
+            if(LOGGER.isErrorEnabled()){
+                LOGGER.error(e.getMessage(),e);
+            }
         }
     }
 

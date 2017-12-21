@@ -12,16 +12,16 @@ import java.util.List;
 
 public class MarvelElementTable {
 
-    public static void insertComic(int id, String title) throws SQLException {
-        insertElement(id, title, MarvelElements.COMIC.getValue());
+    public static int insertComic(int id, String title) throws SQLException {
+        return insertElement(id, title, MarvelElements.COMIC.getValue());
     }
 
-    public static void insertCharacter(int id, String name) throws SQLException {
-        insertElement(id, name, MarvelElements.CHARACTER.getValue());
+    public static int insertCharacter(int id, String name) throws SQLException {
+        return insertElement(id, name, MarvelElements.CHARACTER.getValue());
     }
 
     public static CharacterRow findCharacterByName(String characterName) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
                         MarvelElements.CHARACTER.getValue() +
@@ -32,7 +32,7 @@ public class MarvelElementTable {
     }
 
     public static List<CharacterRow> findCharactersLike(String pattern, int offset, int next) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE="
                         + MarvelElements.CHARACTER.getValue() +
@@ -53,7 +53,7 @@ public class MarvelElementTable {
     }
 
     public static CharacterRow findCharacterById(int id) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" +
                         MarvelElements.CHARACTER.getValue());
@@ -63,7 +63,7 @@ public class MarvelElementTable {
     }
 
     public static List<CharacterRow> findCharacters() throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElements.CHARACTER.getValue());
 
@@ -71,7 +71,7 @@ public class MarvelElementTable {
     }
 
     public static List<ComicRow> findComics() throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElements.COMIC.getValue());
 
@@ -84,7 +84,7 @@ public class MarvelElementTable {
      * @throws SQLException
      */
     public static ComicRow findComicById(int id) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" + MarvelElements.COMIC.getValue());
         preparedStatement.setInt(1, id);
@@ -93,7 +93,7 @@ public class MarvelElementTable {
     }
 
     public static ComicRow findComicByTitle(String comicTitle) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
                         MarvelElements.COMIC.getValue() +
@@ -106,7 +106,7 @@ public class MarvelElementTable {
     }
 
     public static List<ComicRow> findComicsLike(String pattern, int offset, int next) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE=" +
                         MarvelElements.COMIC.getValue() +
@@ -123,35 +123,39 @@ public class MarvelElementTable {
         return getComicRows(preparedStatement);
     }
 
-    public static boolean comicExists(int id) throws SQLException {
-        boolean found = false;
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+    public static int elementsExists(int id, MarvelElements marvelElements) throws SQLException {
+        int elementId = -1;
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT COUNT(*) FROM ELEMENTS WHERE ID = ? AND TYPE = ?");
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE = ?");
 
         preparedStatement.setInt(1, id);
-        preparedStatement.setInt(2, MarvelElements.COMIC.getValue());
+        preparedStatement.setInt(2, marvelElements.getValue());
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            if (resultSet.getInt(1) > 0) {
-                found = true;
-                System.out.println(id);
-            }
+            elementId = resultSet.getInt("uid");
         }
-        return found;
+        return elementId;
     }
 
-    private static void insertElement(int id, String title, int type) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getConnectionDB()
+    private static int insertElement(int id, String title, int type) throws SQLException {
+        PreparedStatement prepareStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("INSERT INTO ELEMENTS(ID,NAME,TYPE)" +
-                        " VALUES (?,?,?)");
-        statement.setInt(1, id);
-        statement.setString(2, title);
-        statement.setInt(3, type);
+                        " VALUES (?,?,?)", new String[]{"UID"});
+        prepareStatement.setInt(1, id);
+        prepareStatement.setString(2, title);
+        prepareStatement.setInt(3, type);
 
-        statement.execute();
+        prepareStatement.execute();
+
+        ResultSet rs = prepareStatement.getGeneratedKeys();
+        int generatedID = -1;
+        while (rs.next()) {
+            generatedID = rs.getInt(1);
+        }
+        return generatedID;
     }
 
     @Nullable

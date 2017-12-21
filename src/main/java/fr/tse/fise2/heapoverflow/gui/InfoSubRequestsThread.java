@@ -1,8 +1,10 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.Line;
 import java.net.SocketTimeoutException;
@@ -16,7 +18,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  */
 public class InfoSubRequestsThread implements Runnable {
 
-    private static final Logger logger = Logger.getLogger(InfoSubRequestsThread.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfoSubRequestsThread.class);
     /**
      * the datashow element to callback
      */
@@ -143,9 +145,16 @@ public class InfoSubRequestsThread implements Runnable {
                 } catch (SocketTimeoutException e){
                     caller.updateList(fetched, "TimeOut", thisJob.modelKey, thisJob.elementHash);
                     System.err.println("----" + thisJob + " Timed out");
-                    Controller.getLoggerObserver().onError(logger, e);
+                    AppErrorHandler.onError(e);
+                    if(LOGGER.isErrorEnabled()){
+                        LOGGER.error(e.getMessage(),e);
+                    }
+
                 } catch (Exception e) {
-                    Controller.getLoggerObserver().onError(logger, e);
+                    AppErrorHandler.onError(e);
+                    if(LOGGER.isErrorEnabled()){
+                        LOGGER.error(e.getMessage(),e);
+                    }
                 }
             } catch(InterruptedException e){
                 break;

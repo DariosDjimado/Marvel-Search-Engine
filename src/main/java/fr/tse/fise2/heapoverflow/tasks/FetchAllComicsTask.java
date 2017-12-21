@@ -4,10 +4,7 @@ import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.interfaces.ComicsRequestObserver;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
 import fr.tse.fise2.heapoverflow.main.FetchData;
-import fr.tse.fise2.heapoverflow.marvelapi.Comic;
-import fr.tse.fise2.heapoverflow.marvelapi.ComicDataContainer;
-import fr.tse.fise2.heapoverflow.marvelapi.ComicDataWrapper;
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
+import fr.tse.fise2.heapoverflow.marvelapi.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -65,7 +62,7 @@ public class FetchAllComicsTask implements Tasks, ComicsRequestObserver {
         try {
             System.out.println("saving " + comics.length + " new comics");
             for (Comic c : comics) {
-                if (!MarvelElementTable.comicExists(c.getId())) {
+                if (MarvelElementTable.elementsExists(c.getId(), MarvelElements.COMIC) == -1) {
                     MarvelElementTable.insertComic(c.getId(), c.getTitle().toLowerCase());
                 } else {
                     System.out.println(c.getTitle() + " has already registered");

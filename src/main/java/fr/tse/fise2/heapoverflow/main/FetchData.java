@@ -2,9 +2,9 @@ package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.interfaces.CharactersRequestObserver;
 import fr.tse.fise2.heapoverflow.interfaces.ComicsRequestObserver;
-import fr.tse.fise2.heapoverflow.interfaces.LoggerObserver;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -14,8 +14,7 @@ import java.io.IOException;
  * @author Darios DJIMADO
  */
 public class FetchData extends Thread {
-    private static final Logger logger = Logger.getLogger(FetchData.class);
-    private static LoggerObserver LOGGER_OBSERVER;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchData.class);
     private final String url;
     private final ComicsRequestObserver comicsRequestObserver;
     private final CharactersRequestObserver charactersRequestObserver;
@@ -47,13 +46,12 @@ public class FetchData extends Thread {
      * @param comicsType                type of comics event that will be emitted later
      * @param charactersType            type of characters event that will be emitted later
      */
-    public FetchData(ComicsRequestObserver comicsRequestObserver, CharactersRequestObserver charactersRequestObserver, String url, ComicsType comicsType, CharactersType charactersType) {
+    private FetchData(ComicsRequestObserver comicsRequestObserver, CharactersRequestObserver charactersRequestObserver, String url, ComicsType comicsType, CharactersType charactersType) {
         this.url = url;
         this.charactersRequestObserver = charactersRequestObserver;
         this.comicsRequestObserver = comicsRequestObserver;
         this.comicsType = comicsType;
         this.charactersType = charactersType;
-        LOGGER_OBSERVER = Controller.getLoggerObserver();
     }
 
     /**
@@ -100,7 +98,10 @@ public class FetchData extends Thread {
                 }
             }
         } catch (IOException e) {
-            LOGGER_OBSERVER.onError(logger, e);
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
     }

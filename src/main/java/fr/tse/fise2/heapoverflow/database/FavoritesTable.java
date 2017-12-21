@@ -12,53 +12,77 @@ import java.util.List;
 public final class FavoritesTable {
 
     public static void insertFavorite(FavoriteRow favoriteRow) throws SQLException {
-        internalManipulation(favoriteRow, "INSERT INTO favorites(id,type,user_id) VALUES(?,?,?)");
+        int elementUid;
+        if (favoriteRow.getType() == MarvelElements.COMIC.getValue()) {
+            elementUid = MarvelElementTable.elementsExists(favoriteRow.getId(), MarvelElements.COMIC);
+            if (elementUid == -1) {
+                elementUid = MarvelElementTable.insertComic(favoriteRow.getId(), favoriteRow.getName());
+            }
+        } else {
+            elementUid = MarvelElementTable.elementsExists(favoriteRow.getId(), MarvelElements.CHARACTER);
+            if (elementUid == -1) {
+                elementUid = MarvelElementTable.insertCharacter(favoriteRow.getId(), favoriteRow.getName());
+            }
+        }
+        favoriteRow.setUid(elementUid);
+        favoriteRow.setFavorite(true);
+        if (existsFavorite(favoriteRow.getUserId(), favoriteRow.getId(), favoriteRow.getType()) == null) {
+            internalManipulation(favoriteRow, "INSERT INTO ELEMENTS_ASSOCIATION(FAVORITE,UID,user_id) VALUES(?,?,?)");
+        } else {
+            internalManipulation(favoriteRow, "UPDATE ELEMENTS_ASSOCIATION SET FAVORITE = ? WHERE UID =? AND  user_id = ?");
+        }
     }
 
     public static void deleteFavorite(FavoriteRow favoriteRow) throws SQLException {
-        internalManipulation(favoriteRow, "DELETE FROM favorites WHERE id = ? AND type = ? AND user_id = ?");
+        favoriteRow.setFavorite(false);
+        internalManipulation(favoriteRow, "UPDATE ELEMENTS_ASSOCIATION SET FAVORITE = ? WHERE UID = ? AND user_id = ?");
     }
 
     public static List<FavoriteRow> findFavoriteComicsByUser(int userId) throws SQLException {
         return getFavoriteRows(userId, MarvelElements.COMIC.getValue());
-
     }
 
     public static List<FavoriteRow> findFavoriteCharactersByUser(int userId) throws SQLException {
         return getFavoriteRows(userId, MarvelElements.CHARACTER.getValue());
-
     }
 
     private static List<FavoriteRow> getFavoriteRows(int userId, int type) throws SQLException {
-        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        final PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM FAVORITES WHERE user_id = ? AND TYPE = ?");
+                .prepareStatement("SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                        " WHERE user_id = ? AND TYPE = ?");
         preparedStatement.setInt(1, userId);
         preparedStatement.setInt(2, type);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<FavoriteRow> favorites = new ArrayList<>();
         while (resultSet.next()) {
-            favorites.add(new FavoriteRow(resultSet.getInt("id"), resultSet.getInt("type"),
-                    resultSet.getInt("user_id")));
+            favorites.add(new FavoriteRow(resultSet.getInt("uid"),
+                    resultSet.getInt("id"),
+                    resultSet.getInt("type"),
+                    resultSet.getString("name"),
+                    resultSet.getInt("user_id"),
+                    resultSet.getBoolean("favorite")));
         }
         return favorites;
     }
 
     private static void internalManipulation(FavoriteRow favoriteRow, @Language("Derby") String s) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement(s);
-        preparedStatement.setInt(1, favoriteRow.getId());
-        preparedStatement.setInt(2, favoriteRow.getType());
+        preparedStatement.setBoolean(1, favoriteRow.isFavorite());
+        preparedStatement.setInt(2, favoriteRow.getUid());
         preparedStatement.setInt(3, favoriteRow.getUserId());
         preparedStatement.execute();
     }
 
-    public static boolean exists(int userID, int id, int type) throws SQLException {
-        boolean found = false;
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+    public static FavoriteRow existsFavorite(int userID, int id, int type) throws SQLException {
+        FavoriteRow favoriteRow = null;
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT COUNT(*) FROM FAVORITES WHERE ID = ? AND TYPE = ? AND USER_ID = ?");
+                .prepareStatement("SELECT * FROM ELEMENTS_ASSOCIATION  " +
+                        "INNER JOIN ELEMENTS ON ELEMENTS_ASSOCIATION.UID = ELEMENTS.UID" +
+                        " WHERE ELEMENTS.ID = ? AND TYPE = ? AND USER_ID = ?");
 
         preparedStatement.setInt(1, id);
         preparedStatement.setInt(2, type);
@@ -66,11 +90,12 @@ public final class FavoritesTable {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            if (resultSet.getInt(1) > 0) {
-                found = true;
-                System.out.println(id);
-            }
+            favoriteRow = new FavoriteRow(resultSet.getInt("uid"),
+                    resultSet.getInt("id"),
+                    resultSet.getInt("type"), resultSet.getString("name"),
+                    resultSet.getInt("user_id"),
+                    resultSet.getBoolean("favorite"));
         }
-        return found;
+        return favoriteRow;
     }
 }

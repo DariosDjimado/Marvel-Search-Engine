@@ -1,24 +1,16 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
 import fr.tse.fise2.heapoverflow.database.CreateTables;
-import fr.tse.fise2.heapoverflow.gui.UI;
-import fr.tse.fise2.heapoverflow.main.AppLogger;
-
-import java.awt.*;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 
 public class TaskSetup {
     public static void main(String[] args) {
         TaskSetup taskSetup = new TaskSetup();
+        AppErrorHandler.configureLogging();
         taskSetup.init();
     }
 
     private void init() {
-        UI ui = new UI();
-
-        EventQueue.invokeLater(ui::init);
-        AppLogger appLogger = new AppLogger(ui);
-        appLogger.configureLogging();
-
         TasksController tasksController = new TasksController();
 
         // create tables

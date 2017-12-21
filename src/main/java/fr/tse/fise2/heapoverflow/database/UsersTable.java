@@ -9,7 +9,7 @@ import java.sql.SQLException;
  */
 public class UsersTable {
     public static void insertUser(UserRow userRow) throws SQLException {
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("INSERT INTO users(username,email,last_name,first_name,password) VALUES (?,?,?,?,?)");
         preparedStatement.setString(1, userRow.getUsername());
@@ -63,7 +63,7 @@ public class UsersTable {
     }
 
     private static UserRow getUserRow(int id, String uniqueConstraint, String s) throws SQLException {
-        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        final PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement(s);
 

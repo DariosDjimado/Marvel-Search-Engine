@@ -1,44 +1,30 @@
 package fr.tse.fise2.heapoverflow.database;
 
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * @author Darios DJIMADO
  */
 public final class CreateTables {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateTables.class);
+
     /**
      * Creates all tables.
      *
      * @return boolean. True if all tables are successfully created otherwise false will be returned.
      */
     public static boolean createAllTables() {
-        return createUsersTable() && createElementsTable() &&
-                createCharactersTable() && createComicsTable()
-                && createFavorites() &&
-                createCacheUrlsTable() && createCollectionsListTable() && createCollectionElementTable();
-    }
-
-    /**
-     * Creates characters table.
-     *
-     * @return boolean. True if characters table is successfully created otherwise false will be returned.
-     */
-    private static boolean createCharactersTable() {
-        return createTable("CREATE TABLE characters(" +
-                "id INTEGER NOT NULL REFERENCES elements(uid)," +
-                "wikipedia_en_url VARCHAR(255)," +
-                "wikipedia_fr_url VARCHAR(255))");
-    }
-
-    /**
-     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
-     */
-    public static boolean createComicsTable() {
-        return createTable("CREATE TABLE comics(" +
-                "id INTEGER NOT NULL REFERENCES ELEMENTS(UID)," +
-                "title VARCHAR(255) NOT NULL)");
+        return createUsersTable()
+                && createElementsTable()
+                && createCacheUrlsTable()
+                && createCollectionsListTable()
+                && createElementsAssociationTable();
     }
 
     /**
@@ -68,18 +54,26 @@ public final class CreateTables {
                 "password VARCHAR(100) NOT NULL )");
     }
 
-    public static boolean createFavorites() {
-        return createTable("CREATE TABLE favorites(id INT NOT NULL, " +
-                "type INT NOT NULL, " +
-                "user_id INT NOT NULL REFERENCES USERS(ID), PRIMARY KEY (id,user_id))");
-    }
 
+    /**
+     * Creates elements table.
+     *
+     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
+     */
     public static boolean createElementsTable() {
         return createTable("CREATE TABLE elements(uid INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS " +
                 "IDENTITY (START WITH 1, INCREMENT BY 1)," +
-                "id INT NOT NULL, type INT NOT NULL, name VARCHAR(255) NOT NULL ) ");
+                "id INT NOT NULL, " +
+                "type INT NOT NULL, " +
+                "name VARCHAR(255) NOT NULL ) ");
     }
 
+
+    /**
+     * Creates collections table.
+     *
+     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
+     */
     public static boolean createCollectionsListTable() {
         return createTable("CREATE TABLE collections(" +
                 "collection_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1,INCREMENT BY 1), " +
@@ -87,25 +81,68 @@ public final class CreateTables {
                 "description VARCHAR(255) NOT NULL)");
     }
 
-    public static boolean createCollectionElementTable() {
-        return createTable("CREATE TABLE collection_elements(" +
-                "collection_id INT NOT NULL REFERENCES collections(collection_id), " +
-                "marvel_element_id INT NOT NULL REFERENCES elements(uid)," +
-                "PRIMARY KEY (collection_id,marvel_element_id))");
+
+    /**
+     * Creates elements association table.
+     *
+     * @return boolean. True if comics table is successfully creates otherwise false will be returned.
+     */
+    public static boolean createElementsAssociationTable() {
+        return createTable("CREATE TABLE ELEMENTS_ASSOCIATION ( uid INT NOT NULL REFERENCES ELEMENTS (UID), " +
+                "user_id INT NOT NULL REFERENCES USERS(ID)," +
+                "favorite BOOLEAN NOT NULL DEFAULT FALSE," +
+                "collection_id INT REFERENCES COLLECTIONS(COLLECTION_ID)," +
+                "is_read BOOLEAN NOT NULL DEFAULT FALSE," +
+                "grade INT,PRIMARY KEY(uid, user_id))");
     }
 
 
-    private static boolean createTable(@Language("Derby") String s) {
+    /**
+     * Creates table from sql statement
+     *
+     * @param sql The statement
+     * @return True if comics table is successfully creates otherwise false will be returned.
+     */
+    private static boolean createTable(@Language("Derby") String sql) {
         boolean execute;
         try {
-            ConnectionDB.getConnectionDB().getConnection()
+            ConnectionDB.getInstance().getConnection()
                     .createStatement()
-                    .execute(s);
+                    .execute(sql);
             execute = true;
         } catch (SQLException e) {
             e.printStackTrace();
             execute = false;
         }
         return execute;
+    }
+
+    /**
+     * Checks if a table is created
+     *
+     * @param tableName the name of the table
+     * @return true if table exists
+     */
+    public static boolean tableIsCreated(String tableName) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("check if table " + tableName.toUpperCase() + " exists in database");
+        }
+        boolean found;
+        try {
+            final DatabaseMetaData databaseMetaData = ConnectionDB.getInstance().getConnection().getMetaData();
+            final ResultSet resultSet = databaseMetaData.getTables(null, null, tableName.toUpperCase(), null);
+            found = resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            found = false;
+        }
+        if (LOGGER.isDebugEnabled()) {
+            if (found) {
+                LOGGER.debug(tableName + " exists");
+            } else {
+                LOGGER.debug(tableName + " doesn't exists");
+            }
+        }
+        return found;
     }
 }
