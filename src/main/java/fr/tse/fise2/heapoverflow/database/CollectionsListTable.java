@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CollectionsListTable {
     public static void insertCollection(String title, String description) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getConnectionDB()
+        PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("INSERT INTO collections(title,description)" +
                         " VALUES (?,?)");
@@ -21,7 +21,7 @@ public class CollectionsListTable {
     }
 
     public static CollectionsListRow findCollection(int id) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getConnectionDB()
+        PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM collections WHERE COLLECTION_ID = ?");
         statement.setInt(1, id);
@@ -36,7 +36,7 @@ public class CollectionsListTable {
 
     @NotNull
     public static List<CollectionsListRow> findCollections() throws SQLException {
-        PreparedStatement statement = ConnectionDB.getConnectionDB()
+        PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM collections");
         ResultSet resultSet = statement.executeQuery();
@@ -51,7 +51,7 @@ public class CollectionsListTable {
 
     public static boolean existCollection(int id) throws SQLException {
         boolean found = false;
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT COUNT(*) FROM COLLECTIONS WHERE COLLECTION_ID = ? ");
 

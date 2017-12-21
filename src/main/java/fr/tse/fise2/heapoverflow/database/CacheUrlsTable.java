@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public final class CacheUrlsTable {
     public static void insertUrls(String shortenUrl, String completeUrl) throws SQLException {
 
-        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        final PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection().prepareStatement("INSERT INTO cache_urls VALUES(?,?)");
 
         preparedStatement.setString(1, shortenUrl);
@@ -16,7 +16,7 @@ public final class CacheUrlsTable {
     }
 
     public static CacheUrlsRow findCompleteUrl(String shortenUrl) throws SQLException {
-        final PreparedStatement preparedStatement = ConnectionDB.getConnectionDB().getConnection()
+        final PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
                 .prepareStatement("SELECT * FROM cache_urls WHERE shorten_url = ?");
 
         preparedStatement.setString(1, shortenUrl);
@@ -31,7 +31,7 @@ public final class CacheUrlsTable {
 
     public static boolean exists(String shortenUrl) throws SQLException {
         boolean found = false;
-        PreparedStatement preparedStatement = ConnectionDB.getConnectionDB()
+        PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT COUNT(*) FROM cache_urls WHERE shorten_url = ?");
 
@@ -47,7 +47,7 @@ public final class CacheUrlsTable {
     }
 
     public static void empty() throws SQLException {
-        ConnectionDB.getConnectionDB().getConnection().createStatement().execute("DELETE FROM CACHE_URLS WHERE 1=1");
+        ConnectionDB.getInstance().getConnection().createStatement().execute("DELETE FROM CACHE_URLS WHERE 1=1");
     }
 
 }

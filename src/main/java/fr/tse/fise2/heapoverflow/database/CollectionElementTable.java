@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 public class CollectionElementTable {
     public static void insertElement(CollectionElementRow collectionElementRow, CollectionsListRow collectionsListRow)throws SQLException {
-        PreparedStatement statement = ConnectionDB.getConnectionDB()
+        PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("INSERT INTO collection_elements(collection_id,marvel_element_id)" +
                         " VALUES (?,?)");
