@@ -15,4 +15,8 @@ public final class UIColor {
     public static final Color PRIMARY_COLOR = new Color(63, 81, 181);
     // Accent color
     public static final Color ACCENT_COLOR = new Color(233, 30, 99, 255);
+    // success
+    public static final Color SUCCESS_COLOR = new Color(51, 105, 30);
+    // default
+    public static final Color DEFAULT_COLOR = new Color(245, 245, 245);
 }

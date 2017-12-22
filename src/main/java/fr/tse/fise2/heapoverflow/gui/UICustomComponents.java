@@ -206,3 +206,24 @@ final class CustomRadioButton extends JRadioButton {
         this.setBackground(UIColor.PRIMARY_COLOR);
     }
 }
+
+final class CustomProgressBar extends JProgressBar {
+    /**
+     * Creates a horizontal progress bar
+     * that displays a border but no progress string.
+     * The initial and minimum values are 0,
+     * and the maximum is 100.
+     *
+     * @see #setOrientation
+     * @see #setBorderPainted
+     * @see #setStringPainted
+     * @see #setString
+     * @see #setIndeterminate
+     */
+    public CustomProgressBar() {
+        super();
+        this.setForeground(UIColor.SUCCESS_COLOR);
+        this.setBackground(UIColor.DEFAULT_COLOR);
+        this.setBorderPainted(false);
+    }
+}

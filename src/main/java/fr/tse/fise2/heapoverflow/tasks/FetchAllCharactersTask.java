@@ -1,7 +1,7 @@
 package fr.tse.fise2.heapoverflow.tasks;
 
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
-import fr.tse.fise2.heapoverflow.interfaces.CharactersRequestObserver;
+import fr.tse.fise2.heapoverflow.events.CharactersRequestAdapter;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
 import fr.tse.fise2.heapoverflow.main.FetchData;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 
 
-public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver {
+public class FetchAllCharactersTask extends CharactersRequestAdapter implements Tasks {
 
     public FetchAllCharactersTask() {
     }
@@ -42,8 +42,6 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
                     Thread fetchCharacters = new FetchData(this, "characters?offset=" + offset + "&limit=100" + "&orderBy=name", FetchData.CharactersType.CHARACTERS);
                     fetchCharacters.run();
                 }
-
-
             } while (offset < total);
 
             isDone = true;
@@ -55,11 +53,6 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
     }
 
     @Override
-    public void onFetchingCharacters(String Url) {
-
-    }
-
-    @Override
     public void onFetchedCharacters(Character[] characters) {
         for (Character c : characters) {
             try {
@@ -68,15 +61,5 @@ public class FetchAllCharactersTask implements Tasks, CharactersRequestObserver 
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void onFetchedCharactersById(Character character) {
-
-    }
-
-    @Override
-    public void onFetchedCharactersInSameComic(Character[] characters) {
-
     }
 }

@@ -16,11 +16,11 @@ public final class ConnectionDB {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionDB.class);
     private static final String JDBC_URl = "jdbc:derby:lc_database;create=true";
     private static ConnectionDB instance;
-    private Connection connection;
+    private static Connection CONNECTION;
 
     private ConnectionDB() {
         try {
-            this.connection = DriverManager.getConnection(JDBC_URl);
+            CONNECTION = DriverManager.getConnection(JDBC_URl);
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
             if (LOGGER.isErrorEnabled()) {
@@ -37,13 +37,12 @@ public final class ConnectionDB {
         return instance;
     }
 
-    public Connection getConnection() {
-        return this.connection;
-    }
-
-    public void closeConnection() throws SQLException {
-        if (this.connection != null) {
-            this.connection.close();
+    public static void closeConnection() throws SQLException {
+        if (CONNECTION != null) {
+            CONNECTION.close();
         }
+    }
+    public Connection getConnection() {
+        return CONNECTION;
     }
 }

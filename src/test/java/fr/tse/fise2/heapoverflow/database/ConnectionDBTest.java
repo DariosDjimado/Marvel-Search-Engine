@@ -23,7 +23,7 @@ public class ConnectionDBTest {
 
     @After
     public void tearDown() throws Exception {
-        this.connectionDB.closeConnection();
+        ConnectionDB.closeConnection();
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ConnectionDBTest {
     @Test
     public void closeConnection() {
         try {
-            this.connectionDB.closeConnection();
+            ConnectionDB.closeConnection();
             assertTrue(this.connectionDB.getConnection().isClosed());
         } catch (SQLException e) {
             e.printStackTrace();

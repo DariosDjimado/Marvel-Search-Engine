@@ -12,7 +12,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class DataBaseTest {
-    @Test
+   /* @Test
     public void saveAndGetComicNamesTest() throws Exception {
         MarvelRequest request = new MarvelRequest();
         try {
@@ -33,5 +33,5 @@ public class DataBaseTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

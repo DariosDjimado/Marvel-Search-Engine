@@ -118,7 +118,7 @@ public class Controller extends InternalController implements IRequestListener, 
         });
         userAuthentication = UserAuthentication.getUserAuthentication();
 
-        //Launcher.checkDatabase();
+
     }
 
     public static Controller getController() {

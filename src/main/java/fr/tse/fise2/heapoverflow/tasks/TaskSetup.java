@@ -11,7 +11,6 @@ public class TaskSetup {
     }
 
     private void init() {
-        TasksController tasksController = new TasksController();
 
         // create tables
         System.out.println("creating tables");

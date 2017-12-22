@@ -37,3 +37,6 @@ CacheResponse.tmp/*
 lc_database/*
 
 classes
+
+characters_sample.csv
+comics_sample.csv
