@@ -1,13 +1,13 @@
 package fr.tse.fise2.heapoverflow.database;
 
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 
 public final class MarvelElementsRow {
     private int uid;
     private int id;
-    private MarvelElements type;
+    private MarvelElement type;
 
-    public MarvelElementsRow(int uid, int id, MarvelElements type) {
+    public MarvelElementsRow(int uid, int id, MarvelElement type) {
         this.uid = uid;
         this.id = id;
         this.type = type;
@@ -30,11 +30,11 @@ public final class MarvelElementsRow {
         this.id = id;
     }
 
-    public MarvelElements getType() {
+    public MarvelElement getType() {
         return type;
     }
 
-    public void setType(MarvelElements type) {
+    public void setType(MarvelElement type) {
         this.type = type;
     }
 }

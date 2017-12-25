@@ -1,13 +1,13 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
-public enum MarvelElements {
-    COMIC(0),
-    CHARACTER(1),;
+public enum MarvelElement {
+    COMIC(MarvelElementBase.getComicMapInt()),
+    CHARACTER(MarvelElementBase.getCharacterMapInt()),;
 
     private final int value;
 
 
-    MarvelElements(int value) {
+    MarvelElement(int value) {
         this.value = value;
     }
 
@@ -15,3 +15,4 @@ public enum MarvelElements {
         return value;
     }
 }
+
