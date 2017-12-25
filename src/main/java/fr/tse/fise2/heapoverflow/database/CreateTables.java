@@ -47,7 +47,7 @@ public final class CreateTables {
         return createTable("CREATE TABLE users(id INT NOT NULL PRIMARY KEY" +
                 " GENERATED ALWAYS AS IDENTITY" +
                 "(START WITH 1, INCREMENT BY 1) , " +
-                "username VARCHAR(50) NOT NULL , " +
+                "username VARCHAR(50) UNIQUE NOT NULL , " +
                 "email VARCHAR(100) UNIQUE NOT NULL , " +
                 "last_name VARCHAR(50) NOT NULL , " +
                 "first_name VARCHAR(50)  NOT NULL , " +

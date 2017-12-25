@@ -19,4 +19,13 @@ public final class UIColor {
     public static final Color SUCCESS_COLOR = new Color(51, 105, 30);
     // default
     public static final Color DEFAULT_COLOR = new Color(245, 245, 245);
+
+
+    public static final Color LIBRARY_ADD = new Color(245, 245, 245);
+    public static final Color LIBRARY_REMOVE = new Color(153, 153, 153);
+
+
+    public static final Color TEXT_FIELD_DISABLE_COLOR = new Color(117, 117, 117);
+
+
 }

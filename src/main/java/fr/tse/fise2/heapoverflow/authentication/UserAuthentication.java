@@ -7,12 +7,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
-import org.apache.shiro.config.Ini;
-import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,15 +22,15 @@ import java.util.Set;
 public class UserAuthentication implements PasswordService {
     private static final transient Logger log = LoggerFactory.getLogger(UserAuthentication.class);
     private static Set<IUserObserver> userObservers = new HashSet<>();
+
+
     private static UserAuthentication userAuthentication;
     private static Subject currentUser = null;
     private final PasswordService passwordService;
 
 
     private UserAuthentication() {
-        Ini ini = new Ini();
         passwordService = new DefaultPasswordService();
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory(ini);
         SaltRealm saltRealm = new SaltRealm();
         SecurityManager securityManager = new DefaultSecurityManager(saltRealm);
         SecurityUtils.setSecurityManager(securityManager);
