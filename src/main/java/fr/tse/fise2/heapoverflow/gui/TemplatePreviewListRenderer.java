@@ -12,10 +12,13 @@ import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
+    protected final FavoriteButton favoriteButton;
     final JLabel cardTitle;
     private final JPanel mainPanel;
+    private final JPanel cardHeaderPanel;
+    private final JPanel cardBodyPanel;
+    private final JPanel cardFooterPanel;
     private final TemplatePreviewListRenderer.ImagePanel imagePanel;
-    private final JButton favoriteButton;
     protected Object data;
     private boolean selected;
 
@@ -24,7 +27,10 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.imagePanel = new TemplatePreviewListRenderer.ImagePanel();
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
-        this.favoriteButton = new JButton("*");
+        this.favoriteButton = new FavoriteButton();
+        this.cardHeaderPanel = new JPanel();
+        this.cardBodyPanel = new JPanel();
+        this.cardFooterPanel = new JPanel();
         this.init();
     }
 
@@ -34,14 +40,33 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.setPreferredSize(fixedDimension);
         this.setMaximumSize(fixedDimension);
         this.setLayout(new BorderLayout());
-        this.add(imagePanel, BorderLayout.WEST);
+        this.add(this.imagePanel, BorderLayout.WEST);
         this.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 0));
 
+        this.mainPanel.setLayout(new BorderLayout());
         this.mainPanel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, Color.GRAY));
-        this.mainPanel.add(this.cardTitle, BorderLayout.CENTER);
-        this.add(mainPanel, BorderLayout.CENTER);
 
-        this.mainPanel.add(this.favoriteButton);
+        this.mainPanel.setOpaque(true);
+        this.mainPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+
+        // card header
+        this.cardHeaderPanel.setOpaque(false);
+        this.cardHeaderPanel.add(this.cardTitle);
+        this.mainPanel.add(this.cardHeaderPanel, BorderLayout.NORTH);
+
+        // card body
+        this.cardBodyPanel.setOpaque(false);
+        this.cardBodyPanel.add(new GradePanel());
+        this.mainPanel.add(this.cardBodyPanel, BorderLayout.CENTER);
+
+        // card footer
+        this.cardFooterPanel.setOpaque(false);
+        this.cardFooterPanel.add(new LibraryButton());
+        this.cardFooterPanel.add(this.favoriteButton);
+        this.cardFooterPanel.add(new ReadButton());
+        this.mainPanel.add(cardFooterPanel, BorderLayout.SOUTH);
+
+        this.add(mainPanel, BorderLayout.CENTER);
 
     }
 
