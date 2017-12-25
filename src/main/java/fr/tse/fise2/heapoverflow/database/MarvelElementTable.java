@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.database;
 
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,19 +13,19 @@ import java.util.List;
 
 public class MarvelElementTable {
 
-    public static int insertComic(int id, String title) throws SQLException {
-        return insertElement(id, title, MarvelElements.COMIC.getValue());
+    public static int insertComic(int id, String title) {
+        return insertElement(id, title, MarvelElement.COMIC.getValue());
     }
 
-    public static int insertCharacter(int id, String name) throws SQLException {
-        return insertElement(id, name, MarvelElements.CHARACTER.getValue());
+    public static int insertCharacter(int id, String name) {
+        return insertElement(id, name, MarvelElement.CHARACTER.getValue());
     }
 
     public static CharacterRow findCharacterByName(String characterName) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
-                        MarvelElements.CHARACTER.getValue() +
+                        MarvelElement.CHARACTER.getValue() +
                         " OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
         preparedStatement.setString(1, characterName);
 
@@ -35,7 +36,7 @@ public class MarvelElementTable {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE="
-                        + MarvelElements.CHARACTER.getValue() +
+                        + MarvelElement.CHARACTER.getValue() +
                         " ORDER BY NAME OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
 
         pattern = pattern
@@ -56,7 +57,7 @@ public class MarvelElementTable {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" +
-                        MarvelElements.CHARACTER.getValue());
+                        MarvelElement.CHARACTER.getValue());
         preparedStatement.setInt(1, id);
 
         return getCharacterRow(preparedStatement);
@@ -65,7 +66,7 @@ public class MarvelElementTable {
     public static List<CharacterRow> findCharacters() throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElements.CHARACTER.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElement.CHARACTER.getValue());
 
         return getCharacterRows(preparedStatement);
     }
@@ -73,7 +74,7 @@ public class MarvelElementTable {
     public static List<ComicRow> findComics() throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElements.COMIC.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElement.COMIC.getValue());
 
         return getComicRows(preparedStatement);
     }
@@ -86,7 +87,7 @@ public class MarvelElementTable {
     public static ComicRow findComicById(int id) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" + MarvelElements.COMIC.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" + MarvelElement.COMIC.getValue());
         preparedStatement.setInt(1, id);
 
         return getComicRow(preparedStatement);
@@ -96,7 +97,7 @@ public class MarvelElementTable {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
-                        MarvelElements.COMIC.getValue() +
+                        MarvelElement.COMIC.getValue() +
                         " OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
 
         preparedStatement.setString(1, comicTitle);
@@ -109,7 +110,7 @@ public class MarvelElementTable {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE=" +
-                        MarvelElements.COMIC.getValue() +
+                        MarvelElement.COMIC.getValue() +
                         " ORDER BY NAME OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
         pattern = pattern
                 .replace("!", "!!")
@@ -123,37 +124,38 @@ public class MarvelElementTable {
         return getComicRows(preparedStatement);
     }
 
-    public static int elementsExists(int id, MarvelElements marvelElements) throws SQLException {
+    public static int elementsExists(int id, MarvelElement marvelElement) {
         int elementId = -1;
-        PreparedStatement preparedStatement = ConnectionDB.getInstance()
-                .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE = ?");
-
-        preparedStatement.setInt(1, id);
-        preparedStatement.setInt(2, marvelElements.getValue());
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()) {
-            elementId = resultSet.getInt("uid");
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE = ?")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, marvelElement.getValue());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                elementId = resultSet.getInt("uid");
+            }
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
         }
         return elementId;
     }
 
-    private static int insertElement(int id, String title, int type) throws SQLException {
-        PreparedStatement prepareStatement = ConnectionDB.getInstance()
-                .getConnection()
-                .prepareStatement("INSERT INTO ELEMENTS(ID,NAME,TYPE)" +
-                        " VALUES (?,?,?)", new String[]{"UID"});
-        prepareStatement.setInt(1, id);
-        prepareStatement.setString(2, title);
-        prepareStatement.setInt(3, type);
-
-        prepareStatement.execute();
-
-        ResultSet rs = prepareStatement.getGeneratedKeys();
+    private static int insertElement(int id, String title, int type) {
         int generatedID = -1;
-        while (rs.next()) {
-            generatedID = rs.getInt(1);
+        try (PreparedStatement prepareStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("INSERT INTO ELEMENTS(ID,NAME,TYPE)" +
+                        " VALUES (?,?,?)", new String[]{"UID"})) {
+            prepareStatement.setInt(1, id);
+            prepareStatement.setString(2, title);
+            prepareStatement.setInt(3, type);
+            prepareStatement.execute();
+            ResultSet rs = prepareStatement.getGeneratedKeys();
+            while (rs.next()) {
+                generatedID = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
         }
         return generatedID;
     }

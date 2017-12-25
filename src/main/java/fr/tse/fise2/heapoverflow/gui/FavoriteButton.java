@@ -1,29 +1,43 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
-import fr.tse.fise2.heapoverflow.database.FavoriteRow;
-import fr.tse.fise2.heapoverflow.database.FavoritesTable;
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
+import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 
 import javax.swing.*;
-import java.sql.SQLException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-public class FavoriteButton extends JButton {
+public final class FavoriteButton extends ButtonFormat {
+    private static final ImageIcon iconSelected = new ImageIcon(ComicsSearchListRenderer.class.getResource("favorite_add.png"));
+    private static final ImageIcon iconUnselected = new ImageIcon(ComicsSearchListRenderer.class.getResource("favorite_remove.png"));
     private boolean state;
     private int id;
-    private MarvelElements type;
+    private MarvelElement type;
     private String elementName;
 
-    /**
-     * Creates a button with text.
-     */
     public FavoriteButton() {
-        this.setFocusPainted(false);
-        this.setBorderPainted(false);
-        this.setContentAreaFilled(true);
-        this.setForeground(UIColor.MAIN_BACKGROUND_COLOR);
-        this.setBackground(UIColor.PRIMARY_COLOR);
+        this.setIcon(iconUnselected);
+        this.initConfig();
+    }
+
+    private void adaptIcon(boolean reverse) {
+        if (reverse) {
+            if (this.state) {
+                this.setIcon(iconUnselected);
+            } else {
+                this.setIcon(iconSelected);
+            }
+        } else {
+            if (this.state) {
+                this.setIcon(iconSelected);
+            } else {
+                this.setIcon(iconUnselected);
+            }
+        }
+
     }
 
     public String getElementName() {
@@ -40,10 +54,12 @@ public class FavoriteButton extends JButton {
 
     public void setState(boolean state) {
         this.state = state;
-        if (!this.state) {
-            this.setText("+Favorite");
+        if (this.state) {
+            this.setToolTipText("Remove favorite");
+            this.setIcon(iconSelected);
         } else {
-            this.setText("-Favorite");
+            this.setToolTipText("Add favorite");
+            this.setIcon(iconUnselected);
         }
     }
 
@@ -54,27 +70,49 @@ public class FavoriteButton extends JButton {
     public void setId(int id) {
         this.id = id;
         if (UserAuthentication.isAuthenticated()) {
-            try {
-                FavoriteRow favoriteRow = FavoritesTable
-                        .existsFavorite(
-                                Objects.requireNonNull(UserAuthentication.getUser()).getId(),
-                                this.id, this.type.getValue());
-                if (favoriteRow != null) {
-                    this.setState(favoriteRow.isFavorite());
-                } else {
-                    this.setState(false);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            ElementAssociationRow row = ElementsAssociation.findElement(
+                    Objects.requireNonNull(UserAuthentication.getUser()).getId(),
+                    this.id, this.type);
+            if (row != null) {
+                this.setState(row.isFavorite());
+            } else {
+                this.setState(false);
             }
+
         }
     }
 
-    public MarvelElements getType() {
+    private void initConfig() {
+        this.addMouseListener(new MouseAdapter() {
+            /**
+             * {@inheritDoc}
+             *
+             * @param e
+             */
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                adaptIcon(true);
+            }
+
+            /**
+             * {@inheritDoc}
+             *
+             * @param e
+             */
+            @Override
+            public void mouseExited(MouseEvent e) {
+                adaptIcon(false);
+            }
+        });
+    }
+
+    public MarvelElement getType() {
         return type;
     }
 
-    public void setType(MarvelElements type) {
+    public void setType(MarvelElement type) {
         this.type = type;
     }
+
+
 }

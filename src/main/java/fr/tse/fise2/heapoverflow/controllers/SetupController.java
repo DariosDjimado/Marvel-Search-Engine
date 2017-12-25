@@ -3,17 +3,16 @@ package fr.tse.fise2.heapoverflow.controllers;
 import fr.tse.fise2.heapoverflow.database.CreateTables;
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.gui.SetupView;
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.models.SetupModel;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElements.CHARACTER;
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElements.COMIC;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
 
 public class SetupController {
     private SetupModel model;
@@ -78,7 +77,7 @@ public class SetupController {
         }
     }
 
-    private void saveElement(String filePath, MarvelElements elements) throws IOException {
+    private void saveElement(String filePath, MarvelElement elements) throws IOException {
         File sample = new File(filePath);
         BufferedReader reader = new BufferedReader(new FileReader(sample));
         String line;
@@ -87,23 +86,19 @@ public class SetupController {
                 String[] lineArray = line.split(";");
                 int id = Integer.parseInt(lineArray[0]);
                 String name = lineArray[1];
-                try {
-                    switch (elements) {
-                        case CHARACTER: {
-                            MarvelElementTable.insertCharacter(id, name);
-                            break;
-                        }
-                        case COMIC: {
-                            MarvelElementTable.insertComic(id, name);
-                            break;
-                        }
-                        default:
-                            break;
+                switch (elements) {
+                    case CHARACTER: {
+                        MarvelElementTable.insertCharacter(id, name);
+                        break;
                     }
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    case COMIC: {
+                        MarvelElementTable.insertComic(id, name);
+                        break;
+                    }
+                    default:
+                        break;
                 }
+
                 view.onLog("insert " + elements.name().toLowerCase() + " " + name + " into database");
             }
         }

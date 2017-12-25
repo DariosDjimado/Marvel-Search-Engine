@@ -11,7 +11,7 @@ import fr.tse.fise2.heapoverflow.interfaces.IRequestListener;
 import fr.tse.fise2.heapoverflow.interfaces.ISelectionChangedListener;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import okhttp3.Cache;
 import org.slf4j.Logger;
@@ -38,7 +38,6 @@ public class Controller extends InternalController implements IRequestListener, 
     private static Cache urlsCache;
     private final SelectionChangedListener selectionChangedListenerExtra;
     private final RequestListener requestListener;
-    private final UserAuthentication userAuthentication;
     // Vue
     private final DataShow dataShow;
     private final UI ui;
@@ -90,12 +89,11 @@ public class Controller extends InternalController implements IRequestListener, 
             e.printStackTrace();
         }
 
-        this.initUserAuthentication();
         this.initFavoriteButton();
         this.initCreateCollectionButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
-        this.initCacheUrlsTable();
+        //this.initCacheUrlsTable();
 
         this.ui.addWindowListener(new WindowAdapter() {
             @Override
@@ -116,7 +114,6 @@ public class Controller extends InternalController implements IRequestListener, 
                 }
             }
         });
-        userAuthentication = UserAuthentication.getUserAuthentication();
 
 
     }
@@ -129,92 +126,25 @@ public class Controller extends InternalController implements IRequestListener, 
         return urlsCache;
     }
 
-    private void initUserAuthentication() {
-        UserAuthentication.subscribe(this.ui.getUiTopComponent());
 
-
-        this.ui.getUiTopComponent().buildAuthenticationPanel();
-        // sign in
-        ui.getUiTopComponent().getLogInButton().addActionListener(e -> {
-            ui.getUiTopComponent().showSignUpField(false);
-
-            int option = JOptionPane.showConfirmDialog(ui,
-                    ui.getUiTopComponent().getAuthenticationPanel(), "Sign in", JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE, null);
-
-            if (option == JOptionPane.YES_OPTION) {
-                // find user
-                final String username = ui.getUiTopComponent().getEmailTextField().getText();
-                final char[] password = ui.getUiTopComponent().getPasswordTextField().getPassword();
-                try {
-                    UserRow user = UsersTable.findUserByUsername(username);
-                    if (user != null) {
-                        if (userAuthentication.passwordsMatch(password, user.getPassword())) {
-                            userAuthentication.login(user.getUsername(), user.getPassword());
-                        }
-                    }
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-
-            }
-        });
-
-        // sign up
-        ui.getUiTopComponent().getSignUpButton().addActionListener(e -> {
-            if (ui.getUiTopComponent().getSignUpButton().getText().equals("Sign up")) {
-                ui.getUiTopComponent().showSignUpField(true);
-
-                int option = JOptionPane.showConfirmDialog(ui,
-                        ui.getUiTopComponent().getAuthenticationPanel(), "Sign up", JOptionPane.YES_NO_OPTION,
-                        JOptionPane.PLAIN_MESSAGE, null);
-
-                if (option == JOptionPane.YES_OPTION) {
-                    final UITopComponent tc = ui.getUiTopComponent();
-                    try {
-                        String encryptedPassword = userAuthentication
-                                .encryptPassword(tc.getPasswordTextField().getPassword());
-                        final UserRow userRow = new UserRow(tc.getUsernameTextField().getText(),
-                                tc.getEmailTextField().getText(),
-                                tc.getLastNameTextField().getText(),
-                                tc.getFirstNameTextField().getText(),
-                                encryptedPassword);
-
-                        UsersTable.insertUser(userRow);
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            } else {
-                userAuthentication.logout();
-            }
-        });
-    }
 
     private void initFavoriteButton() {
         final FavoriteButton favoriteButton = this.dataShow.getBtnFaved();
         favoriteButton.addActionListener(e -> {
             if (UserAuthentication.isAuthenticated()) {
-                try {
-                    if (favoriteButton.getState()) {
-                        FavoriteRow favRow = FavoritesTable
-                                .existsFavorite(Objects.requireNonNull(UserAuthentication.getUser()).getId(),
-                                        favoriteButton.getId(), favoriteButton.getType().getValue());
-                        LOGGER.debug("Deleting Favorite " + favoriteButton.getId());
-                        FavoritesTable.deleteFavorite(favRow);
-                        favoriteButton.setState(false);
-                    } else {
-                        LOGGER.debug("Adding Favorite " + favoriteButton.getId());
-                        int id = Objects.requireNonNull(UserAuthentication.getUser()).getId();
-                        FavoriteRow favoriteRow = new FavoriteRow(favoriteButton.getId(),
-                                id,
-                                favoriteButton.getType().getValue(),
-                                favoriteButton.getElementName());
-                        FavoritesTable.insertFavorite(favoriteRow);
-                        favoriteButton.setState(true);
-                    }
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                if (favoriteButton.getState()) {
+                    ElementAssociationRow favRow = ElementsAssociation
+                            .findElement(Objects.requireNonNull(UserAuthentication.getUser()).getId(),
+                                    favoriteButton.getId(), favoriteButton.getType());
+                    LOGGER.debug("Deleting Favorite " + favoriteButton.getId());
+                    ElementsAssociation.updateFavorite(favRow.getUid(), favRow.getUserId(), false);
+                    favoriteButton.setState(false);
+                } else {
+                    LOGGER.debug("Adding Favorite " + favoriteButton.getId());
+                    int userId = Objects.requireNonNull(UserAuthentication.getUser()).getId();
+                    ElementsAssociation.updateFavoriteCreateAsNeeded(favoriteButton.getId(),
+                            favoriteButton.getElementName(), userId, true, favoriteButton.getType());
+                    favoriteButton.setState(true);
                 }
             }
         });
@@ -363,7 +293,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setType(MarvelElements.COMIC);
+            this.dataShow.getBtnFaved().setType(MarvelElement.COMIC);
             this.dataShow.getBtnFaved().setElementName(comic.getTitle());
             this.dataShow.getBtnFaved().setId(comic.getId());
             dataShow.DrawComic(comic);
@@ -434,7 +364,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setType(MarvelElements.CHARACTER);
+            this.dataShow.getBtnFaved().setType(MarvelElement.CHARACTER);
             this.dataShow.getBtnFaved().setElementName(character.getName());
             this.dataShow.getBtnFaved().setId(character.getId());
             dataShow.DrawCharacter(character);

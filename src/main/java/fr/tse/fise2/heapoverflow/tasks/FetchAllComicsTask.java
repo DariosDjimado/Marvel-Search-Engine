@@ -47,19 +47,17 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
 
     @Override
     public void onFetchedComics(Comic[] comics) {
-        try {
+
             System.out.println("saving " + comics.length + " new comics");
             for (Comic c : comics) {
-                if (MarvelElementTable.elementsExists(c.getId(), MarvelElements.COMIC) == -1) {
+                if (MarvelElementTable.elementsExists(c.getId(), MarvelElement.COMIC) == -1) {
                     MarvelElementTable.insertComic(c.getId(), c.getTitle().toLowerCase());
                 } else {
                     System.out.println(c.getTitle() + " has already registered");
                 }
             }
             System.out.println("done");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
     }
 }
 

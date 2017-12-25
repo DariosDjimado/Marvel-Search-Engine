@@ -153,12 +153,9 @@ public class DataShow {
         detail.add(detailPaneWrapper, BorderLayout.CENTER);
 
         btnPane = new JPanel();
-        btnOwned = new JButton();
-        btnOwned.setText("+Library");
+        btnOwned = new LibraryButton();
         btnFaved = new FavoriteButton();
-        btnFaved.setText("+Favorite");
-        btnRead = new JButton();
-        btnRead.setText("+Read");
+        btnRead = new ReadButton();
         btnPane.add(btnOwned);
         btnPane.add(btnFaved);
         btnPane.add(btnRead);

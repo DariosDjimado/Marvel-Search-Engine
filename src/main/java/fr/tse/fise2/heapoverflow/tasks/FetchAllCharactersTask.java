@@ -10,7 +10,6 @@ import fr.tse.fise2.heapoverflow.marvelapi.CharacterDataWrapper;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 
@@ -55,11 +54,9 @@ public class FetchAllCharactersTask extends CharactersRequestAdapter implements 
     @Override
     public void onFetchedCharacters(Character[] characters) {
         for (Character c : characters) {
-            try {
-                MarvelElementTable.insertCharacter(c.getId(), c.getName().toLowerCase());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            MarvelElementTable.insertCharacter(c.getId(), c.getName().toLowerCase());
+
         }
     }
 }

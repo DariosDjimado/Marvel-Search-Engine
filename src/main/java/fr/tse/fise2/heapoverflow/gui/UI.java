@@ -20,7 +20,7 @@ public class UI extends JFrame {
         final JFrame frame = this;
         this.topPanel = new JPanel();
 
-        uiTopComponent = new UITopComponent(this.topPanel);
+        uiTopComponent = new UITopComponent(this,this.topPanel);
 
     }
 

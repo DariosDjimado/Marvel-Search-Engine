@@ -1,7 +1,5 @@
 package fr.tse.fise2.heapoverflow.database;
 
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElements;
-
 public class CollectionElementRow {
     private int element_id ;
     private int marvelElement_id;
