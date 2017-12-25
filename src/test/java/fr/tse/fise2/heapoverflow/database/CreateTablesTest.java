@@ -28,7 +28,7 @@ public class CreateTablesTest {
     @AfterClass
     public static void finishedConfig() throws Exception {
         DataBase.cleanUpDB(CONNECTION_DB);
-        CONNECTION_DB.closeConnection();
+        ConnectionDB.closeConnection();
     }
 
     @Before
