@@ -16,7 +16,31 @@ import java.util.List;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
 
+/**
+ * @author Darios DJIMADO
+ */
 public class ElementsAssociation {
+    /**
+     * Updates user comment in elements association table
+     *
+     * @param elementUid unique element id
+     * @param userId     user unique id
+     * @param value      new value
+     */
+    public static void updateUserComment(int elementUid, int userId, String value) {
+        updateElementString(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET COMMENT = ? WHERE UID = ? AND USER_ID = ?");
+    }
+
+    /**
+     * Updates read status in elements association table
+     *
+     * @param elementUid unique element id
+     * @param userId     user unique id
+     * @param value      new value
+     */
+    public static void updateRead(int elementUid, int userId, boolean value) {
+        updateElementBoolean(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET IS_READ = ? WHERE UID = ? AND USER_ID = ?");
+    }
 
     /**
      * Updates favorite status in elements association table
@@ -80,6 +104,27 @@ public class ElementsAssociation {
         }
     }
 
+
+    /**
+     * updates element in elements association table
+     *
+     * @param elementUid unique element id
+     * @param userId     user unique id
+     * @param value      new value
+     * @param s          sql string
+     */
+    static void updateElementString(int elementUid, int userId, String value, @Language("Derby") String s) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
+            preparedStatement.setString(1, value);
+            preparedStatement.setInt(2, elementUid);
+            preparedStatement.setInt(3, userId);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
     /**
      * Selects all rows that match user and comic constraints
      *
@@ -128,7 +173,8 @@ public class ElementsAssociation {
                         resultSet.getBoolean("favorite"),
                         resultSet.getInt("collection_id"),
                         resultSet.getBoolean("is_read"),
-                        resultSet.getInt("grade")
+                        resultSet.getInt("grade"),
+                        resultSet.getString("comment")
                 ));
             }
         } catch (SQLException e) {
@@ -166,7 +212,8 @@ public class ElementsAssociation {
                         resultSet.getBoolean("favorite"),
                         resultSet.getInt("collection_id"),
                         resultSet.getBoolean("is_read"),
-                        resultSet.getInt("grade")
+                        resultSet.getInt("grade"),
+                        resultSet.getString("comment")
                 );
             }
         } catch (SQLException e) {
@@ -175,12 +222,23 @@ public class ElementsAssociation {
         return elementAssociationRow;
     }
 
+
+    public static void updateCommentCreateAsNeeded(int elementId, String elementName, int userId, String value, MarvelElement marvelElement) {
+        int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
+        if (findElement(userId, elementId, marvelElement) == null) {
+            updateElementString(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(COMMENT,UID,user_id) VALUES(?,?,?)");
+        } else {
+            updateUserComment(elementUID, userId, value);
+        }
+    }
+
+
     public static void updateReadCreateAsNeeded(int elementId, String elementName, int userId, boolean value, MarvelElement marvelElement) {
         int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
         if (findElement(userId, elementId, marvelElement) == null) {
             updateElementBoolean(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(IS_READ,UID,user_id) VALUES(?,?,?)");
         } else {
-            updateFavorite(elementUID, userId, true);
+            updateRead(elementUID, userId, value);
         }
     }
 
@@ -190,7 +248,7 @@ public class ElementsAssociation {
         if (findElement(userId, elementId, marvelElement) == null) {
             updateElementInt(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(GRADE,UID,user_id) VALUES(?,?,?)");
         } else {
-            updateFavorite(elementUID, userId, true);
+            //updateFavorite(elementUID, userId, true);
         }
     }
 
@@ -199,7 +257,7 @@ public class ElementsAssociation {
         if (findElement(userId, elementId, marvelElement) == null) {
             updateElementBoolean(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(FAVORITE,UID,user_id) VALUES(?,?,?)");
         } else {
-            updateFavorite(elementUID, userId, true);
+            updateFavorite(elementUID, userId, value);
         }
     }
 

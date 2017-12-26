@@ -10,7 +10,7 @@ public class CharactersListRenderer extends DefaultListCellRenderer implements L
     private TemplatePreviewListRenderer renderer;
 
 
-    public CharactersListRenderer() {
+    CharactersListRenderer() {
         super();
         renderer = new TemplatePreviewListRenderer() {
             @Override

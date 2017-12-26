@@ -1,36 +1,30 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
 
-public class ReadButton extends ButtonFormat {
+import javax.swing.*;
+
+public class ReadButton extends ToggleStateButton {
     private static final ImageIcon readIcon = new ImageIcon(ComicsSearchListRenderer.class.getResource("view_add.png"));
     private static final ImageIcon unreadIcon = new ImageIcon(ComicsSearchListRenderer.class.getResource("view_remove.png"));
 
 
-    public ReadButton() {
+    ReadButton() {
+        super(readIcon, unreadIcon);
         this.setIcon(unreadIcon);
-        this.addMouseListener(new MouseAdapter() {
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             */
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                setIcon(readIcon);
-            }
+    }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             */
-            @Override
-            public void mouseExited(MouseEvent e) {
-                setIcon(unreadIcon);
-            }
-        });
+    @Override
+    void updateTooltipText() {
+        if (this.isState()) {
+            this.setToolTipText("Not read");
+        } else {
+            this.setToolTipText("Read");
+        }
+    }
+
+    @Override
+    protected boolean updateState(ElementAssociationRow row) {
+        return row.isRead();
     }
 }

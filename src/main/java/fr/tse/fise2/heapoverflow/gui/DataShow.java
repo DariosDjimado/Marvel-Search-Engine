@@ -2,8 +2,6 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
-import fr.tse.fise2.heapoverflow.main.Controller;
-import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
@@ -92,9 +90,11 @@ public class DataShow {
 
     private JButton btnOwned;
 
-    private JButton btnRead;
+    private ReadButtonView btnRead;
 
-    private final FavoriteButton btnFaved;
+    private GradesPanel gradesPanel;
+
+    private final FavoriteButtonView btnFaved;
     //endregion
 
     //region Constructors
@@ -154,11 +154,13 @@ public class DataShow {
 
         btnPane = new JPanel();
         btnOwned = new LibraryButton();
-        btnFaved = new FavoriteButton();
-        btnRead = new ReadButton();
+        btnFaved = new FavoriteButtonView();
+        btnRead = new ReadButtonView();
+        gradesPanel = new GradesPanel();
         btnPane.add(btnOwned);
         btnPane.add(btnFaved);
         btnPane.add(btnRead);
+        btnPane.add(gradesPanel);
         detail.add(btnPane, BorderLayout.SOUTH);
         btnPane.setVisible(false);
 
@@ -220,14 +222,15 @@ public class DataShow {
         //endregion
         //region library buttons
         System.out.println("checking authentication");
-        if(UserAuthentication.isAuthenticated()){
+        btnPane.setVisible(true);
+        /*if(UserAuthentication.isAuthenticated()){
             System.out.println("auth ok");
             btnPane.setVisible(true);
         }
         else{
             System.out.println("auth failed");
             btnPane.setVisible(false);
-        }
+        }*/
         //endregion
         detail.revalidate();
         //endregion
@@ -438,12 +441,16 @@ public class DataShow {
         return btnOwned;
     }
 
-    public JButton getBtnRead() {
+    public ReadButtonView getBtnRead() {
         return btnRead;
     }
 
-    public FavoriteButton getBtnFaved() {
+    public FavoriteButtonView getBtnFaved() {
         return btnFaved;
+    }
+
+    public GradesPanel getGradesPanel() {
+        return gradesPanel;
     }
 
     /**

@@ -117,7 +117,7 @@ public class SetupView implements Observer {
              * Invoked when a window is in the process of being closed.
              * The close operation can be overridden at this point.
              *
-             * @param e
+             * @param e event
              */
             @Override
             public void windowClosing(WindowEvent e) {

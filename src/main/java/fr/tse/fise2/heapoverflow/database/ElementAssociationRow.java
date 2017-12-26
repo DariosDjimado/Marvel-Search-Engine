@@ -12,9 +12,10 @@ public class ElementAssociationRow {
     private int collectionID;
     private boolean read;
     private int grade;
+    private String comment;
 
 
-    public ElementAssociationRow(int uid, int elementID, MarvelElement type, String name, int userId, boolean favorite, int collectionID, boolean read, int grade) {
+    public ElementAssociationRow(int uid, int elementID, MarvelElement type, String name, int userId, boolean favorite, int collectionID, boolean read, int grade, String comment) {
         this.uid = uid;
         this.elementID = elementID;
         this.type = type;
@@ -24,6 +25,7 @@ public class ElementAssociationRow {
         this.collectionID = collectionID;
         this.read = read;
         this.grade = grade;
+        this.comment = comment;
     }
 
     public int getUid() {
@@ -98,6 +100,14 @@ public class ElementAssociationRow {
         this.grade = grade;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public String toString() {
         return "ElementAssociationRow{" +
@@ -110,6 +120,7 @@ public class ElementAssociationRow {
                 ", collectionID=" + collectionID +
                 ", read=" + read +
                 ", grade=" + grade +
+                ", comment='" + comment + '\'' +
                 '}';
     }
 }

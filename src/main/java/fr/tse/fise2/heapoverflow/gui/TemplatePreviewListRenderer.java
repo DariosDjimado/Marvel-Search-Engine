@@ -13,6 +13,7 @@ import java.io.IOException;
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
     protected final FavoriteButton favoriteButton;
+    protected final ReadButton readButton;
     final JLabel cardTitle;
     private final JPanel mainPanel;
     private final JPanel cardHeaderPanel;
@@ -28,6 +29,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
         this.favoriteButton = new FavoriteButton();
+        this.readButton = new ReadButtonView();
         this.cardHeaderPanel = new JPanel();
         this.cardBodyPanel = new JPanel();
         this.cardFooterPanel = new JPanel();
@@ -56,14 +58,14 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
         // card body
         this.cardBodyPanel.setOpaque(false);
-        this.cardBodyPanel.add(new GradePanel());
+        this.cardBodyPanel.add(new GradesPanel());
         this.mainPanel.add(this.cardBodyPanel, BorderLayout.CENTER);
 
         // card footer
         this.cardFooterPanel.setOpaque(false);
         this.cardFooterPanel.add(new LibraryButton());
         this.cardFooterPanel.add(this.favoriteButton);
-        this.cardFooterPanel.add(new ReadButton());
+        this.cardFooterPanel.add(this.readButton);
         this.mainPanel.add(cardFooterPanel, BorderLayout.SOUTH);
 
         this.add(mainPanel, BorderLayout.CENTER);
@@ -87,10 +89,6 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.mainPanel.setBackground(this.selected ? selectionColor : Color.WHITE);
     }
 
-
-    public JButton getFavoriteButton() {
-        return favoriteButton;
-    }
 
     @Override
     public void paintComponent(Graphics graphics) {

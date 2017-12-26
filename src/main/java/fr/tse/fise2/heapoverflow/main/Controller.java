@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.main;
 
-import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
+import fr.tse.fise2.heapoverflow.authentication.User;
+import fr.tse.fise2.heapoverflow.controllers.GradesPanelController;
 import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
@@ -11,8 +12,8 @@ import fr.tse.fise2.heapoverflow.interfaces.IRequestListener;
 import fr.tse.fise2.heapoverflow.interfaces.ISelectionChangedListener;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
-import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
+import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
 import okhttp3.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Objects;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
@@ -41,36 +41,20 @@ public class Controller extends InternalController implements IRequestListener, 
     // Vue
     private final DataShow dataShow;
     private final UI ui;
-    private final AutoCompletion autoCompletion;
+    private AutoCompletion autoCompletion;
     private MarvelRequest request;
 
 
     public Controller(UI ui) {
         con = this;
 
-        DataBaseErrorHandler dataBaseErrorHandler = new DataBaseErrorHandler();
-        // init connection to database
-
-        // init charactersTable
-
-/*
-        DatabaseMetaData dbm;
-        try {
-            dbm = ConnectionDB.getConnectionDB().getConnection().getMetaData();
-            ResultSet tables = dbm.getTables(null, null, "USERS", null);
-            if (!tables.next()) {
-                System.out.println(new CreateTables(ConnectionDB.getConnectionDB()).createUsersTable());
-                System.out.println("--------------Table USERS was not found and was created-------------------");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
-
         // store ui
         this.ui = ui;
-        this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
+        init();
+
         //
         this.dataShow = new DataShow(this.getUi().getCenterWrapperPanel());
+        this.gradesPanelMVC();
         //
         this.ui.getUiSearchComponent().setController(this);
         //
@@ -90,6 +74,7 @@ public class Controller extends InternalController implements IRequestListener, 
         }
 
         this.initFavoriteButton();
+        this.initReadButton();
         this.initCreateCollectionButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
@@ -115,6 +100,7 @@ public class Controller extends InternalController implements IRequestListener, 
             }
         });
 
+        UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
 
     }
 
@@ -127,28 +113,76 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
 
-
     private void initFavoriteButton() {
-        final FavoriteButton favoriteButton = this.dataShow.getBtnFaved();
-        favoriteButton.addActionListener(e -> {
-            if (UserAuthentication.isAuthenticated()) {
-                if (favoriteButton.getState()) {
+        final FavoriteButtonView favoriteButtonView = this.dataShow.getBtnFaved();
+
+        UserAuthenticationModel.getInstance().addObserver(favoriteButtonView);
+
+        favoriteButtonView.addActionListener(e -> {
+            User user = UserAuthenticationModel.getUser();
+            if (user != null) {
+                if (favoriteButtonView.isState()) {
                     ElementAssociationRow favRow = ElementsAssociation
-                            .findElement(Objects.requireNonNull(UserAuthentication.getUser()).getId(),
-                                    favoriteButton.getId(), favoriteButton.getType());
-                    LOGGER.debug("Deleting Favorite " + favoriteButton.getId());
+                            .findElement(user.getId(),
+                                    favoriteButtonView.getId(), favoriteButtonView.getType());
+                    LOGGER.debug("Deleting Favorite " + favoriteButtonView.getId());
                     ElementsAssociation.updateFavorite(favRow.getUid(), favRow.getUserId(), false);
-                    favoriteButton.setState(false);
+                    favoriteButtonView.setState(false);
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
                 } else {
-                    LOGGER.debug("Adding Favorite " + favoriteButton.getId());
-                    int userId = Objects.requireNonNull(UserAuthentication.getUser()).getId();
-                    ElementsAssociation.updateFavoriteCreateAsNeeded(favoriteButton.getId(),
-                            favoriteButton.getElementName(), userId, true, favoriteButton.getType());
-                    favoriteButton.setState(true);
+                    LOGGER.debug("Adding Favorite " + favoriteButtonView.getId());
+                    int userId = user.getId();
+                    ElementsAssociation.updateFavoriteCreateAsNeeded(favoriteButtonView.getId(),
+                            favoriteButtonView.getElementName(), userId, true, favoriteButtonView.getType());
+                    favoriteButtonView.setState(true);
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
                 }
             }
         });
     }
+
+
+    private void initReadButton() {
+
+        final ReadButtonView readButtonView = this.dataShow.getBtnRead();
+
+        UserAuthenticationModel.getInstance().addObserver(readButtonView);
+
+        readButtonView.addActionListener(e -> {
+            User user = UserAuthenticationModel.getUser();
+            if (user != null) {
+                if (readButtonView.isState()) {
+                    ElementAssociationRow elementAssociationRow = ElementsAssociation
+                            .findElement(user.getId(),
+                                    readButtonView.getId(), readButtonView.getType());
+
+
+                    System.out.println("Deleting Favorite " + readButtonView.getId());
+
+
+                    ElementsAssociation.updateRead(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
+                    readButtonView.setState(false);
+
+
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                } else {
+
+                    System.out.println("Adding Favorite " + readButtonView.getId());
+
+
+                    int userId = user.getId();
+                    ElementsAssociation.updateReadCreateAsNeeded(readButtonView.getId(),
+                            readButtonView.getElementName(), userId, true, readButtonView.getType());
+
+                    readButtonView.setState(true);
+
+
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                }
+            }
+        });
+    }
+
 
     private void initCreateCollectionButton() {
         this.ui.getUiTopComponent().getCreateCollectionButton().addActionListener(e -> {
@@ -172,9 +206,16 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
+
     void init() {
+        this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
         this.ui.getUiSearchComponent().getSearchTextField().requestFocusInWindow();
         this.ui.setVisible(true);
+    }
+
+    private void gradesPanelMVC() {
+        GradesPanelController gradesPanelController = new GradesPanelController(this.dataShow.getGradesPanel());
+        gradesPanelController.init();
     }
 
     private void initCacheUrlsTable() {
@@ -293,9 +334,8 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setType(MarvelElement.COMIC);
-            this.dataShow.getBtnFaved().setElementName(comic.getTitle());
-            this.dataShow.getBtnFaved().setId(comic.getId());
+            this.dataShow.getBtnFaved().setComic(comic);
+            this.dataShow.getBtnRead().setComic(comic);
             dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
@@ -364,9 +404,8 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setType(MarvelElement.CHARACTER);
-            this.dataShow.getBtnFaved().setElementName(character.getName());
-            this.dataShow.getBtnFaved().setId(character.getId());
+            this.dataShow.getBtnFaved().setCharacter(character);
+            this.dataShow.getBtnRead().setCharacter(character);
             dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();

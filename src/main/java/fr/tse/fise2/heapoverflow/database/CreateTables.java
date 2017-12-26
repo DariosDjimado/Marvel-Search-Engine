@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author Darios DJIMADO
@@ -93,7 +94,9 @@ public final class CreateTables {
                 "favorite BOOLEAN NOT NULL DEFAULT FALSE," +
                 "collection_id INT REFERENCES COLLECTIONS(COLLECTION_ID)," +
                 "is_read BOOLEAN NOT NULL DEFAULT FALSE," +
-                "grade INT,PRIMARY KEY(uid, user_id))");
+                "grade INT, " +
+                "comment VARCHAR(255), " +
+                "PRIMARY KEY(uid, user_id))");
     }
 
 
@@ -105,10 +108,8 @@ public final class CreateTables {
      */
     private static boolean createTable(@Language("Derby") String sql) {
         boolean execute;
-        try {
-            ConnectionDB.getInstance().getConnection()
-                    .createStatement()
-                    .execute(sql);
+        try (Statement statement = ConnectionDB.getInstance().getConnection().createStatement()) {
+            statement.execute(sql);
             execute = true;
         } catch (SQLException e) {
             e.printStackTrace();

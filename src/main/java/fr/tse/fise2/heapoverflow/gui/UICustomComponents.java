@@ -2,15 +2,10 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.ComponentUI;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-
-/**
- * @author Darios DJIMADO
- */
-public class UICustomComponents {
-}
 
 final class DefaultButton extends JButton {
     /**
@@ -18,7 +13,7 @@ final class DefaultButton extends JButton {
      *
      * @param text the text of the button
      */
-    public DefaultButton(String text) {
+    DefaultButton(String text) {
         super(text);
         this.setOpaque(false);
         this.setFocusPainted(false);
@@ -33,7 +28,7 @@ final class PrimaryButton extends JButton {
      *
      * @param text the text of the button
      */
-    public PrimaryButton(String text) {
+    PrimaryButton(String text) {
         super(text);
         this.setOpaque(true);
         this.setFocusPainted(false);
@@ -67,7 +62,7 @@ final class AccentButton extends JButton {
      *
      * @param text the text of the button
      */
-    public AccentButton(String text) {
+    AccentButton(String text) {
         super(text);
         this.setOpaque(true);
         this.setFocusPainted(false);
@@ -198,7 +193,7 @@ final class CustomRadioButton extends JRadioButton {
      * Creates an initially unselected radio button
      * with no set text.
      */
-    public CustomRadioButton() {
+    CustomRadioButton() {
         super();
         this.setOpaque(true);
         this.setFocusPainted(false);
@@ -222,7 +217,7 @@ final class CustomProgressBar extends JProgressBar {
      * @see #setString
      * @see #setIndeterminate
      */
-    public CustomProgressBar() {
+    CustomProgressBar() {
         super();
         this.setForeground(UIColor.SUCCESS_COLOR);
         this.setBackground(UIColor.DEFAULT_COLOR);
@@ -234,7 +229,7 @@ abstract class ButtonFormat extends JButton {
     /**
      * Creates a button with no set text or icon.
      */
-    public ButtonFormat() {
+    ButtonFormat() {
         this.setFocusPainted(false);
         this.setBorderPainted(false);
         this.setContentAreaFilled(false);
@@ -251,7 +246,7 @@ final class CustomTextField extends JTextField {
     private int minTextSize = 2;
     private int maxTextSize = 100;
 
-    public CustomTextField(String placeholder) {
+    CustomTextField(String placeholder) {
         this.placeholder = placeholder;
         this.setBorder(BorderFactory.createMatteBorder(0, 0, UISize.TEXT_FIELD_BORDER_BOTTOM, 0, UIColor.TEXT_FIELD_DISABLE_COLOR));
 
@@ -259,7 +254,7 @@ final class CustomTextField extends JTextField {
             /**
              * Invoked when a component gains the keyboard focus.
              *
-             * @param e
+             * @param e focus event
              */
             @Override
             public void focusGained(FocusEvent e) {
@@ -269,7 +264,7 @@ final class CustomTextField extends JTextField {
             /**
              * Invoked when a component loses the keyboard focus.
              *
-             * @param e
+             * @param e focus event
              */
             @Override
             public void focusLost(FocusEvent e) {
@@ -350,14 +345,14 @@ final class CustomPasswordTextField extends JPasswordField {
     private int minTextSize = 4;
     private int maxTextSize = 100;
 
-    public CustomPasswordTextField(String placeholder) {
+    CustomPasswordTextField(String placeholder) {
         this.placeholder = placeholder;
         this.setBorder(BorderFactory.createMatteBorder(0, 0, UISize.TEXT_FIELD_BORDER_BOTTOM, 0, UIColor.TEXT_FIELD_DISABLE_COLOR));
         this.addFocusListener(new FocusAdapter() {
             /**
              * Invoked when a component gains the keyboard focus.
              *
-             * @param e
+             * @param e focus event
              */
             @Override
             public void focusGained(FocusEvent e) {
@@ -367,7 +362,7 @@ final class CustomPasswordTextField extends JPasswordField {
             /**
              * Invoked when a component loses the keyboard focus.
              *
-             * @param e
+             * @param e focus event
              */
             @Override
             public void focusLost(FocusEvent e) {
@@ -448,5 +443,73 @@ final class MaterialPlaceholder {
     public static Border getDefaultBorder() {
         return BorderFactory.createMatteBorder(0, 0, UISize.TEXT_FIELD_BORDER_BOTTOM, 0, UIColor.PRIMARY_COLOR);
 
+    }
+}
+
+final class CustomDialog extends JDialog {
+    private final Frame owner;
+
+    /**
+     * Creates a dialog with the specified title, owner {@code Frame}
+     * and modality. If {@code owner} is {@code null},
+     * a shared, hidden frame will be set as the owner of this dialog.
+     * <p>
+     * This constructor sets the component's locale property to the value
+     * returned by {@code JComponent.getDefaultLocale}.
+     * <p>
+     * NOTE: Any popup components ({@code JComboBox},
+     * {@code JPopupMenu}, {@code JMenuBar})
+     * created within a modal dialog will be forced to be lightweight.
+     * <p>
+     * NOTE: This constructor does not allow you to create an unowned
+     * {@code JDialog}. To create an unowned {@code JDialog}
+     * you must use either the {@code JDialog(Window)} or
+     * {@code JDialog(Dialog)} constructor with an argument of
+     * {@code null}.
+     *
+     * @param owner the {@code Frame} from which the dialog is displayed
+     * @param title the {@code String} to display in the dialog's
+     *              title bar
+     * @param modal specifies whether dialog blocks user input to other top-level
+     *              windows when shown. If {@code true}, the modality type property is set to
+     *              {@code DEFAULT_MODALITY_TYPE} otherwise the dialog is modeless
+     * @throws HeadlessException if {@code GraphicsEnvironment.isHeadless()}
+     *                           returns {@code true}.
+     * @see ModalityType
+     * @see ModalityType#MODELESS
+     * @see Dialog#DEFAULT_MODALITY_TYPE
+     * @see Dialog#setModal
+     * @see Dialog#setModalityType
+     * @see GraphicsEnvironment#isHeadless
+     * @see JComponent#getDefaultLocale
+     */
+    CustomDialog(Frame owner, String title, boolean modal) {
+        super(owner, title, modal);
+        this.owner = owner;
+    }
+
+    public void customSetVisible() {
+        this.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIColor.HEADER_SHADOW_COLOR));
+        this.pack();
+        this.setResizable(false);
+        this.setLocationRelativeTo(this.owner);
+        this.setVisible(true);
+    }
+}
+
+
+final class CustomTextArea extends JTextArea {
+
+    private String placeholder;
+
+    /**
+     * Constructs a new TextArea.  A default model is set, the initial string
+     * is null, and rows/columns are set to 0.
+     */
+    public CustomTextArea(String placeholder) {
+        this.setMargin(new Insets(5, 10, 10, 10));
+        this.setLineWrap(true);
+        this.setBorder(BorderFactory.createMatteBorder(0, 0, UISize.TEXT_FIELD_BORDER_BOTTOM, 0, UIColor.TEXT_FIELD_DISABLE_COLOR));
+        this.placeholder = placeholder;
     }
 }

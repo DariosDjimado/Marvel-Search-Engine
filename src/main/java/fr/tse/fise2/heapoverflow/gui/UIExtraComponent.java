@@ -8,8 +8,10 @@ import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
-public class UIExtraComponent implements UIComponent {
+public class UIExtraComponent implements UIComponent, Observer {
     private final JPanel rightWrapperPanel;
     private final JPanel rightTitlePanel;
     private final JPanel rightContainerPanel;
@@ -99,6 +101,24 @@ public class UIExtraComponent implements UIComponent {
         }
 
         this.rightWrapperPanel.revalidate();
+        this.rightWrapperPanel.repaint();
+    }
+
+    public JPanel getRightWrapperPanel() {
+        return rightWrapperPanel;
+    }
+
+    /**
+     * This method is called whenever the observed object is changed. An
+     * application calls an <tt>Observable</tt> object's
+     * <code>notifyObservers</code> method to have all the object's
+     * observers notified of the change.
+     *
+     * @param o   the observable object.
+     * @param arg an argument passed to the <code>notifyObservers</code>
+     */
+    @Override
+    public void update(Observable o, Object arg) {
         this.rightWrapperPanel.repaint();
     }
 }

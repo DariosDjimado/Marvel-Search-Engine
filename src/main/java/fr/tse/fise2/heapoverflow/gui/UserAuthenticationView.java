@@ -233,7 +233,7 @@ public class UserAuthenticationView extends JPanel implements Observer {
             this.showSignUpField(false);
 
             // create new dialog dynamically
-            JDialog dialog = new JDialog(ui, "Authentication", true);
+            CustomDialog dialog = new CustomDialog(ui, "Authentication", true);
 
             // create new action listener and store its reference
             final ActionListener actionListener = new ActionListener() {
@@ -282,12 +282,8 @@ public class UserAuthenticationView extends JPanel implements Observer {
             });
 
 
-            dialog.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIColor.HEADER_SHADOW_COLOR));
             dialog.add(this.authenticationPanel);
-            dialog.pack();
-            dialog.setResizable(false);
-            dialog.setLocationRelativeTo(ui);
-            dialog.setVisible(true);
+            dialog.customSetVisible();
 
         });
     }
@@ -300,7 +296,7 @@ public class UserAuthenticationView extends JPanel implements Observer {
                 this.showSignUpField(true);
 
                 // create new dialog dynamically
-                JDialog dialog = new JDialog(ui, "Authentication", true);
+                CustomDialog dialog = new CustomDialog(ui, "Authentication", true);
 
                 // create new action listener and store its reference
                 final ActionListener actionListener = new ActionListener() {
@@ -356,12 +352,9 @@ public class UserAuthenticationView extends JPanel implements Observer {
                 });
 
 
-                dialog.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIColor.HEADER_SHADOW_COLOR));
                 dialog.add(this.authenticationPanel);
-                dialog.pack();
-                dialog.setResizable(false);
-                dialog.setLocationRelativeTo(ui);
-                dialog.setVisible(true);
+                dialog.customSetVisible();
+
             } else {
                 this.controller.logout();
             }
