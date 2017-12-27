@@ -16,6 +16,7 @@ import java.io.IOException;
 public class FetchData extends Thread {
     private static final Logger LOGGER = LoggerFactory.getLogger(FetchData.class);
     private final String url;
+    private final String query;
     private final ComicsRequestObserver comicsRequestObserver;
     private final CharactersRequestObserver charactersRequestObserver;
     private ComicsType comicsType;
@@ -24,30 +25,34 @@ public class FetchData extends Thread {
     /**
      * @param comicsRequestObserver observer for comics
      * @param url                   url to use
+     * @param query                 query can be null
      * @param comicsType            type of comics event that will be emitted later
      */
-    public FetchData(ComicsRequestObserver comicsRequestObserver, String url, ComicsType comicsType) {
-        this(comicsRequestObserver, null, url, comicsType, null);
+    public FetchData(ComicsRequestObserver comicsRequestObserver, String url, String query, ComicsType comicsType) {
+        this(comicsRequestObserver, null, url, query, comicsType, null);
     }
 
     /**
      * @param charactersRequestObserver observer for characters
      * @param url                       url to use
+     * @param query                     query can be null
      * @param charactersType            type of characters event that will be emitted later
      */
-    public FetchData(CharactersRequestObserver charactersRequestObserver, String url, CharactersType charactersType) {
-        this(null, charactersRequestObserver, url, null, charactersType);
+    public FetchData(CharactersRequestObserver charactersRequestObserver, String url, String query, CharactersType charactersType) {
+        this(null, charactersRequestObserver, url, query, null, charactersType);
     }
 
     /**
      * @param comicsRequestObserver     observer for comics
      * @param charactersRequestObserver observer for characters
      * @param url                       url to use
+     * @param query                     query can be null
      * @param comicsType                type of comics event that will be emitted later
      * @param charactersType            type of characters event that will be emitted later
      */
-    private FetchData(ComicsRequestObserver comicsRequestObserver, CharactersRequestObserver charactersRequestObserver, String url, ComicsType comicsType, CharactersType charactersType) {
+    private FetchData(ComicsRequestObserver comicsRequestObserver, CharactersRequestObserver charactersRequestObserver, String url, String query, ComicsType comicsType, CharactersType charactersType) {
         this.url = url;
+        this.query = query;
         this.charactersRequestObserver = charactersRequestObserver;
         this.comicsRequestObserver = comicsRequestObserver;
         this.comicsType = comicsType;
@@ -64,7 +69,7 @@ public class FetchData extends Thread {
             if (this.comicsRequestObserver != null) {
                 // emit on fetching event
                 this.comicsRequestObserver.onFetchingComics(this.url);
-                String response = request.getData(this.url);
+                String response = request.getData(this.url, this.query);
                 switch (this.comicsType) {
                     case COMICS:
                         this.comicsRequestObserver.onFetchedComics(MarvelRequest.deserializeComics(response).getData().getResults());
@@ -82,7 +87,7 @@ public class FetchData extends Thread {
             if (this.charactersRequestObserver != null) {
                 // emit on fetching event
                 this.charactersRequestObserver.onFetchingCharacters(this.url);
-                String response = request.getData(this.url);
+                String response = request.getData(this.url, this.query);
                 switch (this.charactersType) {
                     case CHARACTERS:
                         this.charactersRequestObserver.onFetchedCharacters(MarvelRequest.deserializeCharacters(response).getData().getResults());

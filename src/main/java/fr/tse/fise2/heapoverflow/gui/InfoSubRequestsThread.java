@@ -1,14 +1,15 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
-import fr.tse.fise2.heapoverflow.main.Controller;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.Line;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
@@ -90,7 +91,7 @@ public class InfoSubRequestsThread implements Runnable {
                     int count = 0;
                     int total = 0;
                     do {
-                        String response = request.getData(thisJob.shortUri + "?limit=100&offset=" + 100 * reqCount);
+                        String response = request.getData(thisJob.shortUri, "limit=100&offset=" + 100 * reqCount);
                         switch (thisJob.elementType) {
                             case "Comic":
                                 ComicDataWrapper responseComic = deserializeComics(response);

@@ -1,8 +1,11 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -15,7 +18,7 @@ public class UrlBuilder {
     /**
      * Appends hash, timestamp  and keys to the url
      *
-     * @param url entire
+     * @param url Original url
      * @return String
      */
     static String appendHash(String url) {
@@ -41,11 +44,18 @@ public class UrlBuilder {
      * Appends base url to partial url
      *
      * @param partialUrl part of url that will be added
+     * @param query      query can be null
      * @return url with baseUrl appended
      */
-    static String appendBaseUrl(String partialUrl) {
-        String baseUrl = "https://gateway.marvel.com:443/v1/public/";
-        return baseUrl + partialUrl;
+    static URL appendBaseUrl(String partialUrl, @Nullable String query) {
+        URL url = null;
+        try {
+            URI uri = new URI("https", null, "gateway.marvel.com", 443, "/v1/public/" + partialUrl, query, null);
+            url = uri.toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
     }
 
     /**

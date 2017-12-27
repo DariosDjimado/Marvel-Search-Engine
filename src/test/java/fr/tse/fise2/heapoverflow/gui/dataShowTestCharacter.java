@@ -19,7 +19,7 @@ public class dataShowTestCharacter {
         MarvelRequest request = new MarvelRequest();
 //        Path myFile = Paths.get("comicSample.json");
         try {
-            String response = request.getData("characters/1009367");
+            String response = request.getData("characters/1009367",null);
 //            Files.write(myFile, Arrays.asList(response));
 //            String response = Files.readAllLines(myFile).get(0);
             Character fetched = deserializeCharacters(response).getData().getResults()[0];

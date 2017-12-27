@@ -29,7 +29,7 @@ public class FetchAllCharactersTask extends CharactersRequestAdapter implements 
             int total = 0;
             do {
                 if (offset == 0) {
-                    String response = request.getData("characters?offset=" + offset + "&limit=100");
+                    String response = request.getData("characters", "offset=" + offset + "&limit=100");
                     CharacterDataWrapper characterDataWrapper = deserializeCharacters(response);
                     CharacterDataContainer dataContainer = characterDataWrapper.getData();
 
@@ -38,7 +38,7 @@ public class FetchAllCharactersTask extends CharactersRequestAdapter implements 
 
                 } else {
                     offset += 100;
-                    Thread fetchCharacters = new FetchData(this, "characters?offset=" + offset + "&limit=100" + "&orderBy=name", FetchData.CharactersType.CHARACTERS);
+                    Thread fetchCharacters = new FetchData(this, "characters", "offset=" + offset + "&limit=100" + "&orderBy=name", FetchData.CharactersType.CHARACTERS);
                     fetchCharacters.run();
                 }
             } while (offset < total);

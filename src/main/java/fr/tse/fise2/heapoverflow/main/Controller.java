@@ -253,14 +253,14 @@ public class Controller extends InternalController implements IRequestListener, 
         this.autoCompletion.getAutoSuggestionPopUpWindow().setVisible(false);
         try {
             if (this.ui.getUiSearchComponent().getCharactersRadioButton().isSelected()) {
-                String response = this.request.getData("characters?nameStartsWith=" + text.toLowerCase() + "&limit=50");
+                String response = this.request.getData("characters", "nameStartsWith=" + text.toLowerCase() + "&limit=50");
                 Character[] fetched = deserializeCharacters(response).getData().getResults();
                 this.ui.getUiSearchComponent().setResultsCharacters(fetched);
                 this.ui.revalidate();
             }
             if (this.ui.getUiSearchComponent().getComicsRadioButton().isSelected()) {
                 System.out.println("tex-------------------------------------------------------------------------------t" + text);
-                String response = this.request.getData("comics?titleStartsWith=" + text.toLowerCase() + "&limit=50");
+                String response = this.request.getData("comics", "titleStartsWith=" + text.toLowerCase() + "&limit=50");
                 System.out.println("response" + response);
                 Comic[] fetched = deserializeComics(response).getData().getResults();
                 this.ui.getUiSearchComponent().setResultsComics(fetched);
@@ -276,7 +276,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
         try {
             final String id = String.valueOf(MarvelElementTable.findCharacterByName(word).getId());
-            Thread fetchCharacterById = new FetchData(this, "characters/" + id, FetchData.CharactersType.CHARACTER_BY_ID);
+            Thread fetchCharacterById = new FetchData(this, "characters/" + id, null, FetchData.CharactersType.CHARACTER_BY_ID);
             fetchCharacterById.run();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -290,7 +290,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
             System.out.println(MarvelElementTable.findComicByTitle(word));
 
-            Thread fetchComic = new FetchData(this, "comics/" + id, FetchData.ComicsType.COMIC_BY_ID);
+            Thread fetchComic = new FetchData(this, "comics/" + id, null, FetchData.ComicsType.COMIC_BY_ID);
             fetchComic.run();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -373,7 +373,7 @@ public class Controller extends InternalController implements IRequestListener, 
             // since we have the comic now we are going to fetch all comics in same series by using series id returned
             System.out.println(comic.getId());
 
-            Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(42) + "/comics", FetchData.ComicsType.COMICS_IN_SAME_SERIES);
+            Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(42) + "/comics", null, FetchData.ComicsType.COMICS_IN_SAME_SERIES);
             fetchComicsInSameSeries.run();
         }
     }
@@ -415,7 +415,7 @@ public class Controller extends InternalController implements IRequestListener, 
     public void fetchCharactersInSameComic(Character character) {
         // if there are comics returned then we'll get the others characters
         if (character.getComics().getReturned() > 0) {
-            Thread fetchCharactersInSameComic = new FetchData(this, "series/" + character.getComics().getItems()[0].getResourceURI().substring(43) + "/characters", FetchData.CharactersType.CHARACTERS_IN_SAME_SERIES);
+            Thread fetchCharactersInSameComic = new FetchData(this, "series/" + character.getComics().getItems()[0].getResourceURI().substring(43) + "/characters", null, FetchData.CharactersType.CHARACTERS_IN_SAME_SERIES);
             fetchCharactersInSameComic.run();
         }
     }

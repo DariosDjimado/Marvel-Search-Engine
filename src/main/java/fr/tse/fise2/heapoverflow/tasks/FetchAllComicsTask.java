@@ -25,13 +25,13 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
             do {
                 if (offset == 0) {
                     System.out.println(offset);
-                    String response = request.getData("comics?offset=" + offset + "&limit=100");
+                    String response = request.getData("comics","offset=" + offset + "&limit=100");
                     ComicDataWrapper comicDataWrapper = deserializeComics(response);
                     ComicDataContainer dataContainer = comicDataWrapper.getData();
                     offset = offset + 100;
                 } else {
                     offset += 100;
-                    Thread fetchComics = new FetchData(this, "comics?offset=" + offset + "&limit=100" + "&orderBy=title", FetchData.ComicsType.COMICS);
+                    Thread fetchComics = new FetchData(this, "comics","offset=" + offset + "&limit=100" + "&orderBy=title", FetchData.ComicsType.COMICS);
                     fetchComics.run();
                 }
             } while (offset < 4000);

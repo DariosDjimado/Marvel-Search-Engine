@@ -1,15 +1,28 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import fr.tse.fise2.heapoverflow.main.AppConfig;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
-import static org.junit.Assert.*;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
+import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestMarvelRequest {
+
+    @BeforeClass
+    public static void setupConfig() {
+        AppErrorHandler.configureLogging();
+    }
+
+
     @Test
     public void TestDeserializeCharacters() {
 
@@ -17,7 +30,7 @@ public class TestMarvelRequest {
 
         try {
             // fetch all characters
-            String response = request.getData("characters");
+            String response = request.getData("characters", null);
             // deserialize the response
             CharacterDataWrapper characterDataWrapper = deserializeCharacters(response);
             // we must have an instance of CharacterDataWrapper
@@ -29,7 +42,7 @@ public class TestMarvelRequest {
 
 
             // fetch characters using query
-            String responseToQuery = request.getData("characters?nameStartsWith=th");
+            String responseToQuery = request.getData("characters", "nameStartsWith=th");
             // deserialize the response
             CharacterDataWrapper characterDataWrapperToQuery = deserializeCharacters(responseToQuery);
             // the code of response must be 200
@@ -43,7 +56,7 @@ public class TestMarvelRequest {
 
 
             // fetch comic using id
-            String responseToId = request.getData("characters/1011334");
+            String responseToId = request.getData("characters/1011334", null);
             // deserialize the response
             CharacterDataWrapper characterDataWrapperToId = deserializeCharacters(responseToId);
             // the code of response must be 200
@@ -68,7 +81,7 @@ public class TestMarvelRequest {
 
         try {
             // fetch all comics
-            String response = request.getData("comics");
+            String response = request.getData("comics", null);
             // deserialize the response
             ComicDataWrapper comicDataWrapper = deserializeComics(response);
             // we must have an instance of ComicDataWrapper
@@ -80,7 +93,7 @@ public class TestMarvelRequest {
 
 
             // fetch comic using query
-            String responseToQuery = request.getData("comics?titleStartsWith=th");
+            String responseToQuery = request.getData("comics", "titleStartsWith=th");
             // deserialize the response
             ComicDataWrapper comicDataWrapperToQuery = deserializeComics(responseToQuery);
             // the code of response must be 200
@@ -94,7 +107,7 @@ public class TestMarvelRequest {
 
 
             // fetch comic using id
-            String responseToId = request.getData("comics/21486");
+            String responseToId = request.getData("comics/21486", null);
             // deserialize the response
             ComicDataWrapper comicDataWrapperToId = deserializeComics(responseToId);
             // the code of response must be 200
@@ -116,32 +129,26 @@ public class TestMarvelRequest {
     @Test
     public void TestGetData() throws Exception {
         MarvelRequest request = new MarvelRequest();
-
-        // fetch data
-        try {
-            String data = request.getData("creators");
-            assertTrue(data.contains("\"code\":200,\"status\":\"Ok\",\"copyright\":\"© 2017 MARVEL"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        String data = request.getData("creators", null);
+        assertNotNull(data);
+        assertTrue(data.contains("\"code\":200,\"status\":\"Ok\",\"copyright\":\"© 2017 MARVEL"));
     }
 
     @Test
     public void TestGetImage() throws Exception {
-        MarvelRequest request = new MarvelRequest();
+        // create an image of type : Marvel Image
+        String path = "http://i.annihil.us/u/prod/marvel/i/mg/9/f0/589deb5c4a277";
+        String extension = "jpg";
+        Image image = new Image();
+        image.setPath(path);
+        image.setExtension(extension);
 
-        // fetch comics
-        String responseComics = request.getData("comics");
-        // find an existing image
-        Image comicImage = deserializeComics(responseComics).getData().getResults()[2].getImages()[0];
-        // fetch the image
-        BufferedImage bufferedImage = getImage(comicImage, ImageVariant.PORTRAIT_MEDIUM, AppConfig.tmpDir);
+        // get url
+        BufferedImage bufferedImage = MarvelRequest.getImage(image, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
 
-        assertEquals(bufferedImage.getHeight(), 150);
-        assertEquals(bufferedImage.getWidth(), 100);
-
+        assertNotNull(bufferedImage);
+        assertEquals(bufferedImage.getHeight(), 252);
+        assertEquals(bufferedImage.getWidth(), 168);
     }
 
 }

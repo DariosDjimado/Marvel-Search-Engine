@@ -190,17 +190,18 @@ public final class MarvelRequest extends UrlBuilder {
      * This method takes the required partialUrl and makes a request from the entire url and returns the response.
      *
      * @param partialUrl the part of the url that will be concatenate with the keys and the timestamp
+     * @param query      query can be null
      * @return String. If the rateLimit is reached this method will return the specified string <i>requestCanceled</i>
      * @throws IOException on request execution
      */
-    public String getData(String partialUrl) throws IOException {
+    public String getData(String partialUrl, String query) throws IOException {
         if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
             for (RequestListener requestListener : requestListeners) {
                 requestListener.startLoading(partialUrl);
             }
 
             Request request = new Request.Builder()
-                    .url(appendBaseUrl(partialUrl))
+                    .url(appendBaseUrl(partialUrl, query))
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 Authentication.setNumberOfRequest(Authentication.getNumberOfRequest() + 1);
