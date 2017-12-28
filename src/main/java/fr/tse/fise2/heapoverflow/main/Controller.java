@@ -1,7 +1,6 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
-import fr.tse.fise2.heapoverflow.controllers.GradesPanelController;
 import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
@@ -214,8 +214,18 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
     private void gradesPanelMVC() {
-        GradesPanelController gradesPanelController = new GradesPanelController(this.dataShow.getGradesPanel());
-        gradesPanelController.init();
+        final GradesPanelView gradesPanelView = this.dataShow.getGradesPanel();
+        List<GradesPanel.GradeButton> gradeButtonList = gradesPanelView.getGrades();
+        for (GradesPanel.GradeButton button : gradeButtonList) {
+            button.addActionListener(e -> {
+                User user = UserAuthenticationModel.getUser();
+                if (user != null) {
+                    ElementsAssociation.updateGradeAsNeeded(gradesPanelView.getId(), gradesPanelView.getElementName(), user.getId(), button.getGrade(), gradesPanelView.getType());
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    gradesPanelView.setCurrentGrade(button.getGrade());
+                }
+            });
+        }
     }
 
     private void initCacheUrlsTable() {
@@ -303,9 +313,10 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void startLoading(String name) {
-        this.ui.setTitle("start loading " + name);
         this.ui.getUiBottomComponent().getUrlLabel().setText("start: " + name);
-        this.ui.getUiBottomComponent().getProgressBar().setVisible(true);
+        if (!this.ui.getUiBottomComponent().getProgressBar().isVisible()) {
+            this.ui.getUiBottomComponent().getProgressBar().setVisible(true);
+        }
         this.ui.repaint();
         this.ui.revalidate();
 
@@ -313,7 +324,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void endLoading(String name) {
-        this.ui.setTitle("end loading " + name);
         this.ui.getUiBottomComponent().getUrlLabel().setText("end: " + name);
         this.ui.getUiBottomComponent().getProgressBar().setVisible(false);
         this.ui.repaint();
@@ -336,6 +346,7 @@ public class Controller extends InternalController implements IRequestListener, 
         EventQueue.invokeLater(() -> {
             this.dataShow.getBtnFaved().setComic(comic);
             this.dataShow.getBtnRead().setComic(comic);
+            this.dataShow.getGradesPanel().setComic(comic);
             dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
@@ -406,6 +417,7 @@ public class Controller extends InternalController implements IRequestListener, 
         EventQueue.invokeLater(() -> {
             this.dataShow.getBtnFaved().setCharacter(character);
             this.dataShow.getBtnRead().setCharacter(character);
+            this.dataShow.getGradesPanel().setCharacter(character);
             dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();

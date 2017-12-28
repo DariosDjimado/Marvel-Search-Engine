@@ -1,11 +1,15 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
-/**Here is the bottom component, in which are placed pieces of information
+/**
+ * Here is the bottom component, in which are placed pieces of information
  * about requests, queries, and the progress bar.
+ *
  * @author Lionel Rajaona
  */
 public class UIBottomComponent implements UIComponent {
@@ -25,10 +29,11 @@ public class UIBottomComponent implements UIComponent {
     public UIBottomComponent(JPanel bottomWrapperPanel) {
         this.bottomWrapperPanel = bottomWrapperPanel;
         this.bottomWrapperPanel.setLayout(new BorderLayout());
-        this.progressBar = new JProgressBar();
+        this.progressBar = new CustomProgressBar();
         this.errorIcon = new JOptionPane();
         this.progressBar.setVisible(false);
-        this.urlLabel=new JLabel("default");
+
+        this.urlLabel = new JLabel("default");
     }
 
     //Getters/Setters
@@ -57,8 +62,8 @@ public class UIBottomComponent implements UIComponent {
         this.errorIcon = errorIcon;
     }
 
-    public void displayErrorPopup(String message){
-        this.errorIcon.showMessageDialog(null,message, "Error",
+    public void displayErrorPopup(String message) {
+        this.errorIcon.showMessageDialog(null, message, "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
 
@@ -75,20 +80,23 @@ public class UIBottomComponent implements UIComponent {
     public void setSize() {
 
 
-
     }
 
 
     @Override
     public void build() {
         this.progressBar.setIndeterminate(true);
-        this.progressBar.setSize(new Dimension(300,5));
-        this.progressBar.setPreferredSize(new Dimension(300,5));
+        this.progressBar.setSize(new Dimension(300, 5));
+        this.progressBar.setPreferredSize(new Dimension(300, 5));
         this.bottomWrapperPanel.add(this.progressBar, BorderLayout.CENTER);
         //this.bottomWrapperPanel.add(this.errorIcon);
-        this.urlLabel.setSize(new Dimension(300,25));
-        this.urlLabel.setPreferredSize(new Dimension(300,25));
+        this.urlLabel.setSize(new Dimension(300, 25));
+        this.urlLabel.setPreferredSize(new Dimension(300, 25));
         this.bottomWrapperPanel.add(this.urlLabel, BorderLayout.WEST);
+
+        JLabel attributionLabel = new JLabel("<HTML><FONT color=\"#000099\"><U>Data provided by Marvel. © 2017 MARVEL.</U></FONT></HTML>");
+        attributionLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
+        this.bottomWrapperPanel.add(attributionLabel, BorderLayout.EAST);
 
     }
 

@@ -1,5 +1,14 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.authentication.User;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
+import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
+import fr.tse.fise2.heapoverflow.marvelapi.Character;
+import fr.tse.fise2.heapoverflow.marvelapi.Comic;
+import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
+import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -14,6 +23,9 @@ public class GradesPanel extends JPanel {
 
     private List<GradeButton> grades = new ArrayList<>();
     private int currentGrade = 0;
+    private int id;
+    private MarvelElement type;
+    private String elementName;
 
 
     /**
@@ -57,6 +69,50 @@ public class GradesPanel extends JPanel {
     public void setCurrentGrade(int currentGrade) {
         this.currentGrade = currentGrade;
         select(this.currentGrade);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+        User user = UserAuthenticationModel.getUser();
+        if (user != null) {
+            ElementAssociationRow row = ElementsAssociation.findElement(user.getId(), this.id, this.type);
+            if (row != null) {
+                this.select(row.getGrade());
+                this.currentGrade = row.getGrade();
+            } else {
+                this.select(0);
+                this.currentGrade = 0;
+            }
+        } else {
+            this.select(0);
+            this.currentGrade = 0;
+        }
+    }
+
+    public MarvelElement getType() {
+        return type;
+    }
+
+    public String getElementName() {
+        return elementName;
+    }
+
+    public void setComic(@NotNull Comic comic) {
+        this.elementName = comic.getTitle();
+        this.type = MarvelElement.COMIC;
+        this.setId(comic.getId());
+    }
+
+    public void setCharacter(@NotNull Character character) {
+        this.id = character.getId();
+        this.elementName = character.getName();
+        this.type = MarvelElement.CHARACTER;
+        this.setId(character.getId());
+
     }
 
     public class GradeButton extends ButtonFormat {

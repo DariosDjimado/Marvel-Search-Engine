@@ -40,8 +40,9 @@ public class UIExtraComponent implements UIComponent, Observer {
         this.rightTitleLabel = new JLabel("Nothing to show");
         this.rightTitlePanel.setBackground(UIColor.PRIMARY_COLOR);
         this.rightTitleLabel.setForeground(UIColor.MAIN_BACKGROUND_COLOR);
+
         this.rightTitlePanel.add(this.rightTitleLabel);
-        this.rightTitlePanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        //this.rightTitlePanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
     }
 

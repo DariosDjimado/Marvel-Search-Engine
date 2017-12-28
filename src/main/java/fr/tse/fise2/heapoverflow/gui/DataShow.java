@@ -92,7 +92,7 @@ public class DataShow {
 
     private ReadButtonView btnRead;
 
-    private GradesPanel gradesPanel;
+    private GradesPanelView gradesPanel;
 
     private final FavoriteButtonView btnFaved;
     //endregion
@@ -156,7 +156,7 @@ public class DataShow {
         btnOwned = new LibraryButton();
         btnFaved = new FavoriteButtonView();
         btnRead = new ReadButtonView();
-        gradesPanel = new GradesPanel();
+        gradesPanel = new GradesPanelView();
         btnPane.add(btnOwned);
         btnPane.add(btnFaved);
         btnPane.add(btnRead);
@@ -449,7 +449,7 @@ public class DataShow {
         return btnFaved;
     }
 
-    public GradesPanel getGradesPanel() {
+    public GradesPanelView getGradesPanel() {
         return gradesPanel;
     }
 

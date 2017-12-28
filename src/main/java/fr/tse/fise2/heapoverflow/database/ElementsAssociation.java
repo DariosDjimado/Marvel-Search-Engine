@@ -20,6 +20,19 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
  * @author Darios DJIMADO
  */
 public class ElementsAssociation {
+
+    /**
+     * Updates grade in elements association table
+     *
+     * @param elementUid unique element id
+     * @param userId     user unique id
+     * @param value      new value
+     */
+    public static void updateGrade(int elementUid, int userId, int value) {
+        updateElementInt(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET GRADE = ? WHERE UID = ? AND USER_ID = ?");
+    }
+
+
     /**
      * Updates user comment in elements association table
      *
@@ -248,7 +261,7 @@ public class ElementsAssociation {
         if (findElement(userId, elementId, marvelElement) == null) {
             updateElementInt(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(GRADE,UID,user_id) VALUES(?,?,?)");
         } else {
-            //updateFavorite(elementUID, userId, true);
+            updateGrade(elementUID, userId, value);
         }
     }
 

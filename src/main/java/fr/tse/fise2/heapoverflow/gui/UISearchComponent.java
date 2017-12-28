@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class UISearchComponent {
+    private static final ImageIcon icon = new ImageIcon(UISearchComponent.class.getResource("search.png"));
+
     private final JPanel leftWrapperPanel;
     private Controller controller;
     private JRadioButton charactersRadioButton;
@@ -50,29 +52,29 @@ public class UISearchComponent {
         SearchWrapperPanel.add(searchPanel, BorderLayout.NORTH);
 
 
-        JButton searchButton = new JButton();
+        JButton searchButton = new PrimaryButton("Search");
 
 
         searchButton.addActionListener((ActionEvent e) -> {
             this.controller.searchStartsWith(this.getSearchTextField().getText());
         });
 
-
-        searchButton.setText("Search");
         searchButton.setVerticalAlignment(0);
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
-        gbc.gridx = 0;
+        gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
+        gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
-        gbc.insets = new Insets(0, 5, 0, 0);
+        gbc.insets = new Insets(0, 5, 0, 20);
         searchButton.setVisible(true);
         searchPanel.add(searchButton, gbc);
 
 
         this.searchTextField.setHorizontalAlignment(10);
-        this.searchTextField.setMargin(new Insets(5, 5, 5, 0));
+        this.searchTextField.setMargin(new Insets(5, 20, 5, 0));
+        //GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -120,7 +122,6 @@ public class UISearchComponent {
         leftWrapperPanel.setVisible(true);
     }
 
-
     public JRadioButton getCharactersRadioButton() {
         return charactersRadioButton;
     }
@@ -162,7 +163,6 @@ public class UISearchComponent {
         this.searchResultsPanel.setVisible(true);
 
     }
-
 
     public void setResultsCharacters(Character[] characters) {
         this.searchResultsPanel.removeAll();

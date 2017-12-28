@@ -14,6 +14,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
     protected final FavoriteButton favoriteButton;
     protected final ReadButton readButton;
+    protected final GradesPanel gradesPanel;
     final JLabel cardTitle;
     private final JPanel mainPanel;
     private final JPanel cardHeaderPanel;
@@ -30,6 +31,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.cardTitle = new JLabel("default");
         this.favoriteButton = new FavoriteButton();
         this.readButton = new ReadButtonView();
+        this.gradesPanel = new GradesPanel();
         this.cardHeaderPanel = new JPanel();
         this.cardBodyPanel = new JPanel();
         this.cardFooterPanel = new JPanel();
@@ -46,7 +48,6 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 0));
 
         this.mainPanel.setLayout(new BorderLayout());
-        this.mainPanel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, Color.GRAY));
 
         this.mainPanel.setOpaque(true);
         this.mainPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
@@ -58,7 +59,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
         // card body
         this.cardBodyPanel.setOpaque(false);
-        this.cardBodyPanel.add(new GradesPanel());
+        this.cardBodyPanel.add(this.gradesPanel);
         this.mainPanel.add(this.cardBodyPanel, BorderLayout.CENTER);
 
         // card footer
