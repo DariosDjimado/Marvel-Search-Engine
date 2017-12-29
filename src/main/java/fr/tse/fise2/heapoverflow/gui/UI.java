@@ -45,6 +45,7 @@ public class UI extends JFrame {
 
     private void createMenu() {
         JMenuBar menuBar = new JMenuBar();
+        menuBar.setBackground(UIColor.HEADER_SHADOW_COLOR);
 
         JMenu aboutMenu = new JMenu("About");
         JMenuItem helpMenuItem = new JMenuItem("Help");
@@ -90,7 +91,9 @@ public class UI extends JFrame {
         centerWrapperPanel.setMinimumSize(new Dimension(600, 500));
         centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
-        centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
+        //centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
+        centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
+        centerWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR  );
 
         container.add(centerWrapperPanel, BorderLayout.CENTER);
     }

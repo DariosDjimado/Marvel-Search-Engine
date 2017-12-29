@@ -80,13 +80,7 @@ public class GradesPanel extends JPanel {
         User user = UserAuthenticationModel.getUser();
         if (user != null) {
             ElementAssociationRow row = ElementsAssociation.findElement(user.getId(), this.id, this.type);
-            if (row != null) {
-                this.select(row.getGrade());
-                this.currentGrade = row.getGrade();
-            } else {
-                this.select(0);
-                this.currentGrade = 0;
-            }
+            updateState(row);
         } else {
             this.select(0);
             this.currentGrade = 0;
@@ -112,8 +106,33 @@ public class GradesPanel extends JPanel {
         this.elementName = character.getName();
         this.type = MarvelElement.CHARACTER;
         this.setId(character.getId());
-
     }
+
+
+    public void setComic(Comic comic, ElementAssociationRow row) {
+        this.type = MarvelElement.COMIC;
+        this.elementName = comic.getTitle();
+        this.id = comic.getId();
+        updateState(row);
+    }
+
+    public void setCharacter(Character character, ElementAssociationRow row) {
+        this.type = MarvelElement.CHARACTER;
+        this.elementName = character.getName();
+        this.id = character.getId();
+        updateState(row);
+    }
+
+    private void updateState(ElementAssociationRow row) {
+        if (row != null) {
+            this.select(row.getGrade());
+            this.currentGrade = row.getGrade();
+        } else {
+            this.select(0);
+            this.currentGrade = 0;
+        }
+    }
+
 
     public class GradeButton extends ButtonFormat {
         private final int grade;

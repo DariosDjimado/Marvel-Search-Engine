@@ -13,7 +13,6 @@ public class UITopComponent {
     private final JButton createCollectionButton;
     private final JPanel topRightPanel;
     private final UI ui;
-    private final JButton commentButton;
     private UserAuthenticationView userAuthenticationView;
 
 
@@ -29,10 +28,8 @@ public class UITopComponent {
         this.createCollectionButton = new DefaultButton("Create Collections");
         this.topRightPanel = new JPanel();
 
-        this.commentButton = new CommentButton();
 
         this.configUserAuthenticationMVC();
-        this.commentButtonActionListener();
     }
 
     private void configUserAuthenticationMVC() {
@@ -63,13 +60,10 @@ public class UITopComponent {
         // top right panel
         this.createCollectionButton.setForeground(UIColor.PRIMARY_COLOR);
 
-        this.commentButton.setContentAreaFilled(true);
-        this.commentButton.setBackground(UIColor.HEADER_TEXT_COLOR);
 
         this.topRightPanel.setLayout(new BorderLayout());
         this.topRightPanel.add(this.libraryButton, BorderLayout.WEST);
         this.topRightPanel.add(this.createCollectionButton, BorderLayout.CENTER);
-        this.topRightPanel.add(this.commentButton, BorderLayout.EAST);
         this.topPanel.add(this.topRightPanel, BorderLayout.WEST);
 
 
@@ -77,35 +71,6 @@ public class UITopComponent {
         this.topPanel.add(this.userAuthenticationView, BorderLayout.EAST);
 
 
-    }
-
-    private void commentButtonActionListener() {
-        this.commentButton.addActionListener(e -> {
-            final CustomDialog dialog = new CustomDialog(this.ui, "Comment", true);
-            final CustomTextArea descArea = new CustomTextArea("Comment");
-
-            JScrollPane scrollPane = new JScrollPane(descArea);
-            scrollPane.setBorder(null);
-
-            JPanel buttonsPanel = new JPanel();
-            JButton cancelButton = new DefaultButton("cancel");
-            cancelButton.addActionListener(event -> dialog.dispose());
-            buttonsPanel.add(cancelButton);
-            JButton saveButton = new PrimaryButton("save");
-            buttonsPanel.add(saveButton);
-
-            JPanel mainPanel = new JPanel(new BorderLayout());
-            mainPanel.setBackground(UIColor.DEFAULT_COLOR);
-            mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            mainPanel.setMinimumSize(new Dimension(300, 200));
-            mainPanel.setPreferredSize(new Dimension(300, 200));
-            mainPanel.setMaximumSize(new Dimension(300, 200));
-            mainPanel.add(scrollPane, BorderLayout.CENTER);
-            mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
-
-            dialog.add(mainPanel);
-            dialog.customSetVisible();
-        });
     }
 
     public UserAuthenticationView getUserAuthenticationView() {
@@ -116,7 +81,5 @@ public class UITopComponent {
         return createCollectionButton;
     }
 
-    public JButton getCommentButton() {
-        return commentButton;
-    }
+
 }

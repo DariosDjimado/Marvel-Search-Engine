@@ -94,7 +94,7 @@ public final class CreateTables {
                 "favorite BOOLEAN NOT NULL DEFAULT FALSE," +
                 "collection_id INT REFERENCES COLLECTIONS(COLLECTION_ID)," +
                 "is_read BOOLEAN NOT NULL DEFAULT FALSE," +
-                "grade INT, " +
+                "grade INT NOT NULL DEFAULT 0, " +
                 "comment VARCHAR(255), " +
                 "PRIMARY KEY(uid, user_id))");
     }

@@ -10,7 +10,7 @@ public class ComicsListRenderer extends DefaultListCellRenderer implements ListC
     private TemplatePreviewListRenderer renderer;
 
 
-    public ComicsListRenderer() {
+    ComicsListRenderer() {
         super();
         renderer = new TemplatePreviewListRenderer() {
             @Override

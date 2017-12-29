@@ -34,6 +34,7 @@ public class UISearchComponent {
 
         //
         this.leftWrapperPanel = leftWrapperPanel;
+        this.leftWrapperPanel.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
     }
 
     void setup() {

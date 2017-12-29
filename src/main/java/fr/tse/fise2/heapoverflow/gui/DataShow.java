@@ -86,15 +86,8 @@ public class DataShow {
      */
     private Map<String, JList> tabsJLists;
 
-    private JPanel btnPane;
+    private ReactivePanel btnPane;
 
-    private JButton btnOwned;
-
-    private ReadButtonView btnRead;
-
-    private GradesPanelView gradesPanel;
-
-    private final FavoriteButtonView btnFaved;
     //endregion
 
     //region Constructors
@@ -113,6 +106,7 @@ public class DataShow {
         panel.setLayout(new BorderLayout());
 
         JPanel leftPane = new JPanel();
+        leftPane.setOpaque(false);
         leftPane.setLayout(new BoxLayout(leftPane, BoxLayout.PAGE_AXIS));
         leftPane.setBorder(new EmptyBorder(10, 10, 0, 5));
         panel.add(leftPane, BorderLayout.WEST);
@@ -122,6 +116,7 @@ public class DataShow {
         leftPane.add(thumbnail);
 
         referencesPane = new JPanel();
+        referencesPane.setOpaque(false);
         referencesPane.setLayout(new GridLayout(5, 1));
         referencesPane.setBackground(Color.lightGray);
         referencesPane.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(2, 2, 2, 2), BorderFactory.createLineBorder(Color.darkGray)));
@@ -133,36 +128,32 @@ public class DataShow {
         head.setFont(Fonts.title1);
 
         detail = new JPanel();
+        detail.setOpaque(false);
         detail.setLayout(new BorderLayout());
         detail.setBorder(new EmptyBorder(10, 5, 0, 10));
         JPanel detailWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        detailWrapper.setOpaque(false);
         detailWrapper.add(detail);
         panel.add(detail, BorderLayout.CENTER);
 
         description = new JEditorPane();
         description.setEditable(false);
-        JScrollPane descriptionScroll = new JScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane descriptionScroll = new CustomScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         descriptionScroll.setPreferredSize(new Dimension(200, 100));
-        detail.add(new JScrollPane(descriptionScroll), BorderLayout.NORTH);
+        detail.add(new CustomScrollPane(descriptionScroll), BorderLayout.NORTH);
 
         detailPane = new JPanel();
+        detailPane.setOpaque(false);
         detailPane.setLayout(new BoxLayout(detailPane, BoxLayout.PAGE_AXIS));
         detailPane.setBorder(new EmptyBorder(5, 0, 0, 0));
         JPanel detailPaneWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        detailPaneWrapper.setOpaque(false);
         detailPaneWrapper.add(detailPane);
         detail.add(detailPaneWrapper, BorderLayout.CENTER);
 
-        btnPane = new JPanel();
-        btnOwned = new LibraryButton();
-        btnFaved = new FavoriteButtonView();
-        btnRead = new ReadButtonView();
-        gradesPanel = new GradesPanelView();
-        btnPane.add(btnOwned);
-        btnPane.add(btnFaved);
-        btnPane.add(btnRead);
-        btnPane.add(gradesPanel);
+        btnPane = new ReactivePanel();
         detail.add(btnPane, BorderLayout.SOUTH);
-        btnPane.setVisible(false);
+        //btnPane.setVisible(false);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
@@ -241,7 +232,7 @@ public class DataShow {
         characterListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
-        tabs.addTab("Characters", new JScrollPane(characters));
+        tabs.addTab("Characters", new CustomScrollPane(characters));
         isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Creators
@@ -249,7 +240,7 @@ public class DataShow {
         creatorListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
-        tabs.addTab("Creators", new JScrollPane(creators));
+        tabs.addTab("Creators", new CustomScrollPane(creators));
         isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken);
 
         //endregion
@@ -261,7 +252,7 @@ public class DataShow {
             for (ComicSummary comicVariant : comic.getVariants()) {
                 variantsListModel.addElement(new MarvelListElement(comicVariant.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            tabs.addTab("Variants", new JScrollPane(variants));
+            tabs.addTab("Variants", new CustomScrollPane(variants));
         }
         //endregion
         //region collections
@@ -274,7 +265,7 @@ public class DataShow {
             for (ComicSummary comicCollection : comic.getCollections()) {
                 CollectionsListModel.addElement(new MarvelListElement(comicCollection.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            tabs.addTab("Collections", new JScrollPane(collections));
+            tabs.addTab("Collections", new CustomScrollPane(collections));
         }
         //endregion
         //region collected issues
@@ -287,7 +278,7 @@ public class DataShow {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
                 CollectedListModel.addElement(new MarvelListElement(comicCollected.getName(), comic.getRessourceURI(), MarvelType.Comic));
             }
-            tabs.addTab("Collected Issues", new JScrollPane(collected));
+            tabs.addTab("Collected Issues", new CustomScrollPane(collected));
         }
         //endregion
         //region stories
@@ -295,7 +286,7 @@ public class DataShow {
         storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
-        tabs.addTab("Stories", new JScrollPane(stories));
+        tabs.addTab("Stories", new CustomScrollPane(stories));
         isrt.addJob("Story", "Stories", comic.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
         //region events
@@ -303,7 +294,7 @@ public class DataShow {
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
-        tabs.addTab("Events", new JScrollPane(events));
+        tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
         //endregion
         tabs.revalidate();
@@ -352,7 +343,7 @@ public class DataShow {
         seriesListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> series = new JList<>(seriesListModel);
         tabsJLists.put("Series", series);
-        tabs.addTab("Series", new JScrollPane(series));
+        tabs.addTab("Series", new CustomScrollPane(series));
         isrt.addJob("Serie", "Series", character.getSeries().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Comics
@@ -360,7 +351,7 @@ public class DataShow {
         comicListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> comics = new JList<>(comicListModel);
         tabsJLists.put("Comics", comics);
-        tabs.addTab("Comics", new JScrollPane(comics));
+        tabs.addTab("Comics", new CustomScrollPane(comics));
         isrt.addJob("Comic", "Comics", character.getComics().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Stories
@@ -368,7 +359,7 @@ public class DataShow {
         storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
-        tabs.addTab("Stories", new JScrollPane(stories));
+        tabs.addTab("Stories", new CustomScrollPane(stories));
         isrt.addJob("Story", "Stories", character.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Events
@@ -376,7 +367,7 @@ public class DataShow {
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
-        tabs.addTab("Events", new JScrollPane(events));
+        tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken);
         //endregion
         tabs.revalidate();
@@ -437,20 +428,8 @@ public class DataShow {
         }
     }
 
-    public JButton getBtnOwned() {
-        return btnOwned;
-    }
-
-    public ReadButtonView getBtnRead() {
-        return btnRead;
-    }
-
-    public FavoriteButtonView getBtnFaved() {
-        return btnFaved;
-    }
-
-    public GradesPanelView getGradesPanel() {
-        return gradesPanel;
+    public ReactivePanel getBtnPane() {
+        return btnPane;
     }
 
     /**

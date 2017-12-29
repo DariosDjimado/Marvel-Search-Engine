@@ -3,6 +3,7 @@ package fr.tse.fise2.heapoverflow.gui;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -90,7 +91,7 @@ final class BoxShadow implements Border {
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         g.setColor(UIColor.HEADER_SHADOW_COLOR);
-        g.fillRect(x, y + height - 4, width, 4);
+        g.fillRect(x, y + height - 4, width, 1);
     }
 
     /**
@@ -174,13 +175,15 @@ final class CircleButton extends JButton {
         g2d.setPaint(Color.WHITE);
 
         Font currentFont = g2d.getFont();
-        FontMetrics metrics = g2d.getFontMetrics(currentFont);
-        // center the text
-        int x = 4 + (radius * 2 - metrics.stringWidth(getText().toUpperCase())) / 2;
-        int y = 2 + ((radius * 2 - metrics.getHeight()) / 2) + metrics.getAscent();
         // increase current current font
         Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.5F);
         g2d.setFont(newFont);
+
+        FontMetrics metrics = g2d.getFontMetrics(newFont);
+        // center the text
+        int x = ((radius * 2 - metrics.stringWidth(getText().toUpperCase())) / 2) + 5;
+        int y = ((radius * 2 - metrics.getHeight()) / 2) + metrics.getAscent();
+
         // draw the text
         g2d.drawString(getText().toUpperCase(), x, y);
         g2d.dispose();
@@ -497,7 +500,6 @@ final class CustomDialog extends JDialog {
     }
 }
 
-
 final class CustomTextArea extends JTextArea {
 
     private String placeholder;
@@ -511,5 +513,113 @@ final class CustomTextArea extends JTextArea {
         this.setLineWrap(true);
         this.setBorder(BorderFactory.createMatteBorder(0, 0, UISize.TEXT_FIELD_BORDER_BOTTOM, 0, UIColor.TEXT_FIELD_DISABLE_COLOR));
         this.placeholder = placeholder;
+    }
+}
+
+final class CustomScrollBarUI extends BasicScrollBarUI {
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setColor(UIColor.SCROLLBAR_TRACK);
+        graphics2D.fillRect(trackBounds.x, trackBounds.y, c.getWidth(), c.getHeight());
+    }
+
+    @Override
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setColor(UIColor.SCROLLBAR_THUMB);
+        graphics2D.fillRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height);
+    }
+
+    @Override
+    protected JButton createDecreaseButton(int orientation) {
+        return createEmptyButton();
+    }
+
+    @Override
+    protected JButton createIncreaseButton(int orientation) {
+        return createEmptyButton();
+    }
+
+    private JButton createEmptyButton() {
+        JButton button = new JButton();
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        button.setMaximumSize(new Dimension(0, 0));
+        return button;
+    }
+}
+
+final class CustomScrollPane extends JScrollPane {
+    /**
+     * Creates a <code>JScrollPane</code> that displays the
+     * contents of the specified
+     * component, where both horizontal and vertical scrollbars appear
+     * whenever the component's contents are larger than the view.
+     *
+     * @param view the component to display in the scrollpane's viewport
+     * @see #setViewportView
+     */
+    CustomScrollPane(Component view) {
+        super(view);
+        this.custom();
+    }
+
+    /**
+     * Creates an empty (no viewport view) <code>JScrollPane</code>
+     * with specified
+     * scrollbar policies. The available policy settings are listed at
+     * {@link #setVerticalScrollBarPolicy} and
+     * {@link #setHorizontalScrollBarPolicy}.
+     *
+     * @param vsbPolicy an integer that specifies the vertical
+     *                  scrollbar policy
+     * @param hsbPolicy an integer that specifies the horizontal
+     * @see #setViewportView
+     */
+    CustomScrollPane(int vsbPolicy, int hsbPolicy) {
+        super(vsbPolicy, hsbPolicy);
+        this.custom();
+    }
+
+    /**
+     * Creates an empty (no viewport view) <code>JScrollPane</code>
+     * where both horizontal and vertical scrollbars appear when needed.
+     */
+    CustomScrollPane() {
+        this.custom();
+    }
+
+
+    /**
+     * Creates a <code>JScrollPane</code> that displays the view
+     * component in a viewport
+     * whose view position can be controlled with a pair of scrollbars.
+     * The scrollbar policies specify when the scrollbars are displayed,
+     * For example, if <code>vsbPolicy</code> is
+     * <code>VERTICAL_SCROLLBAR_AS_NEEDED</code>
+     * then the vertical scrollbar only appears if the view doesn't fit
+     * vertically. The available policy settings are listed at
+     * {@link #setVerticalScrollBarPolicy} and
+     * {@link #setHorizontalScrollBarPolicy}.
+     *
+     * @param view      the component to display in the scrollpanes viewport
+     * @param vsbPolicy an integer that specifies the vertical
+     *                  scrollbar policy
+     * @param hsbPolicy an integer that specifies the horizontal
+     * @see #setViewportView
+     */
+    CustomScrollPane(Component view, int vsbPolicy, int hsbPolicy) {
+        super(view, vsbPolicy, hsbPolicy);
+        this.custom();
+    }
+
+    private void custom() {
+        this.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+        this.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
+        this.getVerticalScrollBar().setMaximumSize(new Dimension(UISize.VERTICAL_SCROLLBAR_WIDTH, Integer.MAX_VALUE));
+        this.getVerticalScrollBar().setPreferredSize(new Dimension(UISize.VERTICAL_SCROLLBAR_WIDTH, Integer.MAX_VALUE));
+        this.getHorizontalScrollBar().setMaximumSize(new Dimension(Short.MAX_VALUE, UISize.HORIZONTAL_SCROLLBAR_HEIGH));
+        this.getHorizontalScrollBar().setPreferredSize(new Dimension(Short.MAX_VALUE, UISize.HORIZONTAL_SCROLLBAR_HEIGH));
     }
 }

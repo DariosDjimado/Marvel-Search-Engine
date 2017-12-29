@@ -21,6 +21,10 @@ public class UIExtraComponent implements UIComponent, Observer {
 
     public UIExtraComponent(JPanel rightWrapperPanel) {
         this.rightWrapperPanel = rightWrapperPanel;
+
+        this.rightWrapperPanel.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
+
+
         this.rightWrapperPanel.setLayout(new BorderLayout());
         this.rightContainerPanel = new JPanel();
         this.rightContainerPanel.setLayout(new BorderLayout());
@@ -42,7 +46,6 @@ public class UIExtraComponent implements UIComponent, Observer {
         this.rightTitleLabel.setForeground(UIColor.MAIN_BACKGROUND_COLOR);
 
         this.rightTitlePanel.add(this.rightTitleLabel);
-        //this.rightTitlePanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
     }
 
@@ -77,8 +80,12 @@ public class UIExtraComponent implements UIComponent, Observer {
                     this.selectionChangedListener.showComic(jList.getSelectedValue());
                 }
             });
-            this.rightContainerPanel.add(new JScrollPane(jList,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+
+            JScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
+            this.rightContainerPanel.add(scrollPane, BorderLayout.CENTER);
         }
         this.rightContainerPanel.revalidate();
         this.rightContainerPanel.repaint();
@@ -97,8 +104,11 @@ public class UIExtraComponent implements UIComponent, Observer {
                     this.selectionChangedListener.showCharacter(jList.getSelectedValue());
                 }
             });
-            this.rightContainerPanel.add(new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+            JScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
+            this.rightContainerPanel.add(scrollPane, BorderLayout.CENTER);
         }
 
         this.rightWrapperPanel.revalidate();

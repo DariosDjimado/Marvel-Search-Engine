@@ -101,6 +101,7 @@ public class Controller extends InternalController implements IRequestListener, 
         });
 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
+       // this.emitSearchComicById("61522");
 
     }
 
@@ -114,7 +115,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
 
     private void initFavoriteButton() {
-        final FavoriteButtonView favoriteButtonView = this.dataShow.getBtnFaved();
+        final FavoriteButtonView favoriteButtonView = this.dataShow.getBtnPane().getFavoriteButtonView();
 
         UserAuthenticationModel.getInstance().addObserver(favoriteButtonView);
 
@@ -144,7 +145,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void initReadButton() {
 
-        final ReadButtonView readButtonView = this.dataShow.getBtnRead();
+        final ReadButtonView readButtonView = this.dataShow.getBtnPane().getReadButtonView();
 
         UserAuthenticationModel.getInstance().addObserver(readButtonView);
 
@@ -214,7 +215,7 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
     private void gradesPanelMVC() {
-        final GradesPanelView gradesPanelView = this.dataShow.getGradesPanel();
+        final GradesPanelView gradesPanelView = this.dataShow.getBtnPane().getGradesPanelView();
         List<GradesPanel.GradeButton> gradeButtonList = gradesPanelView.getGrades();
         for (GradesPanel.GradeButton button : gradeButtonList) {
             button.addActionListener(e -> {
@@ -227,6 +228,8 @@ public class Controller extends InternalController implements IRequestListener, 
             });
         }
     }
+
+
 
     private void initCacheUrlsTable() {
         try {
@@ -344,9 +347,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setComic(comic);
-            this.dataShow.getBtnRead().setComic(comic);
-            this.dataShow.getGradesPanel().setComic(comic);
+            this.dataShow.getBtnPane().setComic(comic);
             dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
@@ -382,9 +383,7 @@ public class Controller extends InternalController implements IRequestListener, 
         System.out.println(comic.getSeries());
         if (comic.getSeries() != null) {
             // since we have the comic now we are going to fetch all comics in same series by using series id returned
-            System.out.println(comic.getId());
-
-            Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(42) + "/comics", null, FetchData.ComicsType.COMICS_IN_SAME_SERIES);
+            Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(43) + "/comics", null, FetchData.ComicsType.COMICS_IN_SAME_SERIES);
             fetchComicsInSameSeries.run();
         }
     }
@@ -415,9 +414,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
     private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnFaved().setCharacter(character);
-            this.dataShow.getBtnRead().setCharacter(character);
-            this.dataShow.getGradesPanel().setCharacter(character);
+            this.dataShow.getBtnPane().setCharacter(character);
             dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();

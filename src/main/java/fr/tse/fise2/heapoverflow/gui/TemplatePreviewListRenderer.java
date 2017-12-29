@@ -12,9 +12,9 @@ import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
-    protected final FavoriteButton favoriteButton;
-    protected final ReadButton readButton;
-    protected final GradesPanel gradesPanel;
+    final FavoriteButton favoriteButton;
+    final ReadButton readButton;
+    final GradesPanel gradesPanel;
     final JLabel cardTitle;
     private final JPanel mainPanel;
     private final JPanel cardHeaderPanel;
@@ -25,7 +25,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
     private boolean selected;
 
 
-    public TemplatePreviewListRenderer() {
+    TemplatePreviewListRenderer() {
         this.imagePanel = new TemplatePreviewListRenderer.ImagePanel();
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
@@ -105,7 +105,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
     public final class ImagePanel extends JPanel {
 
-        public ImagePanel() {
+        ImagePanel() {
             Dimension fixedDimension = new Dimension(84, 126);
             this.setMinimumSize(fixedDimension);
             this.setPreferredSize(fixedDimension);

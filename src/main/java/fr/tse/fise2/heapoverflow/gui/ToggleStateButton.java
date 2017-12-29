@@ -39,6 +39,32 @@ public abstract class ToggleStateButton extends ButtonFormat {
         this.setId(character.getId());
     }
 
+    public void setComic(Comic comic, ElementAssociationRow row) {
+        this.type = MarvelElement.COMIC;
+        this.elementName = comic.getTitle();
+        this.id = comic.getId();
+
+        if (row != null) {
+            this.setState(updateState(row));
+        } else {
+            this.setState(false);
+        }
+
+    }
+
+    public void setCharacter(Character character, ElementAssociationRow row) {
+        this.type = MarvelElement.CHARACTER;
+        this.elementName = character.getName();
+        this.id = character.getId();
+
+        if (row != null) {
+            this.setState(updateState(row));
+        } else {
+            this.setState(false);
+        }
+
+    }
+
     void updateIcon(boolean reverse) {
         if (reverse) {
             if (this.isState()) {

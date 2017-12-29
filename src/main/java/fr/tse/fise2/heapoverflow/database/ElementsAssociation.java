@@ -217,16 +217,25 @@ public class ElementsAssociation {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
+                String comment = resultSet.getString("comment");
+                if (resultSet.wasNull()) {
+                    comment = "";
+                }
+                int collectionID = resultSet.getInt("collection_id");
+                if (resultSet.wasNull()) {
+                    collectionID = -1;
+                }
+
                 elementAssociationRow = new ElementAssociationRow(resultSet.getInt("uid"),
                         resultSet.getInt("id"),
                         MarvelElementBase.convertToMarvelElement(resultSet.getInt("type")),
                         resultSet.getString("name"),
                         resultSet.getInt("user_id"),
                         resultSet.getBoolean("favorite"),
-                        resultSet.getInt("collection_id"),
+                        collectionID,
                         resultSet.getBoolean("is_read"),
                         resultSet.getInt("grade"),
-                        resultSet.getString("comment")
+                        comment
                 );
             }
         } catch (SQLException e) {
