@@ -64,7 +64,7 @@ public class FetchData extends Thread {
      */
     @Override
     public void run() {
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
         try {
             if (this.comicsRequestObserver != null) {
                 // emit on fetching event

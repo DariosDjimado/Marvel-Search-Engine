@@ -19,7 +19,7 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
     @Override
     public boolean doTask() {
         boolean isDone;
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
         try {
             int offset = 2000;
             do {

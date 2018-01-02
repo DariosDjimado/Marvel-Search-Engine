@@ -57,7 +57,11 @@ public class UISearchComponent {
 
 
         searchButton.addActionListener((ActionEvent e) -> {
-            this.controller.searchStartsWith(this.getSearchTextField().getText());
+            if (this.searchTextField.getText().isEmpty()) {
+                Toolkit.getDefaultToolkit().beep();
+            } else {
+                this.controller.searchStartsWith(this.getSearchTextField().getText());
+            }
         });
 
         searchButton.setVerticalAlignment(0);
@@ -137,7 +141,6 @@ public class UISearchComponent {
 
     public void setResultsComics(Comic[] comics) {
         this.searchResultsPanel.removeAll();
-        JScrollPane scrollPane = new JScrollPane();
 
 
         DefaultListModel<Comic> listModel = new DefaultListModel<>();
@@ -146,8 +149,7 @@ public class UISearchComponent {
             listModel.addElement(c);
         }
         JList<Comic> jList = new JList<>(listModel);
-        jList.setCellRenderer(new ComicsSearchListRenderer());
-        scrollPane.setViewportView(jList);
+        jList.setCellRenderer(new ComicsListRenderer());
 
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
@@ -159,6 +161,9 @@ public class UISearchComponent {
             }
         });
 
+        CustomScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
 
         this.searchResultsPanel.add(scrollPane);
         this.searchResultsPanel.setVisible(true);
@@ -167,7 +172,6 @@ public class UISearchComponent {
 
     public void setResultsCharacters(Character[] characters) {
         this.searchResultsPanel.removeAll();
-        JScrollPane scrollPane = new JScrollPane();
 
 
         DefaultListModel<Character> listModel = new DefaultListModel<>();
@@ -176,8 +180,7 @@ public class UISearchComponent {
             listModel.addElement(c);
         }
         JList<Character> jList = new JList<>(listModel);
-        jList.setCellRenderer(new CharactersSerachListRenderer());
-        scrollPane.setViewportView(jList);
+        jList.setCellRenderer(new CharactersListRenderer());
 
         jList.addListSelectionListener((ListSelectionEvent e) -> {
             if (e.getValueIsAdjusting()) {
@@ -187,6 +190,9 @@ public class UISearchComponent {
                 }
             }
         });
+
+        CustomScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 
         this.searchResultsPanel.add(scrollPane);

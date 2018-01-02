@@ -25,7 +25,8 @@ public final class CreateTables {
                 && createElementsTable()
                 && createCacheUrlsTable()
                 && createCollectionsListTable()
-                && createElementsAssociationTable();
+                && createElementsAssociationTable()
+                && createWikipediaUrlsTable();
     }
 
     /**
@@ -64,7 +65,7 @@ public final class CreateTables {
     public static boolean createElementsTable() {
         return createTable("CREATE TABLE elements(uid INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS " +
                 "IDENTITY (START WITH 1, INCREMENT BY 1)," +
-                "id INT NOT NULL, " +
+                "id INT NOT NULL UNIQUE , " +
                 "type INT NOT NULL, " +
                 "name VARCHAR(255) NOT NULL ) ");
     }
@@ -97,6 +98,16 @@ public final class CreateTables {
                 "grade INT NOT NULL DEFAULT 0, " +
                 "comment VARCHAR(255), " +
                 "PRIMARY KEY(uid, user_id))");
+    }
+
+    public static boolean createWikipediaUrlsTable() {
+        return createTable("CREATE TABLE WIKIPEDIA_URLS(" +
+                "CHARACTER_NAME VARCHAR(255) NOT NULL ," +
+                " CHARACTER_LABEL VARCHAR(255)," +
+                " CHARACTER_URL VARCHAR(255)," +
+                " CHARACTER_ALIAS VARCHAR(255)," +
+                " CHARACTER_DESCRIPTION VARCHAR(255)," +
+                "PRIMARY KEY (CHARACTER_NAME,CHARACTER_URL))");
     }
 
 

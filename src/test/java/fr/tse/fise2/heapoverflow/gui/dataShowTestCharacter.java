@@ -16,7 +16,7 @@ public class dataShowTestCharacter {
         UI ui = new UI();
         EventQueue.invokeLater(ui::init);
         Controller controller = new Controller(ui);
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
 //        Path myFile = Paths.get("comicSample.json");
         try {
             String response = request.getData("characters/1009367",null);

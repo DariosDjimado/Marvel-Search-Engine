@@ -2,14 +2,15 @@ package fr.tse.fise2.heapoverflow.controllers;
 
 import fr.tse.fise2.heapoverflow.database.CreateTables;
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
+import fr.tse.fise2.heapoverflow.database.WikipediaUrlsTable;
 import fr.tse.fise2.heapoverflow.gui.SetupView;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.models.SetupModel;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
@@ -50,22 +51,19 @@ public class SetupController {
                      */
                     @Override
                     public void run() {
-                        try {
-                            view.onLog("creating database");
-                            if (CreateTables.createAllTables()) {
-                                view.onLog("database created");
-                            } else {
-                                view.onLog("an error occured when creating database");
-                            }
-                            saveElement("characters_sample.csv", CHARACTER);
-                            saveElement("comics_sample.csv", COMIC);
-                            if (view != null) {
-                                view.setInstallFinished();
-                            }
-                            model.nextPage();
-                        } catch (java.io.IOException e) {
-                            e.printStackTrace();
+                        view.onLog("creating database");
+                        if (CreateTables.createAllTables()) {
+                            view.onLog("database created");
+                        } else {
+                            view.onLog("an error occured when creating database");
                         }
+                        saveCharactersUrls();
+                        saveElement("characters_sample.csv", CHARACTER);
+                        saveElement("comics_sample.csv", COMIC);
+                        if (view != null) {
+                            view.setInstallFinished();
+                        }
+                        model.nextPage();
                     }
                 };
                 thread.start();
@@ -77,30 +75,54 @@ public class SetupController {
         }
     }
 
-    private void saveElement(String filePath, MarvelElement elements) throws IOException {
+    private void saveElement(String filePath, MarvelElement elements) {
         File sample = new File(filePath);
-        BufferedReader reader = new BufferedReader(new FileReader(sample));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (view != null) {
-                String[] lineArray = line.split(";");
-                int id = Integer.parseInt(lineArray[0]);
-                String name = lineArray[1];
-                switch (elements) {
-                    case CHARACTER: {
-                        MarvelElementTable.insertCharacter(id, name);
-                        break;
+        try (BufferedReader reader = new BufferedReader(new FileReader(sample))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (view != null) {
+                    String[] lineArray = line.split(";");
+                    int id = Integer.parseInt(lineArray[0]);
+                    String name = lineArray[1];
+                    switch (elements) {
+                        case CHARACTER: {
+                            MarvelElementTable.insertCharacter(id, name);
+                            break;
+                        }
+                        case COMIC: {
+                            MarvelElementTable.insertComic(id, name);
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    case COMIC: {
-                        MarvelElementTable.insertComic(id, name);
-                        break;
-                    }
-                    default:
-                        break;
+                    view.onLog("insert " + elements.name().toLowerCase() + " " + name + " into database");
                 }
-
-                view.onLog("insert " + elements.name().toLowerCase() + " " + name + " into database");
             }
+        } catch (Exception e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
+    private void saveCharactersUrls() {
+        File sample = new File("characters_urls_sample.csv");
+        try (BufferedReader reader = new BufferedReader(new FileReader(sample))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (view != null) {
+                    String[] lineArray = line.split(";");
+                    String characterName = lineArray[0];
+                    String characterLabel = lineArray[1].equals("-") ? "" : lineArray[1];
+                    String characterUrl = lineArray[2];
+                    String characterAlias = lineArray[3].equals("-") ? "" : lineArray[3];
+                    String characterDescription = lineArray[4].equals("-") ? "" : lineArray[4];
+                    WikipediaUrlsTable.insert(characterName, characterLabel, characterUrl, characterAlias, characterDescription);
+                    view.onLog("insert url: --> " + characterUrl);
+                }
+            }
+        } catch (Exception e) {
+            AppErrorHandler.onError(e);
         }
     }
 

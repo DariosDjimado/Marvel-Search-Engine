@@ -14,6 +14,7 @@ public final class AppErrorHandler {
     }
 
     public static void onError(Exception e) {
+        e.printStackTrace();
         LOGGER.error(e.getMessage());
         //e.printStackTrace();
         // ui.getUiBottomComponent().displayErrorPopup(e.getMessage());

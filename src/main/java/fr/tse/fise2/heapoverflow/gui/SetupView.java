@@ -86,7 +86,7 @@ public class SetupView implements Observer {
         this.installPanel.setLayout(new BoxLayout(this.installPanel, BoxLayout.Y_AXIS));
         this.installPanel.add(this.stateProgressBar);
         this.installPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
-        this.installPanel.add(new JScrollPane(logList));
+        this.installPanel.add(new CustomScrollPane(logList));
 
         // config done panel
         this.finishedPanel.add(new JLabel("Done"));
@@ -184,7 +184,7 @@ public class SetupView implements Observer {
         this.finishedButton.addActionListener(e -> System.exit(0));
     }
 
-    public void onLog(String sentence) {
+    synchronized public void onLog(String sentence) {
         EventQueue.invokeLater(() -> listModel.add(0, sentence));
     }
 
@@ -203,7 +203,6 @@ public class SetupView implements Observer {
      */
     @Override
     public void update(java.util.Observable o, Object arg) {
-        System.out.println(arg);
         EventQueue.invokeLater(() -> {
             if (model == o) {
                 gotoPage(model.getCurrentPage());

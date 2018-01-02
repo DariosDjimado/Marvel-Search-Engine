@@ -28,9 +28,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
-import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
-
 public class Controller extends InternalController implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     // Model
     private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
@@ -50,7 +47,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
         // store ui
         this.ui = ui;
-        init();
 
         //
         this.dataShow = new DataShow(this.getUi().getCenterWrapperPanel());
@@ -61,7 +57,7 @@ public class Controller extends InternalController implements IRequestListener, 
         this.selectionChangedListenerExtra = new SelectionChangedListener(this);
         this.ui.getUiExtraComponent().setSelectionChangedListener(this.selectionChangedListenerExtra);
         //
-        this.request = new MarvelRequest();
+        this.request = MarvelRequest.getInstance();
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
@@ -78,7 +74,7 @@ public class Controller extends InternalController implements IRequestListener, 
         this.initCreateCollectionButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
-        //this.initCacheUrlsTable();
+        this.initCacheUrlsTable();
 
         this.ui.addWindowListener(new WindowAdapter() {
             @Override
@@ -101,7 +97,7 @@ public class Controller extends InternalController implements IRequestListener, 
         });
 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
-       // this.emitSearchComicById("61522");
+        // this.emitSearchComicById("61522");
 
     }
 
@@ -209,7 +205,8 @@ public class Controller extends InternalController implements IRequestListener, 
 
 
     void init() {
-        this.autoCompletion = new AutoCompletion(this, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f);
+        AutoCompletion autoCompletion = new AutoCompletion(this.ui, this.ui.getUiSearchComponent().getSearchTextField(), this);
+        autoCompletion.initComponent();
         this.ui.getUiSearchComponent().getSearchTextField().requestFocusInWindow();
         this.ui.setVisible(true);
     }
@@ -228,7 +225,6 @@ public class Controller extends InternalController implements IRequestListener, 
             });
         }
     }
-
 
 
     private void initCacheUrlsTable() {
@@ -263,51 +259,31 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
     public void searchStartsWith(String text) {
-        this.autoCompletion.getAutoSuggestionPopUpWindow().setVisible(false);
+        //this.autoCompletion.getPopUpWindow().setVisible(false);
         try {
             if (this.ui.getUiSearchComponent().getCharactersRadioButton().isSelected()) {
-                String response = this.request.getData("characters", "nameStartsWith=" + text.toLowerCase() + "&limit=50");
-                Character[] fetched = deserializeCharacters(response).getData().getResults();
-                this.ui.getUiSearchComponent().setResultsCharacters(fetched);
-                this.ui.revalidate();
+                Thread fetchCharacterById = new FetchData(this, "characters", "nameStartsWith=" + text.toLowerCase() +
+                        "&limit=50", FetchData.CharactersType.CHARACTERS);
+                fetchCharacterById.run();
             }
             if (this.ui.getUiSearchComponent().getComicsRadioButton().isSelected()) {
-                System.out.println("tex-------------------------------------------------------------------------------t" + text);
-                String response = this.request.getData("comics", "titleStartsWith=" + text.toLowerCase() + "&limit=50");
-                System.out.println("response" + response);
-                Comic[] fetched = deserializeComics(response).getData().getResults();
-                this.ui.getUiSearchComponent().setResultsComics(fetched);
-                this.ui.revalidate();
+                Thread fetchCharacterById = new FetchData(this, "comics", "titleStartsWith=" + text.toLowerCase() +
+                        "&limit=50", FetchData.ComicsType.COMICS);
+                fetchCharacterById.run();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void emitSearchCharacterById(String word) {
-
-
-        try {
-            final String id = String.valueOf(MarvelElementTable.findCharacterByName(word).getId());
-            Thread fetchCharacterById = new FetchData(this, "characters/" + id, null, FetchData.CharactersType.CHARACTER_BY_ID);
-            fetchCharacterById.run();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void emitSearchCharacterById(int id) {
+        Thread fetchCharacterById = new FetchData(this, "characters/" + id, null, FetchData.CharactersType.CHARACTER_BY_ID);
+        fetchCharacterById.run();
     }
 
-    public void emitSearchComicById(String word) {
-        try {
-
-            final String id = String.valueOf(MarvelElementTable.findComicByTitle(word).getId());
-
-            System.out.println(MarvelElementTable.findComicByTitle(word));
-
-            Thread fetchComic = new FetchData(this, "comics/" + id, null, FetchData.ComicsType.COMIC_BY_ID);
-            fetchComic.run();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void emitSearchComicById(int id) {
+        Thread fetchComic = new FetchData(this, "comics/" + id, null, FetchData.ComicsType.COMIC_BY_ID);
+        fetchComic.run();
     }
 
     public UI getUi() {
@@ -369,7 +345,8 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void onFetchedComics(Comic[] comics) {
-
+        this.ui.getUiSearchComponent().setResultsComics(comics);
+        this.ui.revalidate();
     }
 
     @Override
@@ -402,7 +379,8 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void onFetchedCharacters(Character[] characters) {
-
+        this.ui.getUiSearchComponent().setResultsCharacters(characters);
+        this.ui.revalidate();
     }
 
     @Override

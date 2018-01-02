@@ -1,10 +1,15 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Queue;
@@ -50,7 +55,7 @@ public class InfoSubRequestsThread implements Runnable {
     @Override
     public void run() {
         Job thisJob;
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
         Set fetched;
         while (true) {
             try {

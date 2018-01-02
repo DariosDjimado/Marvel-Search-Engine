@@ -85,7 +85,7 @@ public class ElementsAssociation {
      * @param value      new value
      * @param s          sql string
      */
-    static void updateElementBoolean(int elementUid, int userId, boolean value, @Language("Derby") String s) {
+    private static void updateElementBoolean(int elementUid, int userId, boolean value, @Language("Derby") String s) {
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
             preparedStatement.setBoolean(1, value);
             preparedStatement.setInt(2, elementUid);
@@ -105,7 +105,7 @@ public class ElementsAssociation {
      * @param value      new value
      * @param s          sql string
      */
-    static void updateElementInt(int elementUid, int userId, int value, @Language("Derby") String s) {
+    private static void updateElementInt(int elementUid, int userId, int value, @Language("Derby") String s) {
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
             preparedStatement.setInt(1, value);
             preparedStatement.setInt(2, elementUid);
@@ -126,7 +126,7 @@ public class ElementsAssociation {
      * @param value      new value
      * @param s          sql string
      */
-    static void updateElementString(int elementUid, int userId, String value, @Language("Derby") String s) {
+    private static void updateElementString(int elementUid, int userId, String value, @Language("Derby") String s) {
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
             preparedStatement.setString(1, value);
             preparedStatement.setInt(2, elementUid);

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.CacheImage;
 import fr.tse.fise2.heapoverflow.main.Controller;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -15,7 +16,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Makes request to Marvel API
@@ -27,14 +30,24 @@ public final class MarvelRequest extends UrlBuilder {
     // string that is returned when the rateLimit is reached
     private static String requestCanceled = "More than" + Authentication.getRateLimit() + "request";
     private static Set<RequestListener> requestListeners = new HashSet<>();
+    private static MarvelRequest instance;
     private final OkHttpClient client;
 
-    public MarvelRequest() {
+
+    private MarvelRequest() {
         this.client = new OkHttpClient
                 .Builder()
+                .readTimeout(20, TimeUnit.SECONDS)
                 .cache(Controller.getUrlsCache())
                 .addInterceptor(new MarvelRequestInterceptor())
                 .build();
+    }
+
+    public static MarvelRequest getInstance() {
+        if (instance == null) {
+            instance = new MarvelRequest();
+        }
+        return instance;
     }
 
     /**
@@ -216,6 +229,23 @@ public final class MarvelRequest extends UrlBuilder {
         }
     }
 
+
+    public Set<RequestListener> asyncGetData(String partialUrl, String query, Callback callback) {
+        if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
+            for (RequestListener requestListener : requestListeners) {
+                requestListener.startLoading(partialUrl);
+            }
+
+            Request request = new Request.Builder()
+                    .url(appendBaseUrl(partialUrl, query))
+                    .build();
+
+            client.newCall(request).enqueue(callback);
+
+        }
+        return requestListeners;
+    }
+
     /**
      * Add RequestListener
      *
@@ -234,4 +264,7 @@ public final class MarvelRequest extends UrlBuilder {
         requestListeners.remove(listener);
     }
 
+    public static Set<RequestListener> getRequestListeners() {
+        return requestListeners;
+    }
 }

@@ -11,6 +11,10 @@ import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.ExpiredSessionException;
+import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +65,9 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error(e.getMessage(), e);
             }
+        } catch (ExpiredSessionException | UnknownSessionException e) {
+            getInstance().stopCurrentSession();
+            getInstance().logout();
         }
         return user;
     }
@@ -75,8 +82,12 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
         if (!currentUser.isAuthenticated()) {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password, true);
             try {
+                this.stopCurrentSession();
+                currentUser = SecurityUtils.getSubject();
                 currentUser.login(token);
                 if (currentUser.isAuthenticated()) {
+                    // one hour
+                    currentUser.getSession().setTimeout(3600000);
                     setChanged();
                     notifyObservers(username);
                 }
@@ -93,9 +104,9 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
     public void logout() {
         if (currentUser.isAuthenticated()) {
             currentUser.logout();
-            setChanged();
-            notifyObservers(null);
         }
+        setChanged();
+        notifyObservers(null);
     }
 
     public void signUp(UserRow userRow) throws SQLException {
@@ -112,5 +123,26 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
     @Override
     public boolean passwordsMatch(Object o, String s) {
         return passwordService.passwordsMatch(o, s);
+    }
+
+    private void stopCurrentSession() {
+        try {
+            if (currentUser == null) {
+                return;
+            }
+            currentUser.logout();
+            // we also want to stop the current session
+            Session session = currentUser.getSession(false);
+            if (session != null) {
+                session.stop();
+            }
+
+        } catch (InvalidSessionException e) {
+            // if we can't logout the user # UnknownAccountException can bring us here.
+            Session session = currentUser.getSession(false);
+            if (session != null) {
+                session.stop();
+            }
+        }
     }
 }

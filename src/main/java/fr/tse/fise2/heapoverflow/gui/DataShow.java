@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.database.WikipediaUrlsTable;
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
@@ -326,6 +327,7 @@ public class DataShow {
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Serie");
         details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
         details.put("Last Modification : ", character.getModified().substring(0, 10));
+        details.put("Wikipedia :", WikipediaUrlsTable.findByLabel(character.getName()));
 
         fillPaneWithLabels(detailPane, details);
         detail.revalidate();
@@ -337,7 +339,7 @@ public class DataShow {
         description.setText(character.getDescription());
         //endregion
         //region Serie
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
 
         DefaultListModel<MarvelListElement> seriesListModel = new DefaultListModel<>();
         seriesListModel.addElement(new MarvelListElement("Loading...", null, null));

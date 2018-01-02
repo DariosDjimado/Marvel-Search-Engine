@@ -22,7 +22,7 @@ public class FetchAllCharactersTask extends CharactersRequestAdapter implements 
     @Override
     public boolean doTask() {
         boolean isDone;
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
 
         try {
             int offset = 0;

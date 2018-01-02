@@ -16,7 +16,7 @@ public class CharactersListRenderer extends DefaultListCellRenderer implements L
             @Override
             protected void fillCardData() {
                 Character character = (Character) this.data;
-                this.cardTitle.setText(character.getName().substring(0, 4) + "..." + character.getId());
+                this.cardTitle.setText(character.getName().length() > 25 ? character.getName().substring(0, 25) + "..." : character.getName());
             }
 
             @Override

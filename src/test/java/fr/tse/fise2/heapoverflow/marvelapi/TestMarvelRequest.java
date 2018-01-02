@@ -26,7 +26,7 @@ public class TestMarvelRequest {
     @Test
     public void TestDeserializeCharacters() {
 
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
 
         try {
             // fetch all characters
@@ -77,7 +77,7 @@ public class TestMarvelRequest {
     @Test
     public void TestDeserializeComics() {
 
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
 
         try {
             // fetch all comics
@@ -128,7 +128,7 @@ public class TestMarvelRequest {
 
     @Test
     public void TestGetData() throws Exception {
-        MarvelRequest request = new MarvelRequest();
+        MarvelRequest request = MarvelRequest.getInstance();
         String data = request.getData("creators", null);
         assertNotNull(data);
         assertTrue(data.contains("\"code\":200,\"status\":\"Ok\",\"copyright\":\"© 2017 MARVEL"));
