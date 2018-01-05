@@ -1,5 +1,7 @@
 package fr.tse.fise2.heapoverflow.database;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
@@ -9,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CollectionsTable {
+
+
     public static void insertCollection(String title, String description) throws SQLException {
         PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
@@ -19,6 +23,38 @@ public class CollectionsTable {
 
         statement.execute();
     }
+
+    public static void updateCollection(int collectionId, int userId, String title, String description) {
+        updateCollectionString2Arguments(collectionId,userId,title,description,
+                "UPDATE COLLECTIONS SET TITLE = ? AND DESCRIPTION = ? WHERE COLLECTION_ID = ? AND USER_ID = ?");
+    }
+
+    public static void removeCollection(int id) throws SQLException {
+        PreparedStatement statement = ConnectionDB.getInstance()
+                .getConnection()
+                .prepareStatement("DELETE * FROM collections WHERE COLLECTION_ID = ?");
+        statement.setInt(1, id);
+        ResultSet resultSet = statement.executeQuery();
+        CollectionsRow collectionsRow = null;
+        while (resultSet.next()) {
+            collectionsRow = new CollectionsRow(
+                    resultSet.getInt(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getInt(4));
+        }
+    }
+
+    /*
+    public static void updateCollectionTitle(int collectionId, int userId, String title){
+        updateCollectionString(collectionId,userId,title,"UPDATE COLLECTION SET TITLE = ? WHERE COLLECTION_ID = ? AND USER_ID = ?");
+    }
+
+    public static void updateCollectionDescription(int collectionId, int userId, String description){
+        updateCollectionString(collectionId,userId,description,"UPDATE COLLECTION SET DESCRIPTION = ? WHERE COLLECTION_ID = ? AND USER_ID = ?");
+    }
+    */
+
 
     public static CollectionsRow findCollection(int id) throws SQLException {
         PreparedStatement statement = ConnectionDB.getInstance()
@@ -72,7 +108,7 @@ public class CollectionsTable {
         }
         return found;
     }
-    /*
+
     public static boolean existCollectionByTitle(String title) throws SQLException {
         boolean found = false;
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
@@ -90,5 +126,59 @@ public class CollectionsTable {
         }
         return found;
     }
-    */
+
+
+/*
+    private static void updateCollectionBoolean(int collectionId, int userId, boolean value, @Language("Derby") String s) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
+            preparedStatement.setBoolean(1, value);
+            preparedStatement.setInt(2, collectionId);
+            preparedStatement.setInt(3, userId);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
+    private static void updateCollectionInt(int collectionId, int userId, int value, @Language("Derby") String s) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
+            preparedStatement.setInt(1, value);
+            preparedStatement.setInt(2, collectionId);
+            preparedStatement.setInt(3, userId);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+*/
+    private static void updateCollectionString(int collectionId, int userId, String value, @Language("Derby") String s) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
+            preparedStatement.setString(1, value);
+            preparedStatement.setInt(2, collectionId);
+            preparedStatement.setInt(3, userId);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
+    private static void updateCollectionString2Arguments(int collectionId, int userId, String title, String description, @Language("Derby") String s) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().prepareStatement(s)) {
+
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, collectionId);
+            preparedStatement.setInt(4, userId);
+
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
 }
+    }
