@@ -72,6 +72,7 @@ public class CollectionsTable {
         }
         return found;
     }
+    /*
     public static boolean existCollectionByTitle(String title) throws SQLException {
         boolean found = false;
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
@@ -89,4 +90,5 @@ public class CollectionsTable {
         }
         return found;
     }
+    */
 }

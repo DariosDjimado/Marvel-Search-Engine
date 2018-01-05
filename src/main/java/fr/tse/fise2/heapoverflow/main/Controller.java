@@ -194,7 +194,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
             if (option == JOptionPane.YES_OPTION) {
                 try {
-                    CollectionsListTable.insertCollection(textField.getText(), descArea.getText());
+                    CollectionsTable.insertCollection(textField.getText(), descArea.getText());
 
                 } catch (SQLException e1) {
                     e1.printStackTrace();

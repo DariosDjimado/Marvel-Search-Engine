@@ -4,13 +4,13 @@ public class CollectionsRow {
     private int collectionId;
     private String title;
     private String description;
-    private int usersId;
+    private int userId;
 
-    public CollectionsRow(int collectionId, String title, String description, int usersId) {
+    public CollectionsRow(int collectionId, String title, String description, int userId) {
         this.collectionId = collectionId;
         this.title = title;
         this.description = description;
-        this.usersId = usersId;
+        this.userId = userId;
     }
 
     public int getCollectionId() {
@@ -37,21 +37,21 @@ public class CollectionsRow {
         this.description = description;
     }
 
-    public int getUsersId() {
-        return usersId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUsersId(int usersId) {
-        this.usersId = usersId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     @Override
     public String toString() {
         return "CollectionsRow{" +
-                "collectionId=" + collectionId +
+                "collection_id=" + collectionId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", usersId=" + usersId +
+                ", user_id=" + userId +
                 '}';
     }
 }

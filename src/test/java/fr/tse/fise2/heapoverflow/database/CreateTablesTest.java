@@ -66,7 +66,7 @@ public class CreateTablesTest {
 
     @Test
     public void createCollectionsListTable() {
-        CreateTables.createCollectionsListTable();
+        CreateTables.createCollectionsTable();
         assertTrue(CreateTables.tableIsCreated("collections"));
     }
 
@@ -74,7 +74,7 @@ public class CreateTablesTest {
     public void createElementsAssociationTable() {
         CreateTables.createUsersTable();
         CreateTables.createElementsTable();
-        CreateTables.createCollectionsListTable();
+        CreateTables.createCollectionsTable();
         CreateTables.createElementsAssociationTable();
         assertTrue(CreateTables.tableIsCreated("elements_association"));
     }
