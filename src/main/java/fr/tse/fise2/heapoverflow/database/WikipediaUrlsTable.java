@@ -146,7 +146,7 @@ public class WikipediaUrlsTable {
         return "";
     }
 
-    public static List<WikipediaUrlRow> fincUrls() {
+    public static List<WikipediaUrlRow> findUrls() {
         List<WikipediaUrlRow> wikipediaUrlRows = new LinkedList<>();
         try (Statement statement = ConnectionDB.getInstance().getConnection().createStatement();) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM WIKIPEDIA_URLS");

@@ -112,11 +112,11 @@ public class SetupController {
             while ((line = reader.readLine()) != null) {
                 if (view != null) {
                     String[] lineArray = line.split(";");
-                    String characterName = lineArray[0];
-                    String characterLabel = lineArray[1].equals("-") ? "" : lineArray[1];
-                    String characterUrl = lineArray[2];
-                    String characterAlias = lineArray[3].equals("-") ? "" : lineArray[3];
-                    String characterDescription = lineArray[4].equals("-") ? "" : lineArray[4];
+                    String characterName = lineArray[0].trim();
+                    String characterLabel = lineArray[1].trim().equals("-") ? "" : lineArray[1].trim();
+                    String characterUrl = lineArray[2].trim();
+                    String characterAlias = lineArray[3].trim().equals("-") ? "" : lineArray[3].trim();
+                    String characterDescription = lineArray[4].trim().equals("-") ? "" : lineArray[4].trim();
                     WikipediaUrlsTable.insert(characterName, characterLabel, characterUrl, characterAlias, characterDescription);
                     view.onLog("insert url: --> " + characterUrl);
                 }

@@ -264,12 +264,12 @@ public class Controller extends InternalController implements IRequestListener, 
             if (this.ui.getUiSearchComponent().getCharactersRadioButton().isSelected()) {
                 Thread fetchCharacterById = new FetchData(this, "characters", "nameStartsWith=" + text.toLowerCase() +
                         "&limit=50", FetchData.CharactersType.CHARACTERS);
-                fetchCharacterById.run();
+                fetchCharacterById.start();
             }
             if (this.ui.getUiSearchComponent().getComicsRadioButton().isSelected()) {
                 Thread fetchCharacterById = new FetchData(this, "comics", "titleStartsWith=" + text.toLowerCase() +
                         "&limit=50", FetchData.ComicsType.COMICS);
-                fetchCharacterById.run();
+                fetchCharacterById.start();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -278,12 +278,12 @@ public class Controller extends InternalController implements IRequestListener, 
 
     public void emitSearchCharacterById(int id) {
         Thread fetchCharacterById = new FetchData(this, "characters/" + id, null, FetchData.CharactersType.CHARACTER_BY_ID);
-        fetchCharacterById.run();
+        fetchCharacterById.start();
     }
 
     public void emitSearchComicById(int id) {
         Thread fetchComic = new FetchData(this, "comics/" + id, null, FetchData.ComicsType.COMIC_BY_ID);
-        fetchComic.run();
+        fetchComic.start();
     }
 
     public UI getUi() {
@@ -361,7 +361,7 @@ public class Controller extends InternalController implements IRequestListener, 
         if (comic.getSeries() != null) {
             // since we have the comic now we are going to fetch all comics in same series by using series id returned
             Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(43) + "/comics", null, FetchData.ComicsType.COMICS_IN_SAME_SERIES);
-            fetchComicsInSameSeries.run();
+            fetchComicsInSameSeries.start();
         }
     }
 
@@ -403,7 +403,7 @@ public class Controller extends InternalController implements IRequestListener, 
         // if there are comics returned then we'll get the others characters
         if (character.getComics().getReturned() > 0) {
             Thread fetchCharactersInSameComic = new FetchData(this, "series/" + character.getComics().getItems()[0].getResourceURI().substring(43) + "/characters", null, FetchData.CharactersType.CHARACTERS_IN_SAME_SERIES);
-            fetchCharactersInSameComic.run();
+            fetchCharactersInSameComic.start();
         }
     }
 
