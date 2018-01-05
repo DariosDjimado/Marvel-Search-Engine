@@ -64,10 +64,11 @@ public class CollectionsTable {
     }
 
     @NotNull
-    public static List<CollectionsRow> findCollections() throws SQLException {
+    public static List<CollectionsRow> findCollectionsByUserId(int id) throws SQLException {
         PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM collections");
+                .prepareStatement("SELECT * FROM collections WHERE USER_ID = ?");
+        statement.setInt(1,id);
         ResultSet resultSet = statement.executeQuery();
         List<CollectionsRow> collectionsRows = new ArrayList<>();
         while (resultSet.next()) {
