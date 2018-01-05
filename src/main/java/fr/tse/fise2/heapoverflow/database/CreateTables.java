@@ -24,7 +24,7 @@ public final class CreateTables {
         return createUsersTable()
                 && createElementsTable()
                 && createCacheUrlsTable()
-                && createCollectionsListTable()
+                && createCollectionsTable()
                 && createElementsAssociationTable()
                 && createWikipediaUrlsTable();
     }
@@ -76,11 +76,12 @@ public final class CreateTables {
      *
      * @return boolean. True if comics table is successfully creates otherwise false will be returned.
      */
-    public static boolean createCollectionsListTable() {
-        return createTable("CREATE TABLE collections(" +
+    public static boolean createCollectionsTable() {
+        return createTable("CREATE TABLE COLLECTIONS(" +
                 "collection_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1,INCREMENT BY 1), " +
                 "title VARCHAR(255) NOT NULL," +
-                "description VARCHAR(255) NOT NULL)");
+                "description VARCHAR(255) NOT NULL," +
+                "user_id INT NOT NULL REFERENCES USERS(ID))");
     }
 
 
