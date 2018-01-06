@@ -364,6 +364,16 @@ public class DataShow {
         tabs.addTab("Stories", new CustomScrollPane(stories));
         isrt.addJob("Story", "Stories", character.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
+
+        //lien_ext
+        DefaultListModel<MarvelListElement> lien_extListModel = new DefaultListModel<>();
+        lien_extListModel.addElement(new MarvelListElement("Loading...", null, null));
+        JList<MarvelListElement> lien_ext = new JList<>(lien_extListModel);
+        tabsJLists.put("lien_ext", stories);
+        tabs.addTab("lien_ext", new CustomScrollPane(stories));
+        isrt.addJob("lien_ext", "lien_ext", String.valueOf(character.getUrls()), elementToken);
+        //endlien_ext
+
         //region Events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
         eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
@@ -484,6 +494,11 @@ public class DataShow {
                         ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneSerie.getTitle(), oneSerie.getResourceURI(), MarvelType.Serie));
                     }
                     break;
+                    case "lien_ext":
+                            for (lien_ext onelien_ext: (TreeSet<lien_ext>)elements) {
+                                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(onelien_ext.getTitle(), onelien_ext.getUrl(), MarvelType.lien_ext));
+                            }
+                            break;
                 case "TimeOut":
                     ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", null, MarvelType.Error));
                 default:
