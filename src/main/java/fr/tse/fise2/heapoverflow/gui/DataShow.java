@@ -1,5 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.database.FirstAppearanceRow;
+import fr.tse.fise2.heapoverflow.database.FirstAppearanceTable;
 import fr.tse.fise2.heapoverflow.database.WikipediaUrlsTable;
 import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
@@ -7,6 +9,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
 import fr.tse.fise2.heapoverflow.marvelapi.Image;
+import fr.tse.fise2.heapoverflow.tasks.FirstAppearance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +17,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -328,6 +332,13 @@ public class DataShow {
         details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
         details.put("Last Modification : ", character.getModified().substring(0, 10));
         details.put("Wikipedia :", WikipediaUrlsTable.findByLabel(character.getName()));
+
+        FirstAppearanceRow  firstAppearanceRow = FirstAppearanceTable.getFirstAppearanceRow(character.getName().toLowerCase());
+        if(firstAppearanceRow != null) {
+            details.put(
+                    "First appearance : ",
+                    firstAppearanceRow.getComic() +", "+ firstAppearanceRow.getDate());
+        }
 
         fillPaneWithLabels(detailPane, details);
         detail.revalidate();
