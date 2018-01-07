@@ -1,7 +1,10 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
-import fr.tse.fise2.heapoverflow.database.*;
+import fr.tse.fise2.heapoverflow.database.CacheUrlsTable;
+import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
+import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.*;
@@ -71,7 +74,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
         this.initFavoriteButton();
         this.initReadButton();
-        this.initCreateCollectionButton();
+        this.initOwnedButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
@@ -98,6 +101,10 @@ public class Controller extends InternalController implements IRequestListener, 
 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
         // this.emitSearchComicById("61522");
+
+
+        FavoriteView.setController(this);
+        CollectionsView.setController(this);
 
     }
 
@@ -180,29 +187,12 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
+    private void initOwnedButton() {
+        this.dataShow.getBtnPane().getOwnedButton().addActionListener(e -> {
 
-    private void initCreateCollectionButton() {
-        this.ui.getUiTopComponent().getCreateCollectionButton().addActionListener(e -> {
-            final JLabel titleLabel = new JLabel("Title");
-            final JTextField textField = new JTextField();
-            final JLabel descLabel = new JLabel("Description");
-            final JTextArea descArea = new JTextArea(10, 1);
 
-            int option = JOptionPane.showConfirmDialog(ui, new Object[]{titleLabel, textField, descLabel, descArea},
-                    "Sign in", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.PLAIN_MESSAGE, null);
-
-            if (option == JOptionPane.YES_OPTION) {
-                try {
-                    CollectionsTable.insertCollection(textField.getText(), descArea.getText());
-
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-            }
         });
     }
-
 
     void init() {
         AutoCompletion autoCompletion = new AutoCompletion(this.ui, this.ui.getUiSearchComponent().getSearchTextField(), this);
@@ -288,6 +278,10 @@ public class Controller extends InternalController implements IRequestListener, 
 
     public UI getUi() {
         return ui;
+    }
+
+    public void gotoSearchView() {
+        this.ui.getTabbedPane().setSelectedIndex(0);
     }
 
     @Override

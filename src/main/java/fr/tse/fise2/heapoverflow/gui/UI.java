@@ -37,8 +37,8 @@ public class UI extends JFrame {
 
         this.tabbedPane.add("Search ", this.searchViewPanel);
         this.tabbedPane.add("Library", new JPanel());
-        this.tabbedPane.add("Favorite", new JPanel());
-        this.tabbedPane.add("Collection", new CollectionsView());
+        this.tabbedPane.add("Favorite", new FavoriteView());
+        this.tabbedPane.add("Collection", CollectionsView.getInstance());
 
 
         container.add(tabbedPane, BorderLayout.CENTER);
@@ -157,6 +157,10 @@ public class UI extends JFrame {
 
     public UITopComponent getUiTopComponent() {
         return uiTopComponent;
+    }
+
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
     }
 }
 

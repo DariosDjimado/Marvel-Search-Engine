@@ -32,7 +32,6 @@ public class ElementsAssociation {
         updateElementInt(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET GRADE = ? WHERE UID = ? AND USER_ID = ?");
     }
 
-
     /**
      * Updates user comment in elements association table
      *
@@ -117,7 +116,6 @@ public class ElementsAssociation {
         }
     }
 
-
     /**
      * updates element in elements association table
      *
@@ -138,14 +136,21 @@ public class ElementsAssociation {
         }
     }
 
+    public static List<ElementAssociationRow> findComicsByCollection(int userID, int collectionID) {
+        return findElementsByUser(userID, COMIC, "SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                " WHERE user_id = ? AND TYPE = ? AND COLLECTION_ID = " + collectionID);
+    }
+
+
     /**
      * Selects all rows that match user and comic constraints
      *
      * @param userId user unique id
      * @return list of ElementAssociationRow
      */
-    public static List<ElementAssociationRow> findComicsByUser(int userId) {
-        return findElementsByUser(userId, COMIC);
+    public static List<ElementAssociationRow> findFavoriteComicsByUser(int userId) {
+        return findElementsByUser(userId, COMIC, "SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                " WHERE user_id = ? AND TYPE = ? AND FAVORITE = TRUE ");
     }
 
     /**
@@ -155,7 +160,8 @@ public class ElementsAssociation {
      * @return list of ElementAssociationRow
      */
     public static List<ElementAssociationRow> findCharactersByUser(int userId) {
-        return findElementsByUser(userId, CHARACTER);
+        return findElementsByUser(userId, CHARACTER, "SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                " WHERE user_id = ? AND TYPE = ?");
     }
 
     /**
@@ -166,12 +172,12 @@ public class ElementsAssociation {
      * @return list of ElementAssociationRow
      */
     @NotNull
-    private static List<ElementAssociationRow> findElementsByUser(int userId, MarvelElement type) {
+    private static List<ElementAssociationRow> findElementsByUser(int userId, MarvelElement type,
+                                                                  @Language("Derby") String sql) {
         List<ElementAssociationRow> elementAssociationRows = new ArrayList<>();
 
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
-                        " WHERE user_id = ? AND TYPE = ?")) {
+                .prepareStatement(sql)) {
 
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, type.getValue());
@@ -244,7 +250,6 @@ public class ElementsAssociation {
         return elementAssociationRow;
     }
 
-
     public static void updateCommentCreateAsNeeded(int elementId, String elementName, int userId, String value, MarvelElement marvelElement) {
         int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
         if (findElement(userId, elementId, marvelElement) == null) {
@@ -253,7 +258,6 @@ public class ElementsAssociation {
             updateUserComment(elementUID, userId, value);
         }
     }
-
 
     public static void updateReadCreateAsNeeded(int elementId, String elementName, int userId, boolean value, MarvelElement marvelElement) {
         int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
@@ -264,13 +268,21 @@ public class ElementsAssociation {
         }
     }
 
-
     public static void updateGradeAsNeeded(int elementId, String elementName, int userId, int value, MarvelElement marvelElement) {
         int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
         if (findElement(userId, elementId, marvelElement) == null) {
             updateElementInt(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(GRADE,UID,user_id) VALUES(?,?,?)");
         } else {
             updateGrade(elementUID, userId, value);
+        }
+    }
+
+    public static void updateCollectionCreateAsNeeded(int elementId, String elementName, int userId, int value, MarvelElement marvelElement) {
+        int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, marvelElement);
+        if (findElement(userId, elementId, marvelElement) == null) {
+            updateElementInt(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(COLLECTION_ID,UID,user_id) VALUES(?,?,?)");
+        } else {
+            updateCollection(elementUID, userId, value);
         }
     }
 
@@ -282,6 +294,35 @@ public class ElementsAssociation {
             updateFavorite(elementUID, userId, value);
         }
     }
+
+
+    public static void onDeleteCollection(int collectionID, int userID) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection().
+                prepareStatement("UPDATE  ELEMENTS_ASSOCIATION SET COLLECTION_ID = NULL " +
+                        "WHERE COLLECTION_ID = ? AND USER_ID = ?")) {
+            preparedStatement.setInt(1, collectionID);
+            preparedStatement.setInt(2, userID);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
+    public static void removeCollection(int userID, int collectionID, int elementID) {
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("UPDATE ELEMENTS_ASSOCIATION SET COLLECTION_ID = NULL " +
+                        "WHERE USER_ID = ? AND COLLECTION_ID = ? AND UID = (SELECT UID FROM ELEMENTS WHERE ID = ?)")) {
+            preparedStatement.setInt(1, userID);
+            preparedStatement.setInt(2, collectionID);
+            preparedStatement.setInt(3, elementID);
+
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+
 
     private static int getElementUidFromMarvelElementTable(int elementId, String elementName, MarvelElement marvelElement) {
         int elementUID;

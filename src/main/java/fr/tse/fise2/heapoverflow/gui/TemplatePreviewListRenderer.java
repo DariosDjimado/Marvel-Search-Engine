@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
-    private static final Color selectionColor = new Color(3, 169, 244);
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
     final GradesPanel gradesPanel;
@@ -87,7 +86,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-        this.mainPanel.setBackground(this.selected ? selectionColor : Color.WHITE);
+        this.mainPanel.setBackground(this.selected ? UIColor.LiST_CELL_SELECTED : Color.WHITE);
     }
 
 
@@ -97,7 +96,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
         if (this.selected) {
             this.mainPanel.setOpaque(true);
-            this.mainPanel.setBackground(selectionColor);
+            this.mainPanel.setBackground(UIColor.LiST_CELL_SELECTED);
         }
         super.paintComponent(graphics);
 

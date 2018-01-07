@@ -54,8 +54,7 @@ public class SaltRealm extends JdbcRealm {
     }
 
     private UserRow getUser(String username) {
-        System.out.println(username);
-        UserRow userRow = null;
+        UserRow userRow;
         try {
             userRow = UsersTable.findUserByUsername(username);
         } catch (SQLException e) {

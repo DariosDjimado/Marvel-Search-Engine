@@ -16,7 +16,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -193,10 +192,20 @@ public final class MarvelRequest extends UrlBuilder {
             }
 
             Thread cacheImage = new CacheImage(bufferedReader, image, tmpPath);
-            cacheImage.run();
+            cacheImage.start();
 
             return bufferedReader;
         }
+    }
+
+    public static void endRequest(String url) {
+        for (RequestListener requestListener : requestListeners) {
+            requestListener.endLoading(url);
+        }
+    }
+
+    public static Set<RequestListener> getRequestListeners() {
+        return requestListeners;
     }
 
     /**
@@ -228,7 +237,6 @@ public final class MarvelRequest extends UrlBuilder {
             return requestCanceled;
         }
     }
-
 
     public Set<RequestListener> asyncGetData(String partialUrl, String query, Callback callback) {
         if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
@@ -262,9 +270,5 @@ public final class MarvelRequest extends UrlBuilder {
      */
     public void removeRequestListener(RequestListener listener) {
         requestListeners.remove(listener);
-    }
-
-    public static Set<RequestListener> getRequestListeners() {
-        return requestListeners;
     }
 }
