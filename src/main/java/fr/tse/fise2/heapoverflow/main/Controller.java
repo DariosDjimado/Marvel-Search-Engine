@@ -111,7 +111,6 @@ public class Controller extends InternalController implements IRequestListener, 
         libFrame.addWindowFocusListener(new WindowFocusListener() {
             @Override
             public void windowGainedFocus(WindowEvent e) {
-                library.refreshFav();
                 library.refreshLib();
             }
 

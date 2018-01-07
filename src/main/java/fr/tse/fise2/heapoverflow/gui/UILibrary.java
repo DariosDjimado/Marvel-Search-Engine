@@ -20,13 +20,8 @@ import java.util.Observer;
 public class UILibrary implements Observer {
     JPanel panel;
 
-    JTabbedPane tabs;
-
     JList<MarvelListElement> libList;
     DefaultListModel<MarvelListElement> libListModel;
-
-    JList<MarvelListElement> favList;
-    DefaultListModel<MarvelListElement> favListModel;
 
     JTextField libTxtSearch;
     JButton libBtnSearch;
@@ -36,24 +31,12 @@ public class UILibrary implements Observer {
     JButton libBtnRead;
     JButton libBtnUnRead;
 
-    JTextField favTxtSearch;
-    JButton favBtnSearch;
-
-    JButton favBtnUnFav;
-    JButton favBtnOwn;
-    JButton favBtnRead;
-    JButton favBtnUnRead;
-
     public UILibrary(JPanel panel) {
         this.panel = panel;
         this.panel.setLayout(new BorderLayout());
 
-        tabs = new JTabbedPane();
-        this.panel.add(tabs, BorderLayout.CENTER);
         JPanel libPane = new JPanel(new BorderLayout());
-        JPanel favPane = new JPanel(new BorderLayout());
-        tabs.add("Library", libPane);
-        tabs.add("Favorite", favPane);
+        this.panel.add(libPane, BorderLayout.CENTER);
 
         //region Library
         libList = new JList<>();
@@ -84,54 +67,8 @@ public class UILibrary implements Observer {
         libBtnPane.add(libBtnUnRead);
         libRightPane.add(libBtnPane, BorderLayout.SOUTH);
         //endregion
-        //region Favorite
-        favList = new JList<>();
-        favListModel = new DefaultListModel<>();
-        favList.setModel(favListModel);
-        favPane.add(new JScrollPane(favList), BorderLayout.CENTER);
-
-        JPanel favRightPane = new JPanel(new BorderLayout());
-        favPane.add(favRightPane, BorderLayout.EAST);
-
-        favTxtSearch = new JTextField();
-        favTxtSearch.setPreferredSize(new Dimension(200, 30));
-        favBtnSearch = new JButton("Search");
-        JPanel favSearchBar = new JPanel();
-        favSearchBar.add(favTxtSearch);
-        favSearchBar.add(favBtnSearch);
-        favRightPane.add(favSearchBar, BorderLayout.NORTH);
-
-        favBtnUnFav = new JButton("-Favorite");
-        favBtnOwn = new JButton("+Library");
-        favBtnRead = new JButton("+Read");
-        favBtnUnRead = new JButton("-Read");
-        JPanel favBtnPane = new JPanel(new GridLayout(2, 2, 4, 4));
-        favBtnPane.setBorder(new EmptyBorder(4, 4, 4, 4));
-        favBtnPane.add(favBtnOwn);
-        favBtnPane.add(favBtnRead);
-        favBtnPane.add(favBtnUnFav);
-        favBtnPane.add(favBtnUnRead);
-        favRightPane.add(favBtnPane, BorderLayout.SOUTH);
-        //endregion
-
-        tabs.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                switch (tabs.getTitleAt(tabs.getSelectedIndex())) {
-                    case "Favorite":
-                        refreshFav();
-                        break;
-                    case "Library":
-                        refreshLib();
-                        break;
-                    default:
-                        System.err.println("Unknown Tab: " + tabs.getTitleAt(tabs.getSelectedIndex()));
-                }
-            }
-        });
 
         refreshLib();
-//        refreshFav();
 
         UserAuthenticationModel.getInstance().addObserver(this);
         LibraryController.getController().setUiLibrary(this);
@@ -155,31 +92,10 @@ public class UILibrary implements Observer {
         panel.repaint();
     }
 
-    public void refreshFav() {
-        User user = UserAuthenticationModel.getUser();
-        favListModel.clear();
-
-        if (user != null) {
-            List<ElementAssociationRow> UsersComics = ElementsAssociation.findComicsByUser(user.getId());
-            for (ElementAssociationRow oneComic : UsersComics) {
-                if (oneComic.isFavorite()) {
-                    favListModel.addElement(new MarvelListElement(oneComic.getName(), Integer.valueOf(oneComic.getElementID()).toString(), MarvelType.Comic));
-                }
-            }
-        } else {
-            favListModel.addElement(new MarvelListElement("Please Log In", null, null));
-        }
-        panel.revalidate();
-        panel.repaint();
-    }
-
     public DefaultListModel<MarvelListElement> getLibListModel() {
         return libListModel;
     }
 
-    public DefaultListModel<MarvelListElement> getFavListModel() {
-        return favListModel;
-    }
 
     public JTextField getLibTxtSearch() {
         return libTxtSearch;
@@ -205,36 +121,8 @@ public class UILibrary implements Observer {
         return libBtnUnRead;
     }
 
-    public JTextField getFavTxtSearch() {
-        return favTxtSearch;
-    }
-
-    public JButton getFavBtnSearch() {
-        return favBtnSearch;
-    }
-
-    public JButton getFavBtnUnFav() {
-        return favBtnUnFav;
-    }
-
-    public JButton getFavBtnOwn() {
-        return favBtnOwn;
-    }
-
-    public JButton getFavBtnRead() {
-        return favBtnRead;
-    }
-
-    public JButton getFavBtnUnRead() {
-        return favBtnUnRead;
-    }
-
     public JList<MarvelListElement> getLibList() {
         return libList;
-    }
-
-    public JList<MarvelListElement> getFavList() {
-        return favList;
     }
 
     public JPanel getPanel() {
@@ -244,6 +132,5 @@ public class UILibrary implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         refreshLib();
-        refreshFav();
     }
 }
