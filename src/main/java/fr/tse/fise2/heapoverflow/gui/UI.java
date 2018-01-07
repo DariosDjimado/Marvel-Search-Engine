@@ -7,6 +7,8 @@ import java.awt.*;
 public class UI extends JFrame {
     private final JPanel topPanel;
     private final UITopComponent uiTopComponent;
+    private final JPanel searchViewPanel;
+    private final JTabbedPane tabbedPane;
     private JPanel container;
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
@@ -17,10 +19,14 @@ public class UI extends JFrame {
     public UI() {
         super("Marvel Search");
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        final JFrame frame = this;
         this.topPanel = new JPanel();
 
-        uiTopComponent = new UITopComponent(this,this.topPanel);
+        this.searchViewPanel = new JPanel(new BorderLayout());
+
+        this.tabbedPane = new JTabbedPane();
+        this.tabbedPane.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+
+        uiTopComponent = new UITopComponent(this, this.topPanel);
 
     }
 
@@ -28,6 +34,15 @@ public class UI extends JFrame {
 
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
+
+        this.tabbedPane.add("Search ", this.searchViewPanel);
+        this.tabbedPane.add("Library", new JPanel());
+        this.tabbedPane.add("Favorite", new FavoriteView());
+        this.tabbedPane.add("Collection", CollectionsView.getInstance());
+
+
+        container.add(tabbedPane, BorderLayout.CENTER);
+
 
         createMenu();
         configureTopPanel();
@@ -92,10 +107,13 @@ public class UI extends JFrame {
         centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
         //centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
-        centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
-        centerWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR  );
+        centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
+        centerWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
 
-        container.add(centerWrapperPanel, BorderLayout.CENTER);
+        //  container.add(centerWrapperPanel, BorderLayout.CENTER);
+
+        this.searchViewPanel.add(this.centerWrapperPanel, BorderLayout.CENTER);
+
     }
 
     private void createRightWrapperPanel() {
@@ -107,7 +125,8 @@ public class UI extends JFrame {
         this.uiExtraComponent.build();
 
 
-        container.add(rightWrapperPanel, BorderLayout.EAST);
+        // container.add(rightWrapperPanel, BorderLayout.EAST);
+        this.searchViewPanel.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
     private void createBottomWrapperPanel() {
@@ -138,6 +157,10 @@ public class UI extends JFrame {
 
     public UITopComponent getUiTopComponent() {
         return uiTopComponent;
+    }
+
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
     }
 }
 

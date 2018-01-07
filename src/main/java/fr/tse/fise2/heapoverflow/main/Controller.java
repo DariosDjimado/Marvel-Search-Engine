@@ -1,7 +1,10 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
-import fr.tse.fise2.heapoverflow.database.*;
+import fr.tse.fise2.heapoverflow.database.CacheUrlsTable;
+import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
+import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.*;
@@ -37,8 +40,6 @@ public class Controller extends InternalController implements IRequestListener, 
     // Vue
     private final DataShow dataShow;
     private final UI ui;
-    private final UILibrary library;
-    private final JFrame libFrame;
     private AutoCompletion autoCompletion;
     private MarvelRequest request;
 
@@ -62,8 +63,7 @@ public class Controller extends InternalController implements IRequestListener, 
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
-        //
-        this.libFrame = new JFrame();
+
 
         try {
             AppConfig.tmpDir = Files.createTempDirectory("appdarios") + "/";
@@ -73,8 +73,7 @@ public class Controller extends InternalController implements IRequestListener, 
 
         this.initFavoriteButton();
         this.initReadButton();
-        this.initCreateCollectionButton();
-        this.initMyLibraryButton();
+        this.initCollectionButton();
         this.initOwnButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
@@ -103,22 +102,10 @@ public class Controller extends InternalController implements IRequestListener, 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
         // this.emitSearchComicById("61522");
 
-        libFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        libFrame.setSize(700, 500);
-        JPanel pane = new JPanel();
-        libFrame.setContentPane(pane);
-        library = new UILibrary(pane);
-        libFrame.addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-                library.refreshLib();
-            }
 
-            @Override
-            public void windowLostFocus(WindowEvent e) {
+        FavoriteView.setController(this);
+        CollectionsView.setController(this);
 
-            }
-        });
     }
 
     public static Controller getController() {
@@ -242,34 +229,6 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
-    private void initCreateCollectionButton() {
-        this.ui.getUiTopComponent().getCreateCollectionButton().addActionListener(e -> {
-            final JLabel titleLabel = new JLabel("Title");
-            final JTextField textField = new JTextField();
-            final JLabel descLabel = new JLabel("Description");
-            final JTextArea descArea = new JTextArea(10, 1);
-
-            int option = JOptionPane.showConfirmDialog(ui, new Object[]{titleLabel, textField, descLabel, descArea},
-                    "Sign in", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.PLAIN_MESSAGE, null);
-
-            if (option == JOptionPane.YES_OPTION) {
-                try {
-                    CollectionsTable.insertCollection(textField.getText(), descArea.getText());
-
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void initMyLibraryButton(){
-        this.ui.getUiTopComponent().getLibraryButton().addActionListener(e -> {
-            libFrame.setVisible(true);
-        });
-    }
-
 
     void init() {
         AutoCompletion autoCompletion = new AutoCompletion(this.ui, this.ui.getUiSearchComponent().getSearchTextField(), this);
@@ -355,6 +314,10 @@ public class Controller extends InternalController implements IRequestListener, 
 
     public UI getUi() {
         return ui;
+    }
+
+    public void gotoSearchView() {
+        this.ui.getTabbedPane().setSelectedIndex(0);
     }
 
     @Override

@@ -41,6 +41,10 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
         currentUser = SecurityUtils.getSubject();
     }
 
+    public static boolean isAuthencated() {
+        return currentUser.isAuthenticated();
+    }
+
     @NotNull
     public static UserAuthenticationModel getInstance() {
         if (instance == null) {
@@ -48,7 +52,6 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
         }
         return instance;
     }
-
 
     @Nullable
     public static User getUser() {
@@ -76,7 +79,6 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
     private static User getUser(UserRow userRow) {
         return new User(userRow.getUsername(), userRow.getId(), userRow.getFirstName(), userRow.getLastName());
     }
-
 
     public void login(String username, char[] password) throws Exception {
         if (!currentUser.isAuthenticated()) {

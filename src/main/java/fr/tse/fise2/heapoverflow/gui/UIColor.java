@@ -25,4 +25,5 @@ public final class UIColor {
     public static final Color SCROLLBAR_TRACK = new Color(255, 255, 255, 255);
     public static final Color SCROLLBAR_THUMB = new Color(158, 158, 158);
 
+    public static final Color LiST_CELL_SELECTED = new Color(3, 169, 244);
 }

@@ -10,7 +10,6 @@ public class UITopComponent {
 
     private final JButton libraryButton;
     private final JPanel topPanel;
-    private final JButton createCollectionButton;
     private final JPanel topRightPanel;
     private final UI ui;
     private UserAuthenticationView userAuthenticationView;
@@ -25,7 +24,6 @@ public class UITopComponent {
         this.topPanel.setBackground(Color.WHITE);
         this.topPanel.setBorder(new BoxShadow());
 
-        this.createCollectionButton = new DefaultButton("Create Collections");
         this.topRightPanel = new JPanel();
 
 
@@ -58,28 +56,17 @@ public class UITopComponent {
         this.topPanel.setLayout(new BorderLayout());
 
         // top right panel
-        this.createCollectionButton.setForeground(UIColor.PRIMARY_COLOR);
-
-
         this.topRightPanel.setLayout(new BorderLayout());
         this.topRightPanel.add(this.libraryButton, BorderLayout.WEST);
-        this.topRightPanel.add(this.createCollectionButton, BorderLayout.CENTER);
         this.topPanel.add(this.topRightPanel, BorderLayout.WEST);
-
 
         // shadow
         this.topPanel.add(this.userAuthenticationView, BorderLayout.EAST);
-
-
     }
 
     public UserAuthenticationView getUserAuthenticationView() {
         return userAuthenticationView;
     }
 
-    public JButton getCreateCollectionButton() {
-        return createCollectionButton;
-    }
 
-    public JButton getLibraryButton() { return libraryButton; }
 }

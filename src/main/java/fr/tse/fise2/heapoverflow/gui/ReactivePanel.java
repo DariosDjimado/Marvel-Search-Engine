@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
+import fr.tse.fise2.heapoverflow.database.CollectionsRow;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
 import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
@@ -10,23 +11,30 @@ import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * @author Darios DJIMADO
  */
 public class ReactivePanel extends JPanel {
     private final OwnButtonView ownedButtonView;
+    private final LibraryButton collectionButton;
     private final ReadButtonView readButtonView;
     private final GradesPanelView gradesPanelView;
     private final FavoriteButtonView favoriteButtonView;
     private final CommentButtonView commentButtonView;
     private final JTextArea commentTextArea;
     private final JButton saveCommentButton;
-    private final CustomScrollPane scrollPane;
+    private final CustomScrollPane commentTextAreaScrollPane;
+    private final CustomScrollPane collectionsScrollPane;
+    private final JList<CollectionsRow> collectionsRowJList;
+    private final CustomDialog collectionsDialog;
+    private final JButton confirmCollectionSelectedButton;
 
 
     ReactivePanel() {
         this.ownedButtonView = new OwnButtonView();
+        this.collectionButton = new LibraryButton();
         this.favoriteButtonView = new FavoriteButtonView();
         this.readButtonView = new ReadButtonView();
         this.gradesPanelView = new GradesPanelView();
@@ -45,9 +53,26 @@ public class ReactivePanel extends JPanel {
         this.commentTextArea.setLineWrap(true);
         this.commentTextArea.setWrapStyleWord(true);
 
-        this.scrollPane = new CustomScrollPane(this.commentTextArea);
-        this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        this.commentTextAreaScrollPane = new CustomScrollPane(this.commentTextArea);
+        this.commentTextAreaScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
+
+        this.collectionsRowJList = new JList<>(CollectionsView.getInstance().getCollectionsListModel());
+        this.collectionsRowJList.setCellRenderer(new CollectionsListRenderer());
+
+        this.collectionsScrollPane = new CustomScrollPane(this.collectionsRowJList,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.collectionsDialog = new CustomDialog(null, "Select a collection", true);
+
+        this.confirmCollectionSelectedButton = new PrimaryButton("Ok");
+
+
+        this.initComponent();
+        this.commentButtonsActionListener();
+    }
+
+    private void initComponent() {
         GroupLayout groupLayout = new GroupLayout(this);
         this.setLayout(groupLayout);
         this.setOpaque(false);
@@ -61,9 +86,10 @@ public class ReactivePanel extends JPanel {
                                         .addComponent(this.commentButtonView)
                                         .addComponent(this.saveCommentButton)
                         )
-                        .addComponent(this.scrollPane)
+                        .addComponent(this.commentTextAreaScrollPane)
                         .addGroup(
                                 groupLayout.createSequentialGroup()
+                                        .addComponent(this.collectionButton)
                                         .addComponent(this.ownedButtonView)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
@@ -78,16 +104,33 @@ public class ReactivePanel extends JPanel {
                                         .addComponent(this.commentButtonView)
                                         .addComponent(this.saveCommentButton)
                         )
-                        .addComponent(this.scrollPane)
+                        .addComponent(this.commentTextAreaScrollPane)
                         .addGroup(
                                 groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                        .addComponent(this.collectionButton)
                                         .addComponent(this.ownedButtonView)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView)
                         )
         );
-        this.commentButtonsActionListener();
+        this.createCollectionDialog();
+        this.confirmCollectionSelectedButtonActionListener();
+    }
+
+    private void confirmCollectionSelectedButtonActionListener() {
+        this.confirmCollectionSelectedButton.addActionListener(e -> {
+            if (UserAuthenticationModel.isAuthencated()) {
+                User user = UserAuthenticationModel.getUser();
+                ElementsAssociation.updateCollectionCreateAsNeeded(this.collectionButton.getComic().getId(),
+                        this.collectionButton.getComic().getTitle(),
+                        Objects.requireNonNull(user).getId(),
+                        this.collectionsRowJList.getSelectedValue().getCollectionId(),
+                        MarvelElement.COMIC);
+                this.collectionsDialog.dispose();
+                CollectionsView.getInstance().refreshComicList();
+            }
+        });
     }
 
 
@@ -98,7 +141,7 @@ public class ReactivePanel extends JPanel {
             if (user != null) {
                 this.commentTextArea.setEnabled(true);
                 this.saveCommentButton.setVisible(true);
-                this.scrollPane.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
+                this.commentTextAreaScrollPane.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
             }
         });
 
@@ -107,7 +150,7 @@ public class ReactivePanel extends JPanel {
             if (user != null) {
                 this.commentTextArea.setEnabled(false);
                 this.saveCommentButton.setVisible(false);
-                this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
+                this.commentTextAreaScrollPane.setBorder(BorderFactory.createEmptyBorder());
                 ElementsAssociation.updateCommentCreateAsNeeded(this.favoriteButtonView.getId(),
                         this.favoriteButtonView.getElementName(),
                         user.getId(),
@@ -115,8 +158,53 @@ public class ReactivePanel extends JPanel {
                         this.favoriteButtonView.getType());
             }
         });
+
+
+        this.collectionButton.addActionListener(e -> {
+            if (UserAuthenticationModel.isAuthencated() && this.collectionButton.getComic() != null) {
+                this.collectionsDialog.customSetVisible();
+            }
+        });
     }
 
+    private void createCollectionDialog() {
+        this.collectionsDialog.setVisible(false);
+        JPanel panel = (JPanel) this.collectionsDialog.getContentPane();
+        this.collectionsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        panel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+        panel.setLayout(new BorderLayout());
+
+        GroupLayout groupLayout = new GroupLayout(panel);
+        panel.setLayout(groupLayout);
+
+        groupLayout.setAutoCreateContainerGaps(true);
+        groupLayout.setAutoCreateGaps(true);
+
+        groupLayout
+                .setHorizontalGroup(
+                        groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                .addComponent(this.collectionsScrollPane)
+                                .addComponent(this.confirmCollectionSelectedButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                );
+
+        groupLayout
+                .setVerticalGroup(
+                        groupLayout
+                                .createSequentialGroup()
+                                .addComponent(this.collectionsScrollPane)
+                                .addComponent(this.confirmCollectionSelectedButton)
+                );
+
+
+        this.collectionsDialog.setMaximumSize(new Dimension(300, 350));
+        this.collectionsDialog.setPreferredSize(new Dimension(300, 350));
+        this.collectionsDialog.setMinimumSize(new Dimension(300, 350));
+    }
+
+
+    public JButton getCollectionButton() {
+        return collectionButton;
+    }
 
     public OwnButtonView getOwnedButtonView() {
         return ownedButtonView;
@@ -157,6 +245,7 @@ public class ReactivePanel extends JPanel {
         this.readButtonView.setComic(comic, row);
         this.gradesPanelView.setComic(comic, row);
         this.commentButtonView.setComic(comic, row);
+        this.collectionButton.setComic(comic);
         this.ownedButtonView.setEnabled(true);
         this.ownedButtonView.setComic(comic, row);
     }
