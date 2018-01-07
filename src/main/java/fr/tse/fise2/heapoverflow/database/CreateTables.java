@@ -114,9 +114,10 @@ public final class CreateTables {
 
     public static boolean createFirstAppearanceTable(){
         return createTable("CREATE TABLE FIRST_APPEARANCE(" +
-                " CHARACTERR VARCHAR(255) PRIMARY KEY NOT NULL," +
+                " CHARACTERR VARCHAR(255) NOT NULL," +
                 "DATE VARCHAR(255)," +
-                "COMIC VARCHAR(255))");
+                "COMIC VARCHAR(255)," +
+                "PRIMARY KEY (CHARACTERR,COMIC))");
     }
 
 
