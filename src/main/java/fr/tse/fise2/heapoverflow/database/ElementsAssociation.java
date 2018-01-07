@@ -78,6 +78,17 @@ public class ElementsAssociation {
     }
 
     /**
+     * Updates collection id column in elements association table
+     *
+     * @param elementUid unique element id
+     * @param userId     user unique id
+     * @param value      new value
+     */
+    public static void updateOwned(int elementUid, int userId, boolean value) {
+        updateElementBoolean(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET OWNED = ? WHERE UID = ? AND USER_ID = ?");
+    }
+
+    /**
      * updates element in elements association table
      *
      * @param elementUid unique element id
@@ -187,7 +198,8 @@ public class ElementsAssociation {
                         resultSet.getInt("collection_id"),
                         resultSet.getBoolean("is_read"),
                         resultSet.getInt("grade"),
-                        resultSet.getString("comment")
+                        resultSet.getString("comment"),
+                        resultSet.getBoolean("owned")
                 ));
             }
         } catch (SQLException e) {
@@ -235,7 +247,8 @@ public class ElementsAssociation {
                         collectionID,
                         resultSet.getBoolean("is_read"),
                         resultSet.getInt("grade"),
-                        comment
+                        comment,
+                        resultSet.getBoolean("owned")
                 );
             }
         } catch (SQLException e) {
@@ -280,6 +293,15 @@ public class ElementsAssociation {
             updateElementBoolean(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(FAVORITE,UID,user_id) VALUES(?,?,?)");
         } else {
             updateFavorite(elementUID, userId, value);
+        }
+    }
+
+    public static void updateOwnedCreateAsNeeded(int elementId, String elementName, int userId, boolean value) {
+        int elementUID = getElementUidFromMarvelElementTable(elementId, elementName, MarvelElement.COMIC);
+        if (findElement(userId, elementId, MarvelElement.COMIC) == null) {
+            updateElementBoolean(elementUID, userId, value, "INSERT INTO ELEMENTS_ASSOCIATION(OWNED,UID,user_id) VALUES(?,?,?)");
+        } else {
+            updateOwned(elementUID, userId, value);
         }
     }
 

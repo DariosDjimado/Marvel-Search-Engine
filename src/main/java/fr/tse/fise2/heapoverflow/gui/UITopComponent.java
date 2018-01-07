@@ -81,5 +81,5 @@ public class UITopComponent {
         return createCollectionButton;
     }
 
-
+    public JButton getLibraryButton() { return libraryButton; }
 }

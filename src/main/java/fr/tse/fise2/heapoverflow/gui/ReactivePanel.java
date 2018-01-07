@@ -15,7 +15,7 @@ import java.awt.*;
  * @author Darios DJIMADO
  */
 public class ReactivePanel extends JPanel {
-    private final JButton ownedButton;
+    private final OwnButtonView ownedButtonView;
     private final ReadButtonView readButtonView;
     private final GradesPanelView gradesPanelView;
     private final FavoriteButtonView favoriteButtonView;
@@ -26,7 +26,7 @@ public class ReactivePanel extends JPanel {
 
 
     ReactivePanel() {
-        this.ownedButton = new LibraryButton();
+        this.ownedButtonView = new OwnButtonView();
         this.favoriteButtonView = new FavoriteButtonView();
         this.readButtonView = new ReadButtonView();
         this.gradesPanelView = new GradesPanelView();
@@ -64,7 +64,7 @@ public class ReactivePanel extends JPanel {
                         .addComponent(this.scrollPane)
                         .addGroup(
                                 groupLayout.createSequentialGroup()
-                                        .addComponent(this.ownedButton)
+                                        .addComponent(this.ownedButtonView)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -81,7 +81,7 @@ public class ReactivePanel extends JPanel {
                         .addComponent(this.scrollPane)
                         .addGroup(
                                 groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                        .addComponent(this.ownedButton)
+                                        .addComponent(this.ownedButtonView)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView)
@@ -118,8 +118,8 @@ public class ReactivePanel extends JPanel {
     }
 
 
-    public JButton getOwnedButton() {
-        return ownedButton;
+    public OwnButtonView getOwnedButtonView() {
+        return ownedButtonView;
     }
 
     public ReadButtonView getReadButtonView() {
@@ -157,6 +157,8 @@ public class ReactivePanel extends JPanel {
         this.readButtonView.setComic(comic, row);
         this.gradesPanelView.setComic(comic, row);
         this.commentButtonView.setComic(comic, row);
+        this.ownedButtonView.setEnabled(true);
+        this.ownedButtonView.setComic(comic, row);
     }
 
     public void setCharacter(Character character) {
@@ -174,5 +176,6 @@ public class ReactivePanel extends JPanel {
         this.readButtonView.setCharacter(character, row);
         this.gradesPanelView.setCharacter(character, row);
         this.commentButtonView.setCharacter(character, row);
+        this.ownedButtonView.setEnabled(false);
     }
 }

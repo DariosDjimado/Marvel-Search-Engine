@@ -176,6 +176,9 @@ public class DataShow {
      * @param comic The comic to display
      */
     synchronized public void DrawComic(Comic comic) {
+        //Clearing jobs for the previous element
+        isrt.clearJobsFor(elementToken);
+        //Getting token for the next element
         elementToken = comic.hashCode();
         //region title display
         head.setText(comic.getTitle());
@@ -318,6 +321,9 @@ public class DataShow {
      *
      */
     synchronized public void DrawCharacter(final Character character) {
+        //Clearing jobs for the previous element
+        isrt.clearJobsFor(elementToken);
+        //Getting token for the next element
         elementToken = character.hashCode();
 
         //region title display

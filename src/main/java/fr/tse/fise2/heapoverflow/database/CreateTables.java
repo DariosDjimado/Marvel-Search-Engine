@@ -99,6 +99,7 @@ public final class CreateTables {
                 "is_read BOOLEAN NOT NULL DEFAULT FALSE," +
                 "grade INT NOT NULL DEFAULT 0, " +
                 "comment VARCHAR(255), " +
+                "owned BOOLEAN NOT NULL DEFAULT FALSE," +
                 "PRIMARY KEY(uid, user_id))");
     }
 

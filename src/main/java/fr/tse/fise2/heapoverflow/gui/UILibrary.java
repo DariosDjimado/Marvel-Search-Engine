@@ -1,12 +1,23 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.authentication.User;
+import fr.tse.fise2.heapoverflow.authentication.UserAuthentication;
+import fr.tse.fise2.heapoverflow.controllers.LibraryController;
+import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
+import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
+import fr.tse.fise2.heapoverflow.interfaces.IUserObserver;
+import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class UILibrary {
+public class UILibrary implements Observer {
     JPanel panel;
 
     JTabbedPane tabs;
@@ -65,7 +76,7 @@ public class UILibrary {
         libBtnFav = new JButton("+Favorite");
         libBtnRead = new JButton("+Read");
         libBtnUnRead = new JButton("-Read");
-        JPanel libBtnPane = new JPanel( new GridLayout(2, 2, 4, 4));
+        JPanel libBtnPane = new JPanel(new GridLayout(2, 2, 4, 4));
         libBtnPane.setBorder(new EmptyBorder(4, 4, 4, 4));
         libBtnPane.add(libBtnFav);
         libBtnPane.add(libBtnRead);
@@ -94,7 +105,7 @@ public class UILibrary {
         favBtnOwn = new JButton("+Library");
         favBtnRead = new JButton("+Read");
         favBtnUnRead = new JButton("-Read");
-        JPanel favBtnPane = new JPanel( new GridLayout(2, 2, 4, 4));
+        JPanel favBtnPane = new JPanel(new GridLayout(2, 2, 4, 4));
         favBtnPane.setBorder(new EmptyBorder(4, 4, 4, 4));
         favBtnPane.add(favBtnOwn);
         favBtnPane.add(favBtnRead);
@@ -106,7 +117,7 @@ public class UILibrary {
         tabs.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                switch(tabs.getTitleAt(tabs.getSelectedIndex())){
+                switch (tabs.getTitleAt(tabs.getSelectedIndex())) {
                     case "Favorite":
                         refreshFav();
                         break;
@@ -121,21 +132,45 @@ public class UILibrary {
 
         refreshLib();
 //        refreshFav();
-        this.panel.setVisible(true);
+
+        UserAuthenticationModel.getInstance().addObserver(this);
+        LibraryController.getController().setUiLibrary(this);
     }
 
-    public void refreshLib(){
+    public void refreshLib() {
+        User user = UserAuthenticationModel.getUser();
         libListModel.clear();
-        libListModel.addElement(new MarvelListElement("Iron man", null, MarvelType.Comic));
 
-        libListModel.addElement(new MarvelListElement("Captain America Civil War", null, MarvelType.Comic));
+        if (user != null) {
+            List<ElementAssociationRow> UsersComics = ElementsAssociation.findComicsByUser(user.getId());
+            for (ElementAssociationRow oneComic : UsersComics) {
+                if (oneComic.isOwned()) {
+                    libListModel.addElement(new MarvelListElement(oneComic.getName(), Integer.valueOf(oneComic.getElementID()).toString(), MarvelType.Comic));
+                }
+            }
+        } else {
+            libListModel.addElement(new MarvelListElement("Please Log In", null, null));
+        }
+        panel.revalidate();
+        panel.repaint();
     }
 
-    public void refreshFav(){
+    public void refreshFav() {
+        User user = UserAuthenticationModel.getUser();
         favListModel.clear();
-        favListModel.addElement(new MarvelListElement("Captain America Civil War", null, MarvelType.Comic));
 
-        favListModel.addElement(new MarvelListElement("Iron man", null, MarvelType.Comic));
+        if (user != null) {
+            List<ElementAssociationRow> UsersComics = ElementsAssociation.findComicsByUser(user.getId());
+            for (ElementAssociationRow oneComic : UsersComics) {
+                if (oneComic.isFavorite()) {
+                    favListModel.addElement(new MarvelListElement(oneComic.getName(), Integer.valueOf(oneComic.getElementID()).toString(), MarvelType.Comic));
+                }
+            }
+        } else {
+            favListModel.addElement(new MarvelListElement("Please Log In", null, null));
+        }
+        panel.revalidate();
+        panel.repaint();
     }
 
     public DefaultListModel<MarvelListElement> getLibListModel() {
@@ -192,5 +227,23 @@ public class UILibrary {
 
     public JButton getFavBtnUnRead() {
         return favBtnUnRead;
+    }
+
+    public JList<MarvelListElement> getLibList() {
+        return libList;
+    }
+
+    public JList<MarvelListElement> getFavList() {
+        return favList;
+    }
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        refreshLib();
+        refreshFav();
     }
 }

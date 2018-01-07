@@ -6,6 +6,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.*;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,11 @@ public class InfoSubRequestsThread implements Runnable {
     /**
      * A FIFO stack of jobs to do
      */
-    Queue<Job> jobs;
+    volatile Queue<Job> jobs;
+    /**
+     * last canceled token to interrupt job in progress
+     */
+    int lastCanceledToken;
 
     /**
      * Constructor, initialize job stack and start thread
@@ -57,8 +62,10 @@ public class InfoSubRequestsThread implements Runnable {
         Job thisJob;
         MarvelRequest request = MarvelRequest.getInstance();
         Set fetched;
+        boolean cancelling;
         while (true) {
             try {
+                cancelling = false;
                 synchronized (this) {
                     while (jobs.isEmpty()) {
                         wait();
@@ -96,6 +103,10 @@ public class InfoSubRequestsThread implements Runnable {
                     int count = 0;
                     int total = 0;
                     do {
+                        if(thisJob.elementHash == lastCanceledToken){
+                            cancelling = true;
+                            break;
+                        }
                         String response = request.getData(thisJob.shortUri, "limit=100&offset=" + 100 * reqCount);
                         switch (thisJob.elementType) {
                             case "Comic":
@@ -145,6 +156,10 @@ public class InfoSubRequestsThread implements Runnable {
 
                     }
                     while (offset + count < total);
+                    if(cancelling){
+                        System.out.println("----" + thisJob + " Cancelled");
+                        continue;
+                    }
                     caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash);
                     System.out.println("----" + thisJob + " Done");
 
@@ -181,6 +196,21 @@ public class InfoSubRequestsThread implements Runnable {
             System.out.println("----New Job for" + elementsClass);
             notify();
         }
+    }
+
+    public synchronized void clearJobsFor(int elementHash){
+        lastCanceledToken = elementHash;
+        Queue<Job> clearedQueue = new ConcurrentLinkedQueue<>();
+        while(!jobs.isEmpty()){
+            Job job = jobs.poll();
+            if(job.elementHash != elementHash){
+                clearedQueue.add(job);
+            }
+            else{
+                System.out.println("----" + job + " Canceled");
+            }
+        }
+        jobs = clearedQueue;
     }
 }
 

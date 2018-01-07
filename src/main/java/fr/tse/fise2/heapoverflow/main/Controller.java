@@ -19,8 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,6 +37,8 @@ public class Controller extends InternalController implements IRequestListener, 
     // Vue
     private final DataShow dataShow;
     private final UI ui;
+    private final UILibrary library;
+    private final JFrame libFrame;
     private AutoCompletion autoCompletion;
     private MarvelRequest request;
 
@@ -61,7 +62,8 @@ public class Controller extends InternalController implements IRequestListener, 
         //
         this.requestListener = new RequestListener(this);
         this.request.addRequestListener(this.requestListener);
-
+        //
+        this.libFrame = new JFrame();
 
         try {
             AppConfig.tmpDir = Files.createTempDirectory("appdarios") + "/";
@@ -72,6 +74,8 @@ public class Controller extends InternalController implements IRequestListener, 
         this.initFavoriteButton();
         this.initReadButton();
         this.initCreateCollectionButton();
+        this.initMyLibraryButton();
+        this.initOwnButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
@@ -99,6 +103,23 @@ public class Controller extends InternalController implements IRequestListener, 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
         // this.emitSearchComicById("61522");
 
+        libFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        libFrame.setSize(700, 500);
+        JPanel pane = new JPanel();
+        libFrame.setContentPane(pane);
+        library = new UILibrary(pane);
+        libFrame.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                library.refreshFav();
+                library.refreshLib();
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+
+            }
+        });
     }
 
     public static Controller getController() {
@@ -181,6 +202,47 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
 
+    private void initOwnButton() {
+
+        final OwnButtonView ownButtonView = this.dataShow.getBtnPane().getOwnedButtonView();
+
+        UserAuthenticationModel.getInstance().addObserver(ownButtonView);
+
+        ownButtonView.addActionListener(e -> {
+            User user = UserAuthenticationModel.getUser();
+            if (user != null) {
+                if (ownButtonView.isState()) {
+                    ElementAssociationRow elementAssociationRow = ElementsAssociation
+                            .findElement(user.getId(),
+                                    ownButtonView.getId(), ownButtonView.getType());
+
+
+                    System.out.println("Deleting from Library " + ownButtonView.getId());
+
+
+                    ElementsAssociation.updateOwned(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
+                    ownButtonView.setState(false);
+
+
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                } else {
+
+                    System.out.println("Adding to Library " + ownButtonView.getId());
+
+
+                    int userId = user.getId();
+                    ElementsAssociation.updateOwnedCreateAsNeeded(ownButtonView.getId(),
+                            ownButtonView.getElementName(), userId, true);
+
+                    ownButtonView.setState(true);
+
+
+                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                }
+            }
+        });
+    }
+
     private void initCreateCollectionButton() {
         this.ui.getUiTopComponent().getCreateCollectionButton().addActionListener(e -> {
             final JLabel titleLabel = new JLabel("Title");
@@ -200,6 +262,12 @@ public class Controller extends InternalController implements IRequestListener, 
                     e1.printStackTrace();
                 }
             }
+        });
+    }
+
+    private void initMyLibraryButton(){
+        this.ui.getUiTopComponent().getLibraryButton().addActionListener(e -> {
+            libFrame.setVisible(true);
         });
     }
 

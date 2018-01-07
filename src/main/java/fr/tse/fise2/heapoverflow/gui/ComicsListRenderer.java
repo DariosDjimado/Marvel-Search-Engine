@@ -17,6 +17,7 @@ public class ComicsListRenderer extends DefaultListCellRenderer implements ListC
             protected void fillCardData() {
                 Comic comic = (Comic) this.data;
                 this.cardTitle.setText(comic.getTitle().length() > 25 ? comic.getTitle().substring(0, 25) + "..." : comic.getTitle());
+                this.ownButton.setComic(comic);
                 this.favoriteButton.setComic(comic);
                 this.readButton.setComic(comic);
                 this.gradesPanel.setComic(comic);

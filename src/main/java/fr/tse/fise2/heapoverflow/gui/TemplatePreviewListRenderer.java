@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
     private static final Color selectionColor = new Color(3, 169, 244);
+    final OwnButton ownButton;
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
     final GradesPanel gradesPanel;
@@ -29,6 +30,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.imagePanel = new TemplatePreviewListRenderer.ImagePanel();
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
+        this.ownButton = new OwnButton();
         this.favoriteButton = new FavoriteButton();
         this.readButton = new ReadButtonView();
         this.gradesPanel = new GradesPanel();
@@ -64,7 +66,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
         // card footer
         this.cardFooterPanel.setOpaque(false);
-        this.cardFooterPanel.add(new LibraryButton());
+        this.cardFooterPanel.add(this.ownButton);
         this.cardFooterPanel.add(this.favoriteButton);
         this.cardFooterPanel.add(this.readButton);
         this.mainPanel.add(cardFooterPanel, BorderLayout.SOUTH);

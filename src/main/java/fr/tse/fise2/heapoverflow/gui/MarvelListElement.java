@@ -5,7 +5,7 @@ package fr.tse.fise2.heapoverflow.gui;
  * TODO: Make it public
  * @author Théo Basty
  */
-class MarvelListElement{
+public class MarvelListElement{
     String dispName;
     String shortURI;
     MarvelType type;
