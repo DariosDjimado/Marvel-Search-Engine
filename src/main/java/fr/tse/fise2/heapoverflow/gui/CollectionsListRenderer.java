@@ -3,12 +3,13 @@ package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.database.CollectionsRow;
 
 import javax.swing.*;
+import javax.swing.plaf.ComponentUI;
 import java.awt.*;
 
-public class CollectionsListRenderer implements ListCellRenderer {
+public class CollectionsListRenderer implements ListCellRenderer<CollectionsRow> {
     private final ListPanel renderer;
 
-    public CollectionsListRenderer() {
+    CollectionsListRenderer() {
         this.renderer = new ListPanel();
     }
 
@@ -31,80 +32,121 @@ public class CollectionsListRenderer implements ListCellRenderer {
      * @see ListModel
      */
     @Override
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends CollectionsRow> list, CollectionsRow value, int index, boolean isSelected, boolean cellHasFocus) {
+        renderer.setSelected(isSelected);
+        renderer.setCollectionsRow(value);
         return renderer;
     }
 
+    private static class ListPanel extends JPanel {
+        private final static ImageIcon IMAGE_ICON = new ImageIcon(ListPanel.class.getResource("c_for_collections.png"));
 
-    class ListPanel extends JPanel {
         private final JPanel imagePanel;
         private final JLabel collectionLabel;
         private final JLabel collectionDescription;
+        private final JPanel mainPanel;
         private CollectionsRow collectionsRow;
-
+        private boolean selected;
 
         /**
          * Creates a new <code>JPanel</code> with a double buffer
          * and a flow layout.
          */
-        public ListPanel() {
-            super();
+        ListPanel() {
+            super(new BorderLayout());
+
+            this.setOpaque(true);
+
+            this.setBackground(UIColor.LiST_CELL_SELECTED);
 
 
-            this.imagePanel = new JPanel();
-            this.collectionLabel = new JLabel("hd jd dhj djh ddjhgd  dhjd ");
-            this.collectionDescription = new JLabel("desc dghfdu fhfiusj jsdhjfh sdjhfisd fsudjhg ");
+            final JLabel picture = new JLabel();
+            picture.setIcon(IMAGE_ICON);
+            this.imagePanel = new JPanel(new BorderLayout());
+            this.imagePanel.add(picture, BorderLayout.CENTER);
 
-            this.setBorder(BorderFactory.createLineBorder(UIColor.PRIMARY_COLOR));
+
+            this.collectionLabel = new JLabel();
+            this.collectionLabel.setOpaque(false);
+            this.collectionDescription = new JLabel();
+            this.collectionDescription.setOpaque(false);
+            this.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
 
             this.setMinimumSize(new Dimension(300, 100));
             this.setPreferredSize(new Dimension(300, 100));
             this.setMaximumSize(new Dimension(300, 100));
 
-
-            this.imagePanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            this.mainPanel = new JPanel(new BorderLayout());
 
 
             this.initComponent();
         }
 
-        private void initComponent() {
-            // image planel
-            this.imagePanel.setPreferredSize(new Dimension(100, 100));
-
-
-            GroupLayout groupLayout = new GroupLayout(this);
-            this.setLayout(groupLayout);
-
-
-            groupLayout
-                    .setHorizontalGroup(
-                            groupLayout.createSequentialGroup()
-                                    .addComponent(this.imagePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                                    .addGap(10)
-                                    .addGroup(
-                                            groupLayout.createParallelGroup()
-                                                    .addComponent(this.collectionLabel)
-                                                    .addComponent(this.collectionDescription)
-                                    )
-                    );
-
-
-            groupLayout
-                    .setVerticalGroup(
-                            groupLayout.createParallelGroup()
-                                    .addComponent(this.imagePanel)
-
-                                    .addGroup(
-                                            groupLayout.createSequentialGroup()
-                                                    .addGap(10)
-                                                    .addComponent(this.collectionLabel)
-                                                    .addGap(10)
-                                                    .addComponent(this.collectionDescription)
-                                    )
-                    );
+        /**
+         * Calls the UI delegate's paint method, if the UI delegate
+         * is non-<code>null</code>.  We pass the delegate a copy of the
+         * <code>Graphics</code> object to protect the rest of the
+         * paint code from irrevocable changes
+         * (for example, <code>Graphics.translate</code>).
+         * <p>
+         * If you override this in a subclass you should not make permanent
+         * changes to the passed in <code>Graphics</code>. For example, you
+         * should not alter the clip <code>Rectangle</code> or modify the
+         * transform. If you need to do these operations you may find it
+         * easier to create a new <code>Graphics</code> from the passed in
+         * <code>Graphics</code> and manipulate it. Further, if you do not
+         * invoker super's implementation you must honor the opaque property,
+         * that is
+         * if this component is opaque, you must completely fill in the background
+         * in a non-opaque color. If you do not honor the opaque property you
+         * will likely see visual artifacts.
+         * <p>
+         * The passed in <code>Graphics</code> object might
+         * have a transform other than the identify transform
+         * installed on it.  In this case, you might get
+         * unexpected results if you cumulatively apply
+         * another transform.
+         *
+         * @param g the <code>Graphics</code> object to protect
+         * @see #paint
+         * @see ComponentUI
+         */
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (this.selected) {
+                this.mainPanel.setBackground(UIColor.LiST_CELL_SELECTED);
+            } else {
+                this.mainPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+            }
         }
 
+        private void initComponent() {
+            // image panel
+            this.imagePanel.setPreferredSize(new Dimension(100, 100));
+
+            // main panel
+            this.mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+            this.mainPanel.add(this.collectionLabel, BorderLayout.NORTH);
+            this.mainPanel.add(this.collectionDescription, BorderLayout.CENTER);
+
+            this.add(this.imagePanel, BorderLayout.WEST);
+            this.add(this.mainPanel, BorderLayout.CENTER);
+        }
+
+        void setSelected(boolean selected) {
+            this.selected = selected;
+            if (this.selected) {
+                this.mainPanel.setBackground(UIColor.LiST_CELL_SELECTED);
+            } else {
+                this.mainPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+            }
+        }
+
+        void setCollectionsRow(CollectionsRow collectionsRow) {
+            this.collectionsRow = collectionsRow;
+            this.collectionLabel.setText(this.collectionsRow.getTitle());
+            this.collectionDescription.setText(this.collectionsRow.getDescription());
+        }
     }
 
 

@@ -13,35 +13,38 @@ import java.util.List;
 public class CollectionsTable {
 
 
-    public static void insertCollection(String title, String description) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getInstance()
+    public static void insertCollection(String title, String description, int userId) {
+        try (PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("INSERT INTO collections(title,description)" +
-                        " VALUES (?,?)");
-        statement.setString(1, title);
-        statement.setString(2, description);
+                .prepareStatement("INSERT INTO collections(title,description,USER_ID)" +
+                        " VALUES (?,?,?)");) {
+            statement.setString(1, title);
+            statement.setString(2, description);
+            statement.setInt(3, userId);
+            statement.execute();
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
 
-        statement.execute();
     }
 
     public static void updateCollection(int collectionId, int userId, String title, String description) {
-        updateCollectionString2Arguments(collectionId,userId,title,description,
-                "UPDATE COLLECTIONS SET TITLE = ? AND DESCRIPTION = ? WHERE COLLECTION_ID = ? AND USER_ID = ?");
+        updateCollectionString2Arguments(collectionId, userId, title, description,
+                "UPDATE COLLECTIONS SET TITLE = ?, DESCRIPTION = ? WHERE COLLECTION_ID = ? AND USER_ID = ?");
     }
 
-    public static void removeCollection(int id) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getInstance()
+    public static void removeCollection(int collectionID, int userID) {
+        ElementsAssociation.onDeleteCollection(collectionID, userID);
+        try (PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("DELETE FROM collections WHERE COLLECTION_ID = ?");
-        statement.setInt(1, id);
-        ResultSet resultSet = statement.executeQuery();
-        CollectionsRow collectionsRow = null;
-        while (resultSet.next()) {
-            collectionsRow = new CollectionsRow(
-                    resultSet.getInt(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getInt(4));
+                .prepareStatement("DELETE FROM COLLECTIONS WHERE COLLECTION_ID = ? AND USER_ID = ?")) {
+
+            statement.setInt(1, collectionID);
+            statement.setInt(2, userID);
+            statement.execute();
+
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
         }
     }
 
@@ -64,20 +67,24 @@ public class CollectionsTable {
     }
 
     @NotNull
-    public static List<CollectionsRow> findCollectionsByUserId(int id) throws SQLException {
-        PreparedStatement statement = ConnectionDB.getInstance()
-                .getConnection()
-                .prepareStatement("SELECT * FROM collections WHERE USER_ID = ?");
-        statement.setInt(1,id);
-        ResultSet resultSet = statement.executeQuery();
+    public static List<CollectionsRow> findCollectionsByUserId(int id) {
         List<CollectionsRow> collectionsRows = new ArrayList<>();
-        while (resultSet.next()) {
-            collectionsRows.add(new CollectionsRow(
-                    resultSet.getInt(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getInt(4)));
+        try (PreparedStatement statement = ConnectionDB.getInstance()
+                .getConnection()
+                .prepareStatement("SELECT * FROM collections WHERE USER_ID = ? ORDER BY TITLE")) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                collectionsRows.add(new CollectionsRow(
+                        resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getInt(4)));
+            }
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
         }
+
         return collectionsRows;
     }
 
