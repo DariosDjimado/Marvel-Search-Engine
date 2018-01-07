@@ -15,7 +15,6 @@ public class UI extends JFrame {
     private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
     private UIBottomComponent uiBottomComponent;
-    private UILibrary uiLibrary;
 
 
     public UI() {
@@ -37,10 +36,9 @@ public class UI extends JFrame {
 
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
-        this.uiLibrary = new UILibrary(libraryViewPanel);
 
         this.tabbedPane.add("Search ", this.searchViewPanel);
-        this.tabbedPane.add("Library", this.libraryViewPanel);
+        this.tabbedPane.add("Library", new LibraryView());
         this.tabbedPane.add("Favorite", new FavoriteView());
         this.tabbedPane.add("Collection", CollectionsView.getInstance());
 

@@ -17,7 +17,7 @@ import java.util.Observer;
 
 public class FavoriteView extends JPanel implements Observer {
     private static Controller controller;
-    private final DefaultListModel<Comic> comicsListModel;
+    protected final DefaultListModel<Comic> comicsListModel;
 
 
     FavoriteView() {
@@ -68,7 +68,7 @@ public class FavoriteView extends JPanel implements Observer {
         FavoriteView.controller = controller;
     }
 
-    private void refresh() {
+    protected void refresh() {
         this.comicsListModel.clear();
 
         User user = UserAuthenticationModel.getUser();
