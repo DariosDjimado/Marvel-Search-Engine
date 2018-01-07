@@ -164,6 +164,18 @@ public class ElementsAssociation {
                 " WHERE user_id = ? AND TYPE = ? AND FAVORITE = TRUE ");
     }
 
+
+    /**
+     * Selects all rows that match user and is owned by him
+     *
+     * @param userId user unique id
+     * @return list of ElementAssociationRow
+     */
+    public static List<ElementAssociationRow> findOwnedComicsByUser(int userId) {
+        return findElementsByUser(userId, COMIC, "SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                " WHERE user_id = ? AND TYPE = ? AND OWNED = TRUE ");
+    }
+
     /**
      * Selects all rows that match user and character constraints
      *

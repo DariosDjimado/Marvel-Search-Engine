@@ -73,7 +73,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
         this.initFavoriteButton();
         this.initReadButton();
-        this.initCollectionButton();
         this.initOwnButton();
 
         urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);

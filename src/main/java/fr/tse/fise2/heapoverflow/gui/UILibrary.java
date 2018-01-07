@@ -79,11 +79,9 @@ public class UILibrary implements Observer {
         libListModel.clear();
 
         if (user != null) {
-            List<ElementAssociationRow> UsersComics = ElementsAssociation.findComicsByUser(user.getId());
+            List<ElementAssociationRow> UsersComics = ElementsAssociation.findOwnedComicsByUser(user.getId());
             for (ElementAssociationRow oneComic : UsersComics) {
-                if (oneComic.isOwned()) {
-                    libListModel.addElement(new MarvelListElement(oneComic.getName(), Integer.valueOf(oneComic.getElementID()).toString(), MarvelType.Comic));
-                }
+                libListModel.addElement(new MarvelListElement(oneComic.getName(), Integer.valueOf(oneComic.getElementID()).toString(), MarvelType.Comic));
             }
         } else {
             libListModel.addElement(new MarvelListElement("Please Log In", null, null));

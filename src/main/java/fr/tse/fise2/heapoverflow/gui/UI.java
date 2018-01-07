@@ -8,12 +8,14 @@ public class UI extends JFrame {
     private final JPanel topPanel;
     private final UITopComponent uiTopComponent;
     private final JPanel searchViewPanel;
+    private final JPanel libraryViewPanel;
     private final JTabbedPane tabbedPane;
     private JPanel container;
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
     private UIBottomComponent uiBottomComponent;
+    private UILibrary uiLibrary;
 
 
     public UI() {
@@ -22,6 +24,7 @@ public class UI extends JFrame {
         this.topPanel = new JPanel();
 
         this.searchViewPanel = new JPanel(new BorderLayout());
+        this.libraryViewPanel = new JPanel();
 
         this.tabbedPane = new JTabbedPane();
         this.tabbedPane.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
@@ -34,12 +37,12 @@ public class UI extends JFrame {
 
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
+        this.uiLibrary = new UILibrary(libraryViewPanel);
 
         this.tabbedPane.add("Search ", this.searchViewPanel);
-        this.tabbedPane.add("Library", new JPanel());
+        this.tabbedPane.add("Library", this.libraryViewPanel);
         this.tabbedPane.add("Favorite", new FavoriteView());
         this.tabbedPane.add("Collection", CollectionsView.getInstance());
-
 
         container.add(tabbedPane, BorderLayout.CENTER);
 
