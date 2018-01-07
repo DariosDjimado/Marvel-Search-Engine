@@ -249,7 +249,7 @@ public class CollectionsView extends JPanel implements Observer {
         // save button
         this.editCollectionDialogSaveButton.addActionListener(e -> {
             User user = UserAuthenticationModel.getUser();
-            if (user != null && this.currentCollectionsRow != null) {
+            if (user != null) {
                 if (this.createNewCollection) {
                     // insert into CollectionTable
                     CollectionsTable.insertCollection(this.editCollectionDialogTextField.getText(),
@@ -259,12 +259,14 @@ public class CollectionsView extends JPanel implements Observer {
                     this.setList();
                 } else {
                     // update in database
-                    CollectionsTable.updateCollection(this.currentCollectionsRow.getCollectionId(), user.getId(),
-                            this.editCollectionDialogTextField.getText(), this.editCollectionDialogTextArea.getText());
-                    // update in list model
-                    this.currentCollectionsRow.setTitle(this.editCollectionDialogTextField.getText());
-                    this.currentCollectionsRow.setDescription(this.editCollectionDialogTextArea.getText());
-                    this.leftPanel.repaint();
+                    if (this.currentCollectionsRow != null) {
+                        CollectionsTable.updateCollection(this.currentCollectionsRow.getCollectionId(), user.getId(),
+                                this.editCollectionDialogTextField.getText(), this.editCollectionDialogTextArea.getText());
+                        // update in list model
+                        this.currentCollectionsRow.setTitle(this.editCollectionDialogTextField.getText());
+                        this.currentCollectionsRow.setDescription(this.editCollectionDialogTextArea.getText());
+                        this.leftPanel.repaint();
+                    }
                 }
 
                 this.editCollectionDialog.dispose();
