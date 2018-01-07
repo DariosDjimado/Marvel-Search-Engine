@@ -17,7 +17,7 @@ import java.util.Objects;
  * @author Darios DJIMADO
  */
 public class ReactivePanel extends JPanel {
-    private final LibraryButton ownedButton;
+    private final LibraryButton collectionButton;
     private final ReadButtonView readButtonView;
     private final GradesPanelView gradesPanelView;
     private final FavoriteButtonView favoriteButtonView;
@@ -32,7 +32,7 @@ public class ReactivePanel extends JPanel {
 
 
     ReactivePanel() {
-        this.ownedButton = new LibraryButton();
+        this.collectionButton = new LibraryButton();
         this.favoriteButtonView = new FavoriteButtonView();
         this.readButtonView = new ReadButtonView();
         this.gradesPanelView = new GradesPanelView();
@@ -87,7 +87,7 @@ public class ReactivePanel extends JPanel {
                         .addComponent(this.commentTextAreaScrollPane)
                         .addGroup(
                                 groupLayout.createSequentialGroup()
-                                        .addComponent(this.ownedButton)
+                                        .addComponent(this.collectionButton)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -104,7 +104,7 @@ public class ReactivePanel extends JPanel {
                         .addComponent(this.commentTextAreaScrollPane)
                         .addGroup(
                                 groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                        .addComponent(this.ownedButton)
+                                        .addComponent(this.collectionButton)
                                         .addComponent(this.favoriteButtonView)
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView)
@@ -118,8 +118,8 @@ public class ReactivePanel extends JPanel {
         this.confirmCollectionSelectedButton.addActionListener(e -> {
             if (UserAuthenticationModel.isAuthencated()) {
                 User user = UserAuthenticationModel.getUser();
-                ElementsAssociation.updateCollectionCreateAsNeeded(this.ownedButton.getComic().getId(),
-                        this.ownedButton.getComic().getTitle(),
+                ElementsAssociation.updateCollectionCreateAsNeeded(this.collectionButton.getComic().getId(),
+                        this.collectionButton.getComic().getTitle(),
                         Objects.requireNonNull(user).getId(),
                         this.collectionsRowJList.getSelectedValue().getCollectionId(),
                         MarvelElement.COMIC);
@@ -156,8 +156,8 @@ public class ReactivePanel extends JPanel {
         });
 
 
-        this.ownedButton.addActionListener(e -> {
-            if (UserAuthenticationModel.isAuthencated() && this.ownedButton.getComic() != null) {
+        this.collectionButton.addActionListener(e -> {
+            if (UserAuthenticationModel.isAuthencated() && this.collectionButton.getComic() != null) {
                 this.collectionsDialog.customSetVisible();
             }
         });
@@ -198,8 +198,8 @@ public class ReactivePanel extends JPanel {
     }
 
 
-    public JButton getOwnedButton() {
-        return ownedButton;
+    public JButton getCollectionButton() {
+        return collectionButton;
     }
 
     public ReadButtonView getReadButtonView() {
@@ -237,7 +237,7 @@ public class ReactivePanel extends JPanel {
         this.readButtonView.setComic(comic, row);
         this.gradesPanelView.setComic(comic, row);
         this.commentButtonView.setComic(comic, row);
-        this.ownedButton.setComic(comic);
+        this.collectionButton.setComic(comic);
     }
 
     public void setCharacter(Character character) {
