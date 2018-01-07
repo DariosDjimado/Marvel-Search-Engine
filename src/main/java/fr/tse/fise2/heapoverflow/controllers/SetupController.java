@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.controllers;
 
 import fr.tse.fise2.heapoverflow.database.CreateTables;
+import fr.tse.fise2.heapoverflow.database.FirstAppearanceTable;
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.database.WikipediaUrlsTable;
 import fr.tse.fise2.heapoverflow.gui.SetupView;
@@ -58,6 +59,7 @@ public class SetupController {
                             view.onLog("an error occured when creating database");
                         }
                         saveCharactersUrls();
+                        saveCharacterFirstAppearance();
                         saveElement("characters_sample.csv", CHARACTER);
                         saveElement("comics_sample.csv", COMIC);
                         if (view != null) {
@@ -97,6 +99,24 @@ public class SetupController {
                             break;
                     }
                     view.onLog("insert " + elements.name().toLowerCase() + " " + name + " into database");
+                }
+            }
+        } catch (Exception e) {
+            AppErrorHandler.onError(e);
+        }
+    }
+    private void saveCharacterFirstAppearance() {
+        File sample = new File("characters_first_appearance.csv");
+        try (BufferedReader reader = new BufferedReader(new FileReader(sample))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (view != null) {
+                    String[] lineArray = line.split(";");
+                    String character = lineArray[0];
+                    String date = lineArray[1];
+                    String comic = lineArray[2];
+                    FirstAppearanceTable.insert(character,date,comic);
+                    view.onLog("insert first appearance of " + character);
                 }
             }
         } catch (Exception e) {
