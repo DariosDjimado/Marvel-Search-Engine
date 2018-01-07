@@ -26,7 +26,8 @@ public final class CreateTables {
                 && createCacheUrlsTable()
                 && createCollectionsTable()
                 && createElementsAssociationTable()
-                && createWikipediaUrlsTable();
+                && createWikipediaUrlsTable()
+                && createFirstAppearanceTable();
     }
 
     /**
@@ -109,6 +110,14 @@ public final class CreateTables {
                 " CHARACTER_ALIAS VARCHAR(255)," +
                 " CHARACTER_DESCRIPTION VARCHAR(255)," +
                 "PRIMARY KEY (CHARACTER_NAME,CHARACTER_URL))");
+    }
+
+    public static boolean createFirstAppearanceTable(){
+        return createTable("CREATE TABLE FIRST_APPEARANCE(" +
+                " CHARACTERR VARCHAR(255) NOT NULL," +
+                "DATE VARCHAR(255)," +
+                "COMIC VARCHAR(255)," +
+                "PRIMARY KEY (CHARACTERR,COMIC))");
     }
 
 
