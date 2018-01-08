@@ -1,21 +1,26 @@
 package fr.tse.fise2.heapoverflow.gui;
 
+import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
-public class UI extends JFrame {
+public class UI extends JFrame implements Observer {
     private final JPanel topPanel;
     private final UITopComponent uiTopComponent;
     private final JPanel searchViewPanel;
     private final JPanel libraryViewPanel;
     private final JTabbedPane tabbedPane;
+    private final FavoriteView favoriteView;
+    private final LibraryView libraryView;
     private JPanel container;
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
     private JPanel centerWrapperPanel;
     private UIBottomComponent uiBottomComponent;
-
 
     public UI() {
         super("Marvel Search");
@@ -28,7 +33,12 @@ public class UI extends JFrame {
         this.tabbedPane = new JTabbedPane();
         this.tabbedPane.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
 
+        this.favoriteView = new FavoriteView();
+        this.libraryView = new LibraryView();
+
         uiTopComponent = new UITopComponent(this, this.topPanel);
+
+        UserAuthenticationModel.getInstance().addObserver(this);
 
     }
 
@@ -38,9 +48,21 @@ public class UI extends JFrame {
         container.setLayout(new BorderLayout(0, 0));
 
         this.tabbedPane.add("Search ", this.searchViewPanel);
-        this.tabbedPane.add("Library", new LibraryView());
-        this.tabbedPane.add("Favorite", new FavoriteView());
+        this.tabbedPane.add("Library", this.libraryView);
+        this.tabbedPane.add("Favorite", this.favoriteView);
         this.tabbedPane.add("Collection", CollectionsView.getInstance());
+
+        // disable, library, favorite and collection panel
+        this.tabbedPane.setEnabledAt(1, false);
+        this.tabbedPane.setEnabledAt(2, false);
+        this.tabbedPane.setEnabledAt(3, false);
+
+        //
+        this.tabbedPane.addChangeListener(e -> {
+            if (this.tabbedPane.getSelectedComponent() == this.favoriteView || this.tabbedPane.getSelectedComponent() == this.libraryView) {
+                ((FavoriteView) this.tabbedPane.getSelectedComponent()).refresh();
+            }
+        });
 
         container.add(tabbedPane, BorderLayout.CENTER);
 
@@ -162,6 +184,33 @@ public class UI extends JFrame {
 
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    /**
+     * This method is called whenever the observed object is changed. An
+     * application calls an <tt>Observable</tt> object's
+     * <code>notifyObservers</code> method to have all the object's
+     * observers notified of the change.
+     *
+     * @param o   the observable object.
+     * @param arg an argument passed to the <code>notifyObservers</code>
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o == UserAuthenticationModel.getInstance()) {
+            if (arg != null) {
+                // enable, library, favorite and collection panel
+                this.tabbedPane.setEnabledAt(1, true);
+                this.tabbedPane.setEnabledAt(2, true);
+                this.tabbedPane.setEnabledAt(3, true);
+                this.tabbedPane.setSelectedIndex(0);
+            } else {
+                // disable, library, favorite and collection panel
+                this.tabbedPane.setEnabledAt(1, false);
+                this.tabbedPane.setEnabledAt(2, false);
+                this.tabbedPane.setEnabledAt(3, false);
+            }
+        }
     }
 }
 

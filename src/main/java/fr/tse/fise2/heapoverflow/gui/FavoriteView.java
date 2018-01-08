@@ -68,7 +68,7 @@ public class FavoriteView extends JPanel implements Observer {
         FavoriteView.controller = controller;
     }
 
-    protected void refresh() {
+    public void refresh() {
         this.comicsListModel.clear();
 
         User user = UserAuthenticationModel.getUser();
@@ -90,9 +90,7 @@ public class FavoriteView extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o == UserAuthenticationModel.getInstance()) {
-            if (arg != null) {
-                this.refresh();
-            } else {
+            if (arg == null) {
                 this.comicsListModel.clear();
             }
         }

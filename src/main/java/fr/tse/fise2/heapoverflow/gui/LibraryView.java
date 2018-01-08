@@ -9,7 +9,7 @@ import java.util.List;
 
 public class LibraryView extends FavoriteView {
     @Override
-    protected void refresh() {
+    public void refresh() {
         this.comicsListModel.clear();
 
         User user = UserAuthenticationModel.getUser();
