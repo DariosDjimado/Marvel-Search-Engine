@@ -203,12 +203,12 @@ public class UI extends JFrame implements Observer {
                 this.tabbedPane.setEnabledAt(1, true);
                 this.tabbedPane.setEnabledAt(2, true);
                 this.tabbedPane.setEnabledAt(3, true);
-                this.tabbedPane.setSelectedIndex(0);
             } else {
                 // disable, library, favorite and collection panel
                 this.tabbedPane.setEnabledAt(1, false);
                 this.tabbedPane.setEnabledAt(2, false);
                 this.tabbedPane.setEnabledAt(3, false);
+                this.tabbedPane.setSelectedIndex(0);
             }
         }
     }
