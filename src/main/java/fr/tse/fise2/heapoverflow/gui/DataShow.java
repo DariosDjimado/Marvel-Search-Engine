@@ -304,6 +304,13 @@ public class DataShow {
         tabsJLists.put("Events", events);
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
+        // external links
+        DefaultListModel<String> externalLinksListModel = new DefaultListModel<>();
+        JList<String> externalLinksList = new JList<>(externalLinksListModel);
+        tabs.add("External Links", new CustomScrollPane(externalLinksList));
+        for(Url url: comic.getUrls()){
+            externalLinksListModel.addElement(url.getType()+" : "+url.getUrl());
+        }
         //endregion
         tabs.revalidate();
         //endregion
@@ -388,6 +395,13 @@ public class DataShow {
         tabsJLists.put("Events", events);
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken);
+        // external links
+        DefaultListModel<String> externalLinksListModel = new DefaultListModel<>();
+        JList<String> externalLinksList = new JList<>(externalLinksListModel);
+        tabs.add("External Links", new CustomScrollPane(externalLinksList));
+        for(Url url: character.getUrls()){
+            externalLinksListModel.addElement(url.getType()+" : "+url.getUrl());
+        }
         //endregion
         tabs.revalidate();
         //endregion
