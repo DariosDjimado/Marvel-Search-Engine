@@ -35,7 +35,7 @@ public class dataShowTestCharacter {
             frame.setVisible(true);
             dataShow.DrawCharacter(fetched);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
     }

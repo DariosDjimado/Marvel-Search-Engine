@@ -7,7 +7,6 @@ import fr.tse.fise2.heapoverflow.main.FetchData;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
@@ -24,14 +23,13 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
             int offset = 2000;
             do {
                 if (offset == 0) {
-                    System.out.println(offset);
-                    String response = request.getData("comics","offset=" + offset + "&limit=100");
+                    String response = request.getData("comics", "offset=" + offset + "&limit=100");
                     ComicDataWrapper comicDataWrapper = deserializeComics(response);
                     ComicDataContainer dataContainer = comicDataWrapper.getData();
                     offset = offset + 100;
                 } else {
                     offset += 100;
-                    Thread fetchComics = new FetchData(this, "comics","offset=" + offset + "&limit=100" + "&orderBy=title", FetchData.ComicsType.COMICS);
+                    Thread fetchComics = new FetchData(this, "comics", "offset=" + offset + "&limit=100" + "&orderBy=title", FetchData.ComicsType.COMICS);
                     fetchComics.run();
                 }
             } while (offset < 4000);
@@ -47,16 +45,11 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
 
     @Override
     public void onFetchedComics(Comic[] comics) {
-
-            System.out.println("saving " + comics.length + " new comics");
-            for (Comic c : comics) {
-                if (MarvelElementTable.elementsExists(c.getId(), MarvelElement.COMIC) == -1) {
-                    MarvelElementTable.insertComic(c.getId(), c.getTitle().toLowerCase());
-                } else {
-                    System.out.println(c.getTitle() + " has already registered");
-                }
+        for (Comic c : comics) {
+            if (MarvelElementTable.elementsExists(c.getId(), MarvelElement.COMIC) == -1) {
+                MarvelElementTable.insertComic(c.getId(), c.getTitle().toLowerCase());
             }
-            System.out.println("done");
+        }
 
     }
 }

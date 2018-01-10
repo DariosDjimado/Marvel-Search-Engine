@@ -8,17 +8,17 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class UISearchComponent {
-    private static final ImageIcon icon = new ImageIcon(UISearchComponent.class.getResource("search.png"));
-
     private final JPanel leftWrapperPanel;
     private Controller controller;
     private JRadioButton charactersRadioButton;
     private JRadioButton comicsRadioButton;
     private JTextField searchTextField;
     private JPanel searchResultsPanel;
-
+    private AutoCompletion autoCompletion;
 
     UISearchComponent(JPanel leftWrapperPanel) {
         this.charactersRadioButton = new CustomRadioButton();
@@ -28,13 +28,16 @@ public class UISearchComponent {
         this.searchTextField = new JTextField();
 
         this.searchTextField.requestFocusInWindow();
-
         this.charactersRadioButton.setSelected(true);
-
-
         //
         this.leftWrapperPanel = leftWrapperPanel;
         this.leftWrapperPanel.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
+
+        this.autoCompletion = null;
+    }
+
+    public void setAutoCompletion(AutoCompletion autoCompletion) {
+        this.autoCompletion = autoCompletion;
     }
 
     void setup() {
@@ -60,11 +63,38 @@ public class UISearchComponent {
             if (this.searchTextField.getText().isEmpty()) {
                 Toolkit.getDefaultToolkit().beep();
             } else {
+                if (autoCompletion != null) {
+                    autoCompletion.getPopUpWindow().setVisible(false);
+                }
                 this.controller.searchStartsWith(this.getSearchTextField().getText());
             }
         });
 
-        searchButton.setVerticalAlignment(0);
+        this.searchTextField.addKeyListener(new KeyAdapter() {
+            /**
+             * Invoked when a key has been released.
+             *
+             * @param e the event
+             *
+             */
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                //super.keyReleased(e);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (searchTextField.getText().isEmpty()) {
+                        Toolkit.getDefaultToolkit().beep();
+                    } else {
+                        if (autoCompletion != null) {
+                            autoCompletion.getPopUpWindow().setVisible(false);
+                        }
+                        controller.searchStartsWith(getSearchTextField().getText());
+                    }
+                }
+            }
+        });
+
+        searchButton.setVerticalAlignment(SwingConstants.CENTER);
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 3;

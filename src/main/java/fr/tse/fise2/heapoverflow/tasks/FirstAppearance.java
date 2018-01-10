@@ -2,7 +2,6 @@ package fr.tse.fise2.heapoverflow.tasks;
 
 
 import fr.tse.fise2.heapoverflow.database.FirstAppearanceTable;
-import fr.tse.fise2.heapoverflow.gui.SetupView;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,8 +9,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
-//import static com.sun.activation.registries.LogSupport.log;
 
 /**
  * @author Rajaona
@@ -31,11 +28,7 @@ public class FirstAppearance {
                 String character = tds.get(0).text().toLowerCase();
                 String date = tds.get(1).text();
                 String comic = tds.get(3).text();
-                FirstAppearanceTable.insert(character,date,comic);
-                System.out.print(character + " \n");
-                System.out.print(date + " \n");
-                System.out.print(comic + " \n");
-                System.out.print("\n");
+                FirstAppearanceTable.insert(character, date, comic);
             }
         }
     }

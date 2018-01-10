@@ -31,12 +31,10 @@ public class SaltRealm extends JdbcRealm {
         final UserRow userRow = getUser(username);
 
         if (userRow == null) {
-            System.out.println("null user");
             throw new UnknownAccountException("No account found for user [" + username + "]");
         }
 
         if (!this.passwordService.passwordsMatch(password, userRow.getPassword())) {
-            System.out.println("null user");
             throw new UnknownAccountException(" password No account found for user [" + username + "]");
         }
 

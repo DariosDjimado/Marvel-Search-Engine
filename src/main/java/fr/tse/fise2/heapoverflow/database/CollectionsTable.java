@@ -100,7 +100,6 @@ public class CollectionsTable {
         while (resultSet.next()) {
             if (resultSet.getInt(1) > 0) {
                 found = true;
-                System.out.println(id);
             }
         }
         return found;
@@ -118,7 +117,6 @@ public class CollectionsTable {
         while (resultSet.next()) {
             if (resultSet.getString(1) == title) {
                 found = true;
-                System.out.println(title);
             }
         }
         return found;

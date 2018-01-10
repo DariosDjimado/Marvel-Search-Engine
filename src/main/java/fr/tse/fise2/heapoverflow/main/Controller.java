@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -88,7 +89,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
                     try {
                         ConnectionDB.getInstance().getConnection().close();
-                        System.out.println(ConnectionDB.getInstance().getConnection().isClosed());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -158,21 +158,12 @@ public class Controller extends InternalController implements IRequestListener, 
                     ElementAssociationRow elementAssociationRow = ElementsAssociation
                             .findElement(user.getId(),
                                     readButtonView.getId(), readButtonView.getType());
-
-
-                    System.out.println("Deleting Favorite " + readButtonView.getId());
-
-
                     ElementsAssociation.updateRead(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
                     readButtonView.setState(false);
 
 
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
                 } else {
-
-                    System.out.println("Adding Favorite " + readButtonView.getId());
-
-
                     int userId = user.getId();
                     ElementsAssociation.updateReadCreateAsNeeded(readButtonView.getId(),
                             readButtonView.getElementName(), userId, true, readButtonView.getType());
@@ -200,21 +191,12 @@ public class Controller extends InternalController implements IRequestListener, 
                     ElementAssociationRow elementAssociationRow = ElementsAssociation
                             .findElement(user.getId(),
                                     ownButtonView.getId(), ownButtonView.getType());
-
-
-                    System.out.println("Deleting from Library " + ownButtonView.getId());
-
-
                     ElementsAssociation.updateOwned(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
                     ownButtonView.setState(false);
 
 
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
                 } else {
-
-                    System.out.println("Adding to Library " + ownButtonView.getId());
-
-
                     int userId = user.getId();
                     ElementsAssociation.updateOwnedCreateAsNeeded(ownButtonView.getId(),
                             ownButtonView.getElementName(), userId, true);
@@ -232,6 +214,7 @@ public class Controller extends InternalController implements IRequestListener, 
     void init() {
         AutoCompletion autoCompletion = new AutoCompletion(this.ui, this.ui.getUiSearchComponent().getSearchTextField(), this);
         autoCompletion.initComponent();
+        this.ui.getUiSearchComponent().setAutoCompletion(autoCompletion);
         this.ui.getUiSearchComponent().getSearchTextField().requestFocusInWindow();
         this.ui.setVisible(true);
     }
@@ -361,7 +344,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void showCharacter(Character character) {
-        System.out.println(character);
         customDrawCharacter(character);
     }
 
@@ -386,7 +368,7 @@ public class Controller extends InternalController implements IRequestListener, 
     }
 
     public void fetchComicsInSameSeries(Comic comic) {
-        System.out.println(comic.getSeries());
+
         if (comic.getSeries() != null) {
             // since we have the comic now we are going to fetch all comics in same series by using series id returned
             Thread fetchComicsInSameSeries = new FetchData(this, "series/" + comic.getSeries().getResourceURI().substring(43) + "/comics", null, FetchData.ComicsType.COMICS_IN_SAME_SERIES);

@@ -2,16 +2,15 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
 import fr.tse.fise2.heapoverflow.main.AppConfig;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public abstract class TemplatePreviewListRenderer extends JPanel {
-    private static final Color selectionColor = new Color(3, 169, 244);
     final OwnButton ownButton;
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
@@ -121,8 +120,8 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
             try {
                 final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
                 graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                AppErrorHandler.onError(e);
             }
 
         }

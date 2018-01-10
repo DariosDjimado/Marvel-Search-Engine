@@ -36,7 +36,7 @@ public class dataShowTestComic {
             dataShow.DrawComic(fetched);
         }
         catch(Exception e)  {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
     }

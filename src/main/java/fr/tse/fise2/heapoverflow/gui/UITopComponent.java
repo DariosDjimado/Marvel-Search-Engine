@@ -7,8 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UITopComponent {
-
-    private final JButton libraryButton;
     private final JPanel topPanel;
     private final JPanel topRightPanel;
     private final UI ui;
@@ -16,7 +14,6 @@ public class UITopComponent {
 
 
     UITopComponent(final UI ui, final JPanel topPanel) {
-        this.libraryButton = new AccentButton("My library");
         this.ui = ui;
 
 
@@ -45,7 +42,7 @@ public class UITopComponent {
     }
 
 
-    public void setSize() {
+    private void setSize() {
         final Dimension minDimension = new Dimension(200, 50);
         this.topPanel.setMinimumSize(minDimension);
         this.topPanel.setPreferredSize(minDimension);
@@ -57,16 +54,9 @@ public class UITopComponent {
 
         // top right panel
         this.topRightPanel.setLayout(new BorderLayout());
-        this.topRightPanel.add(this.libraryButton, BorderLayout.WEST);
         this.topPanel.add(this.topRightPanel, BorderLayout.WEST);
 
         // shadow
         this.topPanel.add(this.userAuthenticationView, BorderLayout.EAST);
     }
-
-    public UserAuthenticationView getUserAuthenticationView() {
-        return userAuthenticationView;
-    }
-
-
 }

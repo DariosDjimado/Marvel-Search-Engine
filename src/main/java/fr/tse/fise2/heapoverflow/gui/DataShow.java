@@ -16,9 +16,13 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class used to manage à {@link JPanel} used to show detailed datas on characters and comics. Can display :
@@ -219,18 +223,6 @@ public class DataShow {
 
         fillPaneWithLabels(detailPane, details);
         //endregion
-        //region library buttons
-        System.out.println("checking authentication");
-        btnPane.setVisible(true);
-        /*if(UserAuthentication.isAuthenticated()){
-            System.out.println("auth ok");
-            btnPane.setVisible(true);
-        }
-        else{
-            System.out.println("auth failed");
-            btnPane.setVisible(false);
-        }*/
-        //endregion
         detail.revalidate();
         //endregion
         //region Tabs display
@@ -305,12 +297,8 @@ public class DataShow {
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
-        DefaultListModel<String> externalLinksListModel = new DefaultListModel<>();
-        JList<String> externalLinksList = new JList<>(externalLinksListModel);
-        tabs.add("External Links", new CustomScrollPane(externalLinksList));
-        for(Url url: comic.getUrls()){
-            externalLinksListModel.addElement(url.getType()+" : "+url.getUrl());
-        }
+        List<LinkView>  linkViews = Arrays.stream(comic.getUrls()).map((Url url)-> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
+        tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
         //endregion
@@ -344,7 +332,6 @@ public class DataShow {
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Serie");
         details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
         details.put("Last Modification : ", character.getModified().substring(0, 10));
-        details.put("Wikipedia :", WikipediaUrlsTable.findByLabel(character.getName()));
 
         FirstAppearanceRow  firstAppearanceRow = FirstAppearanceTable.getFirstAppearanceRow(character.getName().toLowerCase());
         if(firstAppearanceRow != null) {
@@ -396,12 +383,12 @@ public class DataShow {
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
-        DefaultListModel<String> externalLinksListModel = new DefaultListModel<>();
-        JList<String> externalLinksList = new JList<>(externalLinksListModel);
-        tabs.add("External Links", new CustomScrollPane(externalLinksList));
-        for(Url url: character.getUrls()){
-            externalLinksListModel.addElement(url.getType()+" : "+url.getUrl());
+        List<LinkView>  linkViews = Arrays.stream(character.getUrls()).map((Url url)-> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
+        String url = WikipediaUrlsTable.findByLabel(character.getName());
+        if(!url.isEmpty()){
+            linkViews.add(0,new LinkView("wikipedia",url));
         }
+        tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
         //endregion
@@ -453,7 +440,6 @@ public class DataShow {
         try {
             thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
         } catch (Exception e) {
-            System.out.println(e);
             AppErrorHandler.onError(e);
             if(LOGGER.isErrorEnabled()){
                 LOGGER.error(e.getMessage(),e);

@@ -76,7 +76,6 @@ public class WikipediaUrlsTable {
                                 .contains(characterAlias.toLowerCase().replaceAll("[^A-Za-z0-9]", " "))
 
                 );
-                System.out.println(characterAlias.toLowerCase().replaceAll("[^A-Za-z0-9]", " "));
                 // if there is exactly one element we are ok
                 if (wur.size() == 1) {
                     return wur.get(0).getCharacterUrl();
@@ -148,7 +147,7 @@ public class WikipediaUrlsTable {
 
     public static List<WikipediaUrlRow> findUrls() {
         List<WikipediaUrlRow> wikipediaUrlRows = new LinkedList<>();
-        try (Statement statement = ConnectionDB.getInstance().getConnection().createStatement();) {
+        try (Statement statement = ConnectionDB.getInstance().getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM WIKIPEDIA_URLS");
             while (resultSet.next()) {
                 wikipediaUrlRows.add(new WikipediaUrlRow(resultSet.getString("character_name"),

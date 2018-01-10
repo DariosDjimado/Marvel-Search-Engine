@@ -1,16 +1,10 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Queue;
@@ -45,6 +39,7 @@ public class InfoSubRequestsThread implements Runnable {
 
     /**
      * Constructor, initialize job stack and start thread
+     *
      * @param caller
      */
     public InfoSubRequestsThread(DataShow caller) {
@@ -73,7 +68,7 @@ public class InfoSubRequestsThread implements Runnable {
                     thisJob = jobs.poll();
                 }
 
-                switch (thisJob.elementType){
+                switch (thisJob.elementType) {
                     case "Comic":
                         fetched = new TreeSet<Comic>();
                         break;
@@ -93,7 +88,9 @@ public class InfoSubRequestsThread implements Runnable {
                         fetched = new TreeSet<Serie>();
                         break;
                     default:
-                        System.err.println("Unknown type " + thisJob.elementType);
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error("Unknown type " + thisJob.elementType);
+                        }
                         continue;
                 }
 
@@ -103,7 +100,7 @@ public class InfoSubRequestsThread implements Runnable {
                     int count = 0;
                     int total = 0;
                     do {
-                        if(thisJob.elementHash == lastCanceledToken){
+                        if (thisJob.elementHash == lastCanceledToken) {
                             cancelling = true;
                             break;
                         }
@@ -156,28 +153,34 @@ public class InfoSubRequestsThread implements Runnable {
 
                     }
                     while (offset + count < total);
-                    if(cancelling){
-                        System.out.println("----" + thisJob + " Cancelled");
+                    if (cancelling) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("----" + thisJob + " Cancelled");
+                        }
                         continue;
                     }
                     caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash);
-                    System.out.println("----" + thisJob + " Done");
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("----" + thisJob + " Done");
+                    }
 
-                } catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException e) {
                     caller.updateList(fetched, "TimeOut", thisJob.modelKey, thisJob.elementHash);
-                    System.err.println("----" + thisJob + " Timed out");
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("----" + thisJob + " Timed out");
+                    }
                     AppErrorHandler.onError(e);
-                    if(LOGGER.isErrorEnabled()){
-                        LOGGER.error(e.getMessage(),e);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
                     }
 
                 } catch (Exception e) {
                     AppErrorHandler.onError(e);
-                    if(LOGGER.isErrorEnabled()){
-                        LOGGER.error(e.getMessage(),e);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
                     }
                 }
-            } catch(InterruptedException e){
+            } catch (InterruptedException e) {
                 break;
             }
         }
@@ -185,29 +188,33 @@ public class InfoSubRequestsThread implements Runnable {
 
     /**
      * Method to add a job to the stack
+     *
      * @param elementsClass a string representing the class of elements to get
-     * @param modelKey the key of the model to fill (key of {@link DataShow#tabsJLists})
-     * @param shortUri the short URI to request the set of datas
-     * @param elementHash a hash of the element displayed to avoid editing à list with an old request
+     * @param modelKey      the key of the model to fill (key of {@link DataShow#tabsJLists})
+     * @param shortUri      the short URI to request the set of datas
+     * @param elementHash   a hash of the element displayed to avoid editing à list with an old request
      */
-    public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash){
+    public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash) {
         synchronized (this) {
             jobs.add(new Job(elementsClass, modelKey, shortUri, elementHash));
-            System.out.println("----New Job for" + elementsClass);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("----New Job for" + elementsClass);
+            }
             notify();
         }
     }
 
-    public synchronized void clearJobsFor(int elementHash){
+    public synchronized void clearJobsFor(int elementHash) {
         lastCanceledToken = elementHash;
         Queue<Job> clearedQueue = new ConcurrentLinkedQueue<>();
-        while(!jobs.isEmpty()){
+        while (!jobs.isEmpty()) {
             Job job = jobs.poll();
-            if(job.elementHash != elementHash){
+            if (job.elementHash != elementHash) {
                 clearedQueue.add(job);
-            }
-            else{
-                System.out.println("----" + job + " Canceled");
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("----" + job + " Canceled");
+                }
             }
         }
         jobs = clearedQueue;
@@ -226,9 +233,10 @@ class Job {
 
     /**
      * Constructor
+     *
      * @param elementType a string representing the class of elements to get
-     * @param modelKey the key of the model to fill (key of {@link DataShow#tabsJLists})
-     * @param shortUri the short URI to request the set of datas
+     * @param modelKey    the key of the model to fill (key of {@link DataShow#tabsJLists})
+     * @param shortUri    the short URI to request the set of datas
      * @param elementHash a hash of the element displayed to avoid editing à list with an old request
      */
     public Job(String elementType, String modelKey, String shortUri, int elementHash) {

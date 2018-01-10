@@ -59,7 +59,6 @@ public class AutoCompletion {
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    System.out.println(e.getSource());
                     ItemSuggested itemSuggested = suggestedList.getSelectedValue();
 
                     if (itemSuggested != null) {
@@ -73,7 +72,6 @@ public class AutoCompletion {
 
         this.suggestedList.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
-                System.out.println(e.getSource());
                 ItemSuggested itemSuggested = this.suggestedList.getSelectedValue();
 
                 if (itemSuggested != null) {

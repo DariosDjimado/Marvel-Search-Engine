@@ -270,7 +270,6 @@ public class UserAuthenticationView extends JPanel implements Observer {
                  */
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    System.out.println("intercepted");
                     confirmActionButton.removeActionListener(actionListener);
                 }
             });
@@ -340,7 +339,6 @@ public class UserAuthenticationView extends JPanel implements Observer {
                      */
                     @Override
                     public void windowClosing(WindowEvent e) {
-                        System.out.println("intercepted");
                         confirmActionButton.removeActionListener(actionListener);
                     }
                 });

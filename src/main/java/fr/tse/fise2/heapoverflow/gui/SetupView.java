@@ -121,7 +121,6 @@ public class SetupView implements Observer {
              */
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("closed");
                 if (model.getCurrentPage() != SetupModel.FINISHED) {
                     if (JOptionPane.showConfirmDialog(setupFrame, "Do you want to quit the configuration",
                             "quit setup", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {

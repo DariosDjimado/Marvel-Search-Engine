@@ -36,7 +36,10 @@ public class UI extends JFrame implements Observer {
         this.favoriteView = new FavoriteView();
         this.libraryView = new LibraryView();
 
-        uiTopComponent = new UITopComponent(this, this.topPanel);
+        this.uiTopComponent = new UITopComponent(this, this.topPanel);
+
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(1, 0, 0, 0));
+        UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", true);
 
         UserAuthenticationModel.getInstance().addObserver(this);
 
@@ -208,7 +211,7 @@ public class UI extends JFrame implements Observer {
                 this.tabbedPane.setEnabledAt(1, false);
                 this.tabbedPane.setEnabledAt(2, false);
                 this.tabbedPane.setEnabledAt(3, false);
-                this.tabbedPane.setSelectedIndex(0);
+                this.tabbedPane.setSelectedIndex(1);
             }
         }
     }
