@@ -70,6 +70,18 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         this.cardFooterPanel.add(this.readButton);
         this.mainPanel.add(cardFooterPanel, BorderLayout.SOUTH);
 
+        //card text
+        Dimension textFieldDimension = new Dimension(170,60);
+        this.cardTitle.setMaximumSize(textFieldDimension);
+        this.cardTitle.setMinimumSize(textFieldDimension);
+        this.cardTitle.setPreferredSize(textFieldDimension);
+
+        Dimension gradesDimension = new Dimension(110,40);
+        this.gradesPanel.setMaximumSize(gradesDimension);
+        this.gradesPanel.setPreferredSize(gradesDimension);
+        this.gradesPanel.setMinimumSize(gradesDimension);
+
+
         this.add(mainPanel, BorderLayout.CENTER);
 
     }

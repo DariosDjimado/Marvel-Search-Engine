@@ -16,7 +16,14 @@ public class ComicsListRenderer extends DefaultListCellRenderer implements ListC
             @Override
             protected void fillCardData() {
                 Comic comic = (Comic) this.data;
-                this.cardTitle.setText(comic.getTitle().length() > 25 ? comic.getTitle().substring(0, 25) + "..." : comic.getTitle());
+                this.cardTitle.setText("<html><body style='width: 110px'>");
+                if(comic.getTitle().length() > 80){
+                    this.cardTitle.setText(this.cardTitle.getText() + comic.getTitle().substring(0, 80) + "...");
+                }
+                else{
+                    this.cardTitle.setText(this.cardTitle.getText() + comic.getTitle());
+                }
+
                 this.ownButton.setComic(comic);
                 this.favoriteButton.setComic(comic);
                 this.readButton.setComic(comic);
