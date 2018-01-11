@@ -438,7 +438,7 @@ public class DataShow {
      */
     public void setThumbnail(Image ThumbPartialUrl) {
         try {
-            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir));
+            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir()));
         } catch (Exception e) {
             AppErrorHandler.onError(e);
             if(LOGGER.isErrorEnabled()){

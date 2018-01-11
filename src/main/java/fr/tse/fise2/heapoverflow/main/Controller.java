@@ -6,7 +6,6 @@ import fr.tse.fise2.heapoverflow.database.ConnectionDB;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
 import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
-import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
 import fr.tse.fise2.heapoverflow.gui.*;
 import fr.tse.fise2.heapoverflow.interfaces.CharactersRequestObserver;
 import fr.tse.fise2.heapoverflow.interfaces.ComicsRequestObserver;
@@ -16,7 +15,6 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
-import okhttp3.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -34,21 +30,12 @@ import java.util.List;
 public class Controller extends InternalController implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     // Model
     private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
-    private static Controller con;
-    private static Cache urlsCache;
-    private final SelectionChangedListener selectionChangedListenerExtra;
-    private final RequestListener requestListener;
     // Vue
     private final DataShow dataShow;
     private final UI ui;
-    private AutoCompletion autoCompletion;
-    private MarvelRequest request;
 
 
     public Controller(UI ui) {
-        con = this;
-
-        // store ui
         this.ui = ui;
 
         //
@@ -57,26 +44,17 @@ public class Controller extends InternalController implements IRequestListener, 
         //
         this.ui.getUiSearchComponent().setController(this);
         //
-        this.selectionChangedListenerExtra = new SelectionChangedListener(this);
-        this.ui.getUiExtraComponent().setSelectionChangedListener(this.selectionChangedListenerExtra);
-        //
-        this.request = MarvelRequest.getInstance();
-        //
-        this.requestListener = new RequestListener(this);
-        this.request.addRequestListener(this.requestListener);
+        this.ui.getUiExtraComponent().setSelectionChangedListener(this);
 
+        //
+        RequestListener requestListener = new RequestListener(this);
+        MarvelRequest.getInstance().addRequestListener(requestListener);
 
-        try {
-            AppConfig.tmpDir = Files.createTempDirectory("appdarios") + "/";
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         this.initFavoriteButton();
         this.initReadButton();
         this.initOwnButton();
 
-        urlsCache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.initCacheUrlsTable();
 
         this.ui.addWindowListener(new WindowAdapter() {
@@ -107,14 +85,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
     }
 
-    public static Controller getController() {
-        return con;
-    }
-
-    public static Cache getUrlsCache() {
-        return urlsCache;
-    }
-
 
     private void initFavoriteButton() {
         final FavoriteButtonView favoriteButtonView = this.dataShow.getBtnPane().getFavoriteButtonView();
@@ -129,9 +99,11 @@ public class Controller extends InternalController implements IRequestListener, 
                             .findElement(user.getId(),
                                     favoriteButtonView.getId(), favoriteButtonView.getType());
                     LOGGER.debug("Deleting Favorite " + favoriteButtonView.getId());
-                    ElementsAssociation.updateFavorite(favRow.getUid(), favRow.getUserId(), false);
-                    favoriteButtonView.setState(false);
-                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    if (favRow != null) {
+                        ElementsAssociation.updateFavorite(favRow.getUid(), favRow.getUserId(), false);
+                        favoriteButtonView.setState(false);
+                        this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    }
                 } else {
                     LOGGER.debug("Adding Favorite " + favoriteButtonView.getId());
                     int userId = user.getId();
@@ -158,19 +130,16 @@ public class Controller extends InternalController implements IRequestListener, 
                     ElementAssociationRow elementAssociationRow = ElementsAssociation
                             .findElement(user.getId(),
                                     readButtonView.getId(), readButtonView.getType());
-                    ElementsAssociation.updateRead(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
-                    readButtonView.setState(false);
-
-
-                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    if (elementAssociationRow != null) {
+                        ElementsAssociation.updateRead(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
+                        readButtonView.setState(false);
+                        this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    }
                 } else {
                     int userId = user.getId();
                     ElementsAssociation.updateReadCreateAsNeeded(readButtonView.getId(),
                             readButtonView.getElementName(), userId, true, readButtonView.getType());
-
                     readButtonView.setState(true);
-
-
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
                 }
             }
@@ -191,11 +160,11 @@ public class Controller extends InternalController implements IRequestListener, 
                     ElementAssociationRow elementAssociationRow = ElementsAssociation
                             .findElement(user.getId(),
                                     ownButtonView.getId(), ownButtonView.getType());
-                    ElementsAssociation.updateOwned(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
-                    ownButtonView.setState(false);
-
-
-                    this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    if (elementAssociationRow != null) {
+                        ElementsAssociation.updateOwned(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
+                        ownButtonView.setState(false);
+                        this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    }
                 } else {
                     int userId = user.getId();
                     ElementsAssociation.updateOwnedCreateAsNeeded(ownButtonView.getId(),
@@ -238,7 +207,7 @@ public class Controller extends InternalController implements IRequestListener, 
     private void initCacheUrlsTable() {
         try {
             CacheUrlsTable.empty();
-            final Iterator<String> urls = urlsCache.urls();
+            final Iterator<String> urls = AppConfig.getInstance().getCacheUrls().urls();
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("Importing urls from cache");
             }
@@ -349,7 +318,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void onFetchingComics(String url) {
-        this.ui.setTitle("start loading " + url);
         this.ui.repaint();
         this.ui.revalidate();
     }
@@ -383,7 +351,6 @@ public class Controller extends InternalController implements IRequestListener, 
 
     @Override
     public void onFetchingCharacters(String url) {
-        this.ui.setTitle("start loading " + url);
         this.ui.repaint();
         this.ui.revalidate();
     }

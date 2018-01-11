@@ -118,7 +118,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
         @Override
         public void paintComponent(Graphics graphics) {
             try {
-                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
+                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir());
                 graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
             } catch (Exception e) {
                 AppErrorHandler.onError(e);

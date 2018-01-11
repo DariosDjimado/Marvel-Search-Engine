@@ -1,7 +1,6 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.events.SelectionChangedListener;
-import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
+import fr.tse.fise2.heapoverflow.interfaces.ISelectionChangedListener;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 
@@ -11,15 +10,15 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-public class UIExtraComponent implements UIComponent, Observer {
+public class UIExtraComponent implements Observer {
     private final JPanel rightWrapperPanel;
     private final JPanel rightTitlePanel;
     private final JPanel rightContainerPanel;
     private final JLabel rightTitleLabel;
 
-    private SelectionChangedListener selectionChangedListener;
+    private ISelectionChangedListener selectionChangedListener;
 
-    public UIExtraComponent(JPanel rightWrapperPanel) {
+    UIExtraComponent(JPanel rightWrapperPanel) {
         this.rightWrapperPanel = rightWrapperPanel;
 
         this.rightWrapperPanel.setBorder(BorderFactory.createLineBorder(UIColor.HEADER_SHADOW_COLOR));
@@ -49,23 +48,8 @@ public class UIExtraComponent implements UIComponent, Observer {
 
     }
 
-    public void setSelectionChangedListener(SelectionChangedListener selectionChangedListener) {
+    public void setSelectionChangedListener(ISelectionChangedListener selectionChangedListener) {
         this.selectionChangedListener = selectionChangedListener;
-    }
-
-    @Override
-    public void setSize() {
-
-    }
-
-    @Override
-    public void build() {
-
-    }
-
-    @Override
-    public void setVisible() {
-
     }
 
     public void setResultsComics(Comic[] comics) {

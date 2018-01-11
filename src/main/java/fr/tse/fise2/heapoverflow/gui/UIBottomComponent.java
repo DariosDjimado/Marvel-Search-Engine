@@ -1,7 +1,5 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import fr.tse.fise2.heapoverflow.interfaces.UIComponent;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +9,7 @@ import java.awt.*;
  *
  * @author Lionel Rajaona
  */
-public class UIBottomComponent implements UIComponent {
+public class UIBottomComponent {
     //Wrapper Panel used
     private JPanel bottomWrapperPanel;
 
@@ -74,14 +72,6 @@ public class UIBottomComponent implements UIComponent {
     }
 //Override methods existing from UIComponent
 
-    @Override
-    public void setSize() {
-
-
-    }
-
-
-    @Override
     public void build() {
         this.progressBar.setIndeterminate(true);
         this.progressBar.setPreferredSize(new Dimension(300, 3));
@@ -131,8 +121,4 @@ public class UIBottomComponent implements UIComponent {
 
     }
 
-    @Override
-    public void setVisible() {
-
-    }
 }

@@ -3,11 +3,7 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 import com.google.gson.Gson;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
 import fr.tse.fise2.heapoverflow.main.CacheImage;
-import fr.tse.fise2.heapoverflow.main.Controller;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +30,11 @@ public final class MarvelRequest extends UrlBuilder {
 
 
     private MarvelRequest() {
+        Cache cache = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         this.client = new OkHttpClient
                 .Builder()
                 .readTimeout(20, TimeUnit.SECONDS)
-                .cache(Controller.getUrlsCache())
+                .cache(cache)
                 .addInterceptor(new MarvelRequestInterceptor())
                 .build();
     }

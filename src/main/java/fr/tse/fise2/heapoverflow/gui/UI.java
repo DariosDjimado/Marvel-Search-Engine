@@ -148,10 +148,6 @@ public class UI extends JFrame implements Observer {
         rightWrapperPanel.setPreferredSize(new Dimension(320, 500));
 
         this.uiExtraComponent = new UIExtraComponent(rightWrapperPanel);
-        this.uiExtraComponent.build();
-
-
-        // container.add(rightWrapperPanel, BorderLayout.EAST);
         this.searchViewPanel.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
@@ -206,12 +202,13 @@ public class UI extends JFrame implements Observer {
                 this.tabbedPane.setEnabledAt(1, true);
                 this.tabbedPane.setEnabledAt(2, true);
                 this.tabbedPane.setEnabledAt(3, true);
+                this.tabbedPane.setSelectedIndex(1);
             } else {
                 // disable, library, favorite and collection panel
                 this.tabbedPane.setEnabledAt(1, false);
                 this.tabbedPane.setEnabledAt(2, false);
                 this.tabbedPane.setEnabledAt(3, false);
-                this.tabbedPane.setSelectedIndex(1);
+                this.tabbedPane.setSelectedIndex(0);
             }
         }
     }

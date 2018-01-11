@@ -144,7 +144,7 @@ public class TestMarvelRequest {
         image.setExtension(extension);
 
         // get url
-        BufferedImage bufferedImage = MarvelRequest.getImage(image, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.tmpDir);
+        BufferedImage bufferedImage = MarvelRequest.getImage(image, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir());
 
         assertNotNull(bufferedImage);
         assertEquals(bufferedImage.getHeight(), 252);

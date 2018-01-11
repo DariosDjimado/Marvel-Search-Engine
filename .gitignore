@@ -33,6 +33,7 @@ dumpfiles
 database/*.lck
 
 CacheResponse.tmp/*
+CacheImage.tmp/*
 
 lc_database/*
 
