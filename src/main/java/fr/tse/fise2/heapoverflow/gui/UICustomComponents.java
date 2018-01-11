@@ -168,7 +168,7 @@ final class CircleButton extends JButton {
         final Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2d.setPaint(UIColor.SIGNED_IN_TEXT_COLOR);
+        g2d.setPaint(this.getBackground());
         // fill oval
         g2d.fillOval(5, 1, radius * 2, radius * 2);
 

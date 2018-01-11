@@ -63,11 +63,6 @@ public class UserAuthenticationModel extends Observable implements PasswordServi
             // TODO DANGEROUS DO NOT USE USERNAME
             final UserRow userRow = UsersTable.findUserByUsername((String) currentUser.getPrincipal());
             user = getUser(userRow);
-        } catch (SQLException e) {
-            AppErrorHandler.onError(e);
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(e.getMessage(), e);
-            }
         } catch (ExpiredSessionException | UnknownSessionException e) {
             getInstance().stopCurrentSession();
             getInstance().logout();

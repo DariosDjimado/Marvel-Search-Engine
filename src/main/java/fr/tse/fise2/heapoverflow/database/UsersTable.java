@@ -25,9 +25,8 @@ public class UsersTable {
      *
      * @param id user's unique id
      * @return UserRow user's info
-     * @throws SQLException if any sql exception
      */
-    public static UserRow findUserById(int id) throws SQLException {
+    public static UserRow findUserById(int id) {
         return getUserRow(id, "SELECT * FROM users WHERE id = ?");
     }
 
@@ -36,9 +35,8 @@ public class UsersTable {
      *
      * @param username user's unique username
      * @return UserRow user's info
-     * @throws SQLException if any sql exception
      */
-    public static UserRow findUserByUsername(String username) throws SQLException {
+    public static UserRow findUserByUsername(String username) {
         return getUserRow(username, "SELECT * FROM users WHERE username = ?");
     }
 
@@ -48,37 +46,40 @@ public class UsersTable {
      *
      * @param email user's unique email
      * @return UserRow user's info
-     * @throws SQLException if any sql exception
      */
-    public static UserRow findUserByEmail(String email) throws SQLException {
+    public static UserRow findUserByEmail(String email) {
         return getUserRow(email, "SELECT * FROM users WHERE email = ?");
     }
 
-    private static UserRow getUserRow(int id, String s) throws SQLException {
+    private static UserRow getUserRow(int id, String s) {
         return getUserRow(id, null, s);
     }
 
-    private static UserRow getUserRow(String uniqueConstraint, String s) throws SQLException {
+    private static UserRow getUserRow(String uniqueConstraint, String s) {
         return getUserRow(Integer.MIN_VALUE, uniqueConstraint, s);
     }
 
-    private static UserRow getUserRow(int id, String uniqueConstraint, String s) throws SQLException {
-        final PreparedStatement preparedStatement = ConnectionDB.getInstance()
-                .getConnection()
-                .prepareStatement(s);
+    private static UserRow getUserRow(int id, String uniqueConstraint, String s) {
 
-        if (uniqueConstraint != null) {
-            preparedStatement.setString(1, uniqueConstraint);
-        } else {
-            preparedStatement.setInt(1, id);
-        }
-
-        ResultSet resultSet = preparedStatement.executeQuery();
         UserRow userRow = null;
-        while (resultSet.next()) {
-            userRow = new UserRow(resultSet.getInt("id"), resultSet.getString("username"),
-                    resultSet.getString("email"), resultSet.getString("last_name"),
-                    resultSet.getString("first_name"), resultSet.getString("password"));
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance()
+                .getConnection()
+                .prepareStatement(s)) {
+
+            if (uniqueConstraint != null) {
+                preparedStatement.setString(1, uniqueConstraint);
+            } else {
+                preparedStatement.setInt(1, id);
+            }
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                userRow = new UserRow(resultSet.getInt("id"), resultSet.getString("username"),
+                        resultSet.getString("email"), resultSet.getString("last_name"),
+                        resultSet.getString("first_name"), resultSet.getString("password"));
+            }
+        } catch (SQLException e) {
+
         }
         return userRow;
     }

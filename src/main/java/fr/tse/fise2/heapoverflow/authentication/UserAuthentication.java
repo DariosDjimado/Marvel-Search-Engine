@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,15 +62,9 @@ public class UserAuthentication implements PasswordService {
         if (!isAuthenticated()) {
             return null;
         }
-        User user = null;
-        try {
-            // TODO DANGEROUS DO NOT USE USERNAME
-            final UserRow userRow = UsersTable.findUserByUsername((String) currentUser.getPrincipal());
-            user = getUser(userRow);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return user;
+        // TODO DANGEROUS DO NOT USE USERNAME
+        final UserRow userRow = UsersTable.findUserByUsername((String) currentUser.getPrincipal());
+        return getUser(userRow);
     }
 
     @NotNull

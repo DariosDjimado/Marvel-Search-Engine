@@ -8,8 +8,6 @@ import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.realm.jdbc.JdbcRealm;
 import org.apache.shiro.util.ByteSource;
 
-import java.sql.SQLException;
-
 public class SaltRealm extends JdbcRealm {
     private final PasswordService passwordService;
 
@@ -28,7 +26,7 @@ public class SaltRealm extends JdbcRealm {
         if (username == null) {
             throw new AccountException("Null username");
         }
-        final UserRow userRow = getUser(username);
+        final UserRow userRow = UsersTable.findUserByUsername(username);
 
         if (userRow == null) {
             throw new UnknownAccountException("No account found for user [" + username + "]");
@@ -49,16 +47,5 @@ public class SaltRealm extends JdbcRealm {
     @Override
     protected Object getAuthenticationCacheKey(AuthenticationToken token) {
         return super.getAuthenticationCacheKey(token);
-    }
-
-    private UserRow getUser(String username) {
-        UserRow userRow;
-        try {
-            userRow = UsersTable.findUserByUsername(username);
-        } catch (SQLException e) {
-            final String message = "There was a SQL error while authenticating user [" + username + "]";
-            throw new AuthenticationException(message, e);
-        }
-        return userRow;
     }
 }

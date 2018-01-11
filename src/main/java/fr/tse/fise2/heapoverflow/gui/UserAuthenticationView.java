@@ -46,6 +46,7 @@ public class UserAuthenticationView extends JPanel implements Observer {
         this.logInButton = new DefaultButton("Log in");
         this.logInButton.setForeground(UIColor.ACCENT_COLOR);
         this.signedInButton = new CircleButton("p");
+        this.signedInButton.setBackground(UIColor.SIGNED_IN_TEXT_COLOR);
         this.signUpButton = new PrimaryButton("Sign up");
 
         // sign in button

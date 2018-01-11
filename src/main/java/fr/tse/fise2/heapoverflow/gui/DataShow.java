@@ -9,31 +9,30 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
 import fr.tse.fise2.heapoverflow.marvelapi.Event;
 import fr.tse.fise2.heapoverflow.marvelapi.Image;
-import fr.tse.fise2.heapoverflow.tasks.FirstAppearance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+enum MarvelType {
+    Character, Comic, Serie, Creator, Story, Event, Error, Void
+}
+
 /**
  * Class used to manage à {@link JPanel} used to show detailed datas on characters and comics. Can display :
  * <ul>
- *     <li>Comics</li>
- *     <li>Characters</li>
+ * <li>Comics</li>
+ * <li>Characters</li>
  * </ul>
  *
  * @author Théo Basty
  * @version 2.0
- *
  */
 public class DataShow {
     //region Attributes
@@ -162,17 +161,49 @@ public class DataShow {
 
         btnPane = new ReactivePanel();
         detail.add(btnPane, BorderLayout.SOUTH);
-        //btnPane.setVisible(false);
 
         tabs = new JTabbedPane();
         tabsJLists = new HashMap<>();
-        tabs.setPreferredSize(new Dimension(panel.getWidth(), 120));
+        tabs.setPreferredSize(new Dimension(panel.getWidth(), 80));
         panel.add(tabs, BorderLayout.SOUTH);
 
         panel.setMinimumSize(panel.getLayout().minimumLayoutSize(panel));
         panel.setVisible(true);
     }
     //endregion
+
+    /**
+     * Method to fill a JPanel with lines containing couples content title, content
+     *
+     * @param pane        The {@link JPanel} to fill
+     * @param m           The {@link Map} containing the couples to add
+     * @param titleFont   font for the title of the element
+     * @param contentFont font for the content
+     */
+    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m, Font titleFont, Font contentFont) {
+        pane.removeAll();
+        for (String detailLine : m.keySet()) {
+            JLabel title = new JLabel(detailLine);
+            title.setFont(titleFont);
+            JLabel content = new JLabel(m.get(detailLine));
+            content.setFont(contentFont);
+            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            refLine.setOpaque(false);
+            refLine.add(title);
+            refLine.add(content);
+            pane.add(refLine);
+        }
+    }
+
+    /**
+     * Method to fill a JPanel with lines containin couples content title, content
+     *
+     * @param pane The {@link JPanel} to fill
+     * @param m    The {@link Map} containing the couples to add
+     */
+    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m) {
+        fillPaneWithLabels(pane, m, Fonts.boldContent, Fonts.content);
+    }
 
     /**
      * Function to draw informations for comics
@@ -188,31 +219,31 @@ public class DataShow {
         head.setText(comic.getTitle());
         //endregion
         //region detail display
-
+        referencesPane.setVisible(true);
         //region Description
         description.setText(comic.getDescription());
         //endregion
         //region references
-        referencesPane.setVisible(true);
+        btnPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
-        references.put("ISBN : "        , comic.getIsbn());
-        references.put("UPC : "         , comic.getUpc());
+        references.put("ISBN : ", comic.getIsbn());
+        references.put("UPC : ", comic.getUpc());
         references.put("Diamond Code : ", comic.getDiamondCode());
-        references.put("EAN : "         , comic.getEan());
-        references.put("ISSN : "        , comic.getIssn());
+        references.put("EAN : ", comic.getEan());
+        references.put("ISSN : ", comic.getIssn());
 
         fillPaneWithLabels(referencesPane, references, Fonts.boldRef, Fonts.ref);
         //endregion
         //region detail content
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
-        for(ComicDate date:comic.getDates()) {
+        for (ComicDate date : comic.getDates()) {
             if (date.getType().equals("onsaleDate")) {
                 details.put("Release Date : ", date.getDate().substring(0, 10));
             }
         }
         details.put("Format : ", comic.getFormat());
         details.put("Serie : ", comic.getSeries().getName());
-        if(comic.getIssueNumber() > 0) {
+        if (comic.getIssueNumber() > 0) {
             details.put("Issue Number : ", comic.getIssueNumber().toString());
         }
         details.put("Prices : ", "");
@@ -297,7 +328,7 @@ public class DataShow {
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
-        List<LinkView>  linkViews = Arrays.stream(comic.getUrls()).map((Url url)-> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
+        List<LinkView> linkViews = Arrays.stream(comic.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
         tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
@@ -312,8 +343,8 @@ public class DataShow {
 
     /**
      * Function to draw informations for characters
-     * @param character The Character to display
      *
+     * @param character The Character to display
      */
     synchronized public void DrawCharacter(final Character character) {
         //Clearing jobs for the previous element
@@ -333,11 +364,11 @@ public class DataShow {
         details.put("", " - " + Integer.valueOf(character.getComics().getAvailable()).toString() + " Comics");
         details.put("Last Modification : ", character.getModified().substring(0, 10));
 
-        FirstAppearanceRow  firstAppearanceRow = FirstAppearanceTable.getFirstAppearanceRow(character.getName().toLowerCase());
-        if(firstAppearanceRow != null) {
+        FirstAppearanceRow firstAppearanceRow = FirstAppearanceTable.getFirstAppearanceRow(character.getName().toLowerCase());
+        if (firstAppearanceRow != null) {
             details.put(
                     "First appearance : ",
-                    firstAppearanceRow.getComic() +", "+ firstAppearanceRow.getDate());
+                    firstAppearanceRow.getComic() + ", " + firstAppearanceRow.getDate());
         }
 
         fillPaneWithLabels(detailPane, details);
@@ -350,7 +381,6 @@ public class DataShow {
         description.setText(character.getDescription());
         //endregion
         //region Serie
-        MarvelRequest request = MarvelRequest.getInstance();
 
         DefaultListModel<MarvelListElement> seriesListModel = new DefaultListModel<>();
         seriesListModel.addElement(new MarvelListElement("Loading...", null, null));
@@ -383,10 +413,10 @@ public class DataShow {
         tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
-        List<LinkView>  linkViews = Arrays.stream(character.getUrls()).map((Url url)-> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
+        List<LinkView> linkViews = Arrays.stream(character.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
         String url = WikipediaUrlsTable.findByLabel(character.getName());
-        if(!url.isEmpty()){
-            linkViews.add(0,new LinkView("wikipedia",url));
+        if (!url.isEmpty()) {
+            linkViews.add(0, new LinkView("wikipedia", url));
         }
         tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
@@ -400,49 +430,17 @@ public class DataShow {
     }
 
     /**
-     * Method to fill a JPanel with lines containing couples content title, content
-     * @param pane The {@link JPanel} to fill
-     * @param m The {@link Map} containing the couples to add
-     * @param titleFont font for the title of the element
-     * @param contentFont font for the content
-     */
-    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m, Font titleFont, Font contentFont) {
-        pane.removeAll();
-        for (String detailLine : m.keySet()) {
-            JLabel title = new JLabel(detailLine);
-            title.setFont(titleFont);
-            JLabel content = new JLabel(m.get(detailLine));
-            content.setFont(contentFont);
-            JPanel refLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            refLine.setOpaque(false);
-            refLine.add(title);
-            refLine.add(content);
-            pane.add(refLine);
-        }
-    }
-
-    /**
-     * Method to fill a JPanel with lines containin couples content title, content
-     *
-     * @param pane The {@link JPanel} to fill
-     * @param m    The {@link Map} containing the couples to add
-     */
-    private static void fillPaneWithLabels(JPanel pane, Map<String, String> m) {
-        fillPaneWithLabels(pane, m, Fonts.boldContent, Fonts.content);
-    }
-
-    /**
      * Method to change the thumbnail of the panel
      *
      * @param ThumbPartialUrl the partial URI from the API
      */
-    public void setThumbnail(Image ThumbPartialUrl) {
+    private void setThumbnail(Image ThumbPartialUrl) {
         try {
             thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir()));
         } catch (Exception e) {
             AppErrorHandler.onError(e);
-            if(LOGGER.isErrorEnabled()){
-                LOGGER.error(e.getMessage(),e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -453,68 +451,66 @@ public class DataShow {
 
     /**
      * Method to change the thumbnail of panel
+     *
      * @param thumbnail the {@link BufferedImage} of the image
      */
-            public void setThumbnail(BufferedImage thumbnail) {
-                this.thumbnail.setImage_(thumbnail);
-            }
+    public void setThumbnail(BufferedImage thumbnail) {
+        this.thumbnail.setImage_(thumbnail);
+    }
 
 
-            /**
-             * Method called by thread requested tabs content in parallel, to fill those tabs
-             * @param elements the set of elements to add
-             * @param elementType the type of elements to add
-             * @param tab the tab to fill
-             * @param token the token to check if the data correspond to the element shown
-             */
-            synchronized public void updateList(Set elements, String elementType, String tab, int token){
-                if(token == elementToken){
-                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).clear();
-                    switch(elementType){
-                        case "Comic":
-                            for (Comic oneComic : (TreeSet<Comic>)elements) {
-                                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
-                            }
+    /**
+     * Method called by thread requested tabs content in parallel, to fill those tabs
+     *
+     * @param elements    the set of elements to add
+     * @param elementType the type of elements to add
+     * @param tab         the tab to fill
+     * @param token       the token to check if the data correspond to the element shown
+     */
+    synchronized public void updateList(Set elements, String elementType, String tab, int token) {
+        if (token == elementToken) {
+            ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).clear();
+            switch (elementType) {
+                case "Comic":
+                    for (Comic oneComic : (TreeSet<Comic>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
+                    }
                     break;
                 case "Character":
-                    for (Character oneCharacter : (TreeSet<Character>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCharacter.getName(), oneCharacter.getResourceURI(), MarvelType.Character));
+                    for (Character oneCharacter : (TreeSet<Character>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCharacter.getName(), oneCharacter.getResourceURI(), MarvelType.Character));
                     }
                     break;
                 case "Creator":
-                    for (Creator oneCreator : (TreeSet<Creator>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCreator.getFullName(), oneCreator.getResourceURI(), MarvelType.Creator));
+                    for (Creator oneCreator : (TreeSet<Creator>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCreator.getFullName(), oneCreator.getResourceURI(), MarvelType.Creator));
                     }
                     break;
                 case "Story":
-                    for (Story oneStory : (TreeSet<Story>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneStory.getTitle(), oneStory.getResourceURI(), MarvelType.Story));
+                    for (Story oneStory : (TreeSet<Story>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneStory.getTitle(), oneStory.getResourceURI(), MarvelType.Story));
                     }
                     break;
                 case "Event":
-                    for (Event oneEvent : (TreeSet<Event>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneEvent.getTitle(), oneEvent.getResourceURI(), MarvelType.Event));
+                    for (Event oneEvent : (TreeSet<Event>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneEvent.getTitle(), oneEvent.getResourceURI(), MarvelType.Event));
                     }
                     break;
                 case "Serie":
-                    for (Serie oneSerie : (TreeSet<Serie>)elements) {
-                        ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneSerie.getTitle(), oneSerie.getResourceURI(), MarvelType.Serie));
+                    for (Serie oneSerie : (TreeSet<Serie>) elements) {
+                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneSerie.getTitle(), oneSerie.getResourceURI(), MarvelType.Serie));
                     }
                     break;
                 case "TimeOut":
-                    ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", null, MarvelType.Error));
+                    ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", null, MarvelType.Error));
                 default:
                     break;
             }
-            if(elements.isEmpty() & !elementType.equals("TimeOut")){
-                ((DefaultListModel<MarvelListElement>)tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("<Empty>", null, MarvelType.Void));
+            if (elements.isEmpty() & !elementType.equals("TimeOut")) {
+                ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("<Empty>", null, MarvelType.Void));
             }
 
             panel.repaint();
         }
     }
-}
-
-enum MarvelType{
-    Character, Comic, Serie, Creator, Story, Event, Error, Void
 }

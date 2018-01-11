@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
 import fr.tse.fise2.heapoverflow.database.CollectionsRow;
+import fr.tse.fise2.heapoverflow.database.CommentHandler;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
 import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.marvelapi.Character;
@@ -30,6 +31,8 @@ public class ReactivePanel extends JPanel {
     private final JList<CollectionsRow> collectionsRowJList;
     private final CustomDialog collectionsDialog;
     private final JButton confirmCollectionSelectedButton;
+    private final DefaultListModel<ElementAssociationRow> commentListModel;
+    private final JPanel commentContainer;
 
 
     ReactivePanel() {
@@ -68,6 +71,19 @@ public class ReactivePanel extends JPanel {
         this.confirmCollectionSelectedButton = new PrimaryButton("Ok");
 
 
+        this.commentListModel = new DefaultListModel<>();
+        JList<ElementAssociationRow> commentList = new JList<>(this.commentListModel);
+        CustomScrollPane commentScrollPane = new CustomScrollPane(commentList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.commentContainer = new JPanel(new BorderLayout());
+        this.commentContainer.setPreferredSize(new Dimension(this.commentContainer.getWidth(), 60));
+        this.commentContainer.add(commentScrollPane, BorderLayout.CENTER);
+        commentScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        commentList.setCellRenderer(new CommentListRender());
+
+
         this.initComponent();
         this.commentButtonsActionListener();
     }
@@ -81,12 +97,6 @@ public class ReactivePanel extends JPanel {
 
         groupLayout.setHorizontalGroup(
                 groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addGroup(GroupLayout.Alignment.LEADING,
-                                groupLayout.createSequentialGroup()
-                                        .addComponent(this.commentButtonView)
-                                        .addComponent(this.saveCommentButton)
-                        )
-                        .addComponent(this.commentTextAreaScrollPane)
                         .addGroup(
                                 groupLayout.createSequentialGroup()
                                         .addComponent(this.collectionButton)
@@ -95,16 +105,17 @@ public class ReactivePanel extends JPanel {
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
-        );
-
-        groupLayout.setVerticalGroup(
-                groupLayout.createSequentialGroup()
-                        .addGroup(
-                                groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(GroupLayout.Alignment.LEADING,
+                                groupLayout.createSequentialGroup()
                                         .addComponent(this.commentButtonView)
                                         .addComponent(this.saveCommentButton)
                         )
                         .addComponent(this.commentTextAreaScrollPane)
+                        .addComponent(this.commentContainer)
+        );
+
+        groupLayout.setVerticalGroup(
+                groupLayout.createSequentialGroup()
                         .addGroup(
                                 groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
                                         .addComponent(this.collectionButton)
@@ -113,6 +124,14 @@ public class ReactivePanel extends JPanel {
                                         .addComponent(this.readButtonView)
                                         .addComponent(this.gradesPanelView)
                         )
+                        .addGroup(
+                                groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addComponent(this.commentButtonView)
+                                        .addComponent(this.saveCommentButton)
+                        )
+                        .addComponent(this.commentTextAreaScrollPane)
+                        .addComponent(this.commentContainer, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+
         );
         this.createCollectionDialog();
         this.confirmCollectionSelectedButtonActionListener();
@@ -240,6 +259,13 @@ public class ReactivePanel extends JPanel {
                 this.commentTextArea.setText(row.getComment().isEmpty() ? "no comment" : row.getComment());
             }
         }
+
+
+        this.commentListModel.clear();
+        for (ElementAssociationRow elementAssociationRow : CommentHandler.findCommentsByComic(comic.getId())) {
+            this.commentListModel.addElement(elementAssociationRow);
+        }
+
 
         this.favoriteButtonView.setComic(comic, row);
         this.readButtonView.setComic(comic, row);
