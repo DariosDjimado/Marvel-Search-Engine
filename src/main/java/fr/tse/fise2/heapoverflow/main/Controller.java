@@ -1,6 +1,7 @@
 package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
+import fr.tse.fise2.heapoverflow.controllers.DataShowController;
 import fr.tse.fise2.heapoverflow.database.CacheUrlsTable;
 import fr.tse.fise2.heapoverflow.database.ConnectionDB;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
@@ -54,6 +55,7 @@ public class Controller extends InternalController implements IRequestListener, 
         this.initFavoriteButton();
         this.initReadButton();
         this.initOwnButton();
+        this.initDataShow();
 
         this.initCacheUrlsTable();
 
@@ -179,6 +181,9 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
+    private void initDataShow(){
+        new DataShowController(dataShow);
+    }
 
     void init() {
         AutoCompletion autoCompletion = new AutoCompletion(this.ui, this.ui.getUiSearchComponent().getSearchTextField(), this);

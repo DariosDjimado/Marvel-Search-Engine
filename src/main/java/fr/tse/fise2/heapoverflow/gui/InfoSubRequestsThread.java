@@ -150,7 +150,12 @@ public class InfoSubRequestsThread implements Runnable {
                                 break;
                         }
                         reqCount++;
-
+                        if(offset + count < total) { //not the last request
+                            caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, false, new LoadingListElement());
+                        }
+                        else {
+                            caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, null);
+                        }
                     }
                     while (offset + count < total);
                     if (cancelling) {
@@ -159,13 +164,12 @@ public class InfoSubRequestsThread implements Runnable {
                         }
                         continue;
                     }
-                    caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash);
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("----" + thisJob + " Done");
                     }
 
                 } catch (SocketTimeoutException e) {
-                    caller.updateList(fetched, "TimeOut", thisJob.modelKey, thisJob.elementHash);
+                    caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, new TimeoutListElement());
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("----" + thisJob + " Timed out");
                     }

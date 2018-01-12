@@ -20,10 +20,6 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-enum MarvelType {
-    Character, Comic, Serie, Creator, Story, Event, Error, Void
-}
-
 /**
  * Class used to manage à {@link JPanel} used to show detailed datas on characters and comics. Can display :
  * <ul>
@@ -34,7 +30,7 @@ enum MarvelType {
  * @author Théo Basty
  * @version 2.0
  */
-public class DataShow {
+public class DataShow extends Observable {
     //region Attributes
 //    Controller controllerLink;
     public static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
@@ -92,7 +88,7 @@ public class DataShow {
     /**
      * A map referring to all tabs displayed in the panel
      */
-    private Map<String, JList> tabsJLists;
+    private Map<String, JList<MarvelListElement>> tabsJLists;
 
     private ReactivePanel btnPane;
 
@@ -257,10 +253,13 @@ public class DataShow {
         detail.revalidate();
         //endregion
         //region Tabs display
+        setChanged();
+        notifyObservers("unregister");
+        tabsJLists.clear();
         tabs.removeAll();
         //region Character
         DefaultListModel<MarvelListElement> characterListModel = new DefaultListModel<>();
-        characterListModel.addElement(new MarvelListElement("Loading...", null, null));
+        characterListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
         tabs.addTab("Characters", new CustomScrollPane(characters));
@@ -268,7 +267,7 @@ public class DataShow {
         //endregion
         //region Creators
         DefaultListModel<MarvelListElement> creatorListModel = new DefaultListModel<>();
-        creatorListModel.addElement(new MarvelListElement("Loading...", null, null));
+        creatorListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
         tabs.addTab("Creators", new CustomScrollPane(creators));
@@ -281,7 +280,7 @@ public class DataShow {
         tabsJLists.put("Variants", variants);
         if (comic.getVariants().length > 0) {
             for (ComicSummary comicVariant : comic.getVariants()) {
-                variantsListModel.addElement(new MarvelListElement(comicVariant.getName(), comic.getRessourceURI(), MarvelType.Comic));
+                variantsListModel.addElement(new ComicSummaryListElement(comicVariant));
             }
             tabs.addTab("Variants", new CustomScrollPane(variants));
         }
@@ -294,7 +293,7 @@ public class DataShow {
 
         if (comic.getCollections().length > 0) {
             for (ComicSummary comicCollection : comic.getCollections()) {
-                CollectionsListModel.addElement(new MarvelListElement(comicCollection.getName(), comic.getRessourceURI(), MarvelType.Comic));
+                CollectionsListModel.addElement(new ComicSummaryListElement(comicCollection));
             }
             tabs.addTab("Collections", new CustomScrollPane(collections));
         }
@@ -307,14 +306,14 @@ public class DataShow {
 
         if (comic.getCollectedIssues().length > 0) {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
-                CollectedListModel.addElement(new MarvelListElement(comicCollected.getName(), comic.getRessourceURI(), MarvelType.Comic));
+                CollectedListModel.addElement(new ComicSummaryListElement(comicCollected));
             }
             tabs.addTab("Collected Issues", new CustomScrollPane(collected));
         }
         //endregion
         //region stories
         DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
-        storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
+        storiesListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
         tabs.addTab("Stories", new CustomScrollPane(stories));
@@ -322,7 +321,7 @@ public class DataShow {
         //endregion
         //region events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
-        eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
+        eventsListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
         tabs.addTab("Events", new CustomScrollPane(events));
@@ -332,6 +331,8 @@ public class DataShow {
         tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
+        setChanged();
+        notifyObservers("register");
         //endregion
         //region thumbnail display
         setThumbnail(comic.getThumbnail());
@@ -375,6 +376,8 @@ public class DataShow {
         detail.revalidate();
         //endregion
         //region Tabs display
+        setChanged();
+        notifyObservers("unregister");
         tabsJLists.clear();
         tabs.removeAll();
         //region Description
@@ -383,7 +386,7 @@ public class DataShow {
         //region Serie
 
         DefaultListModel<MarvelListElement> seriesListModel = new DefaultListModel<>();
-        seriesListModel.addElement(new MarvelListElement("Loading...", null, null));
+        seriesListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> series = new JList<>(seriesListModel);
         tabsJLists.put("Series", series);
         tabs.addTab("Series", new CustomScrollPane(series));
@@ -391,7 +394,7 @@ public class DataShow {
         //endregion
         //region Comics
         DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
-        comicListModel.addElement(new MarvelListElement("Loading...", null, null));
+        comicListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> comics = new JList<>(comicListModel);
         tabsJLists.put("Comics", comics);
         tabs.addTab("Comics", new CustomScrollPane(comics));
@@ -399,7 +402,7 @@ public class DataShow {
         //endregion
         //region Stories
         DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
-        storiesListModel.addElement(new MarvelListElement("Loading...", null, null));
+        storiesListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
         tabs.addTab("Stories", new CustomScrollPane(stories));
@@ -407,7 +410,7 @@ public class DataShow {
         //endregion
         //region Events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
-        eventsListModel.addElement(new MarvelListElement("Loading...", null, null));
+        eventsListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
         tabs.addTab("Events", new CustomScrollPane(events));
@@ -421,6 +424,8 @@ public class DataShow {
         tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
+        setChanged();
+        notifyObservers("register");
         //endregion
         //region thumbnail display
         setThumbnail(character.getThumbnail());
@@ -429,6 +434,19 @@ public class DataShow {
         panel.repaint();
     }
 
+    public void DrawObject(Object object){
+        if (object.getClass() == Character.class){
+            DrawCharacter((Character)object);
+        }
+        else if(object.getClass() == Comic.class){
+            DrawComic((Comic)object);
+        }
+        else{
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Trying to display an unsupported object", object);
+            }
+        }
+    };
     /**
      * Method to change the thumbnail of the panel
      *
@@ -458,6 +476,9 @@ public class DataShow {
         this.thumbnail.setImage_(thumbnail);
     }
 
+    public Map<String, JList<MarvelListElement>> getTabsJLists() {
+        return tabsJLists;
+    }
 
     /**
      * Method called by thread requested tabs content in parallel, to fill those tabs
@@ -467,50 +488,51 @@ public class DataShow {
      * @param tab         the tab to fill
      * @param token       the token to check if the data correspond to the element shown
      */
-    synchronized public void updateList(Set elements, String elementType, String tab, int token) {
+    synchronized public void updateList(Set elements, String elementType, String tab, int token, boolean end, MarvelListElement lastElement) {
         if (token == elementToken) {
-            ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).clear();
+            DefaultListModel<MarvelListElement> model = (DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel();
+            model.clear();
             switch (elementType) {
                 case "Comic":
                     for (Comic oneComic : (TreeSet<Comic>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneComic.getTitle(), oneComic.getRessourceURI(), MarvelType.Comic));
+                        model.addElement(new ComicListElement(oneComic));
                     }
                     break;
                 case "Character":
                     for (Character oneCharacter : (TreeSet<Character>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCharacter.getName(), oneCharacter.getResourceURI(), MarvelType.Character));
+                        model.addElement(new ChracterListElement(oneCharacter));
                     }
                     break;
                 case "Creator":
                     for (Creator oneCreator : (TreeSet<Creator>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneCreator.getFullName(), oneCreator.getResourceURI(), MarvelType.Creator));
+                        model.addElement(new CreatorListElement(oneCreator));
                     }
                     break;
                 case "Story":
                     for (Story oneStory : (TreeSet<Story>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneStory.getTitle(), oneStory.getResourceURI(), MarvelType.Story));
+                        model.addElement(new StoryListElement(oneStory));
                     }
                     break;
                 case "Event":
                     for (Event oneEvent : (TreeSet<Event>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneEvent.getTitle(), oneEvent.getResourceURI(), MarvelType.Event));
+                        model.addElement(new EventListElement(oneEvent));
                     }
                     break;
                 case "Serie":
                     for (Serie oneSerie : (TreeSet<Serie>) elements) {
-                        ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement(oneSerie.getTitle(), oneSerie.getResourceURI(), MarvelType.Serie));
+                        model.addElement(new SerieListElement(oneSerie));
                     }
                     break;
-                case "TimeOut":
-                    ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("Request Timeout", null, MarvelType.Error));
-                default:
-                    break;
             }
-            if (elements.isEmpty() & !elementType.equals("TimeOut")) {
-                ((DefaultListModel<MarvelListElement>) tabsJLists.get(tab).getModel()).addElement(new MarvelListElement("<Empty>", null, MarvelType.Void));
+            if(lastElement != null){
+                model.addElement(lastElement);
             }
-
+            if(end && model.isEmpty()){
+                model.addElement(new EmptyListElement());
+            }
             panel.repaint();
         }
     }
+
+
 }
