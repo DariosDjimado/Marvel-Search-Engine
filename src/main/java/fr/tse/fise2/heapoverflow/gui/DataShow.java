@@ -53,7 +53,7 @@ public class DataShow extends Observable {
     /**
      * The thumbnail od the element displayed
      */
-    private ShowThumbnail thumbnail;
+    private final ShowThumbnail thumbnail;
 
     /**
      * The title of the Panel
@@ -434,19 +434,18 @@ public class DataShow extends Observable {
         panel.repaint();
     }
 
-    public void DrawObject(Object object){
-        if (object.getClass() == Character.class){
-            DrawCharacter((Character)object);
-        }
-        else if(object.getClass() == Comic.class){
-            DrawComic((Comic)object);
-        }
-        else{
-            if(LOGGER.isErrorEnabled()) {
+    public void DrawObject(Object object) {
+        if (object.getClass() == Character.class) {
+            DrawCharacter((Character) object);
+        } else if (object.getClass() == Comic.class) {
+            DrawComic((Comic) object);
+        } else {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Trying to display an unsupported object", object);
             }
         }
-    };
+    }
+
     /**
      * Method to change the thumbnail of the panel
      *
@@ -454,7 +453,7 @@ public class DataShow extends Observable {
      */
     private void setThumbnail(Image ThumbPartialUrl) {
         try {
-            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir()));
+            thumbnail.setImage_(MarvelRequest.getImage(ThumbPartialUrl, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(), thumbnail));
         } catch (Exception e) {
             AppErrorHandler.onError(e);
             if (LOGGER.isErrorEnabled()) {
@@ -524,10 +523,10 @@ public class DataShow extends Observable {
                     }
                     break;
             }
-            if(lastElement != null){
+            if (lastElement != null) {
                 model.addElement(lastElement);
             }
-            if(end && model.isEmpty()){
+            if (end && model.isEmpty()) {
                 model.addElement(new EmptyListElement());
             }
             panel.repaint();

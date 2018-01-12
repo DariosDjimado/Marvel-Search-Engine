@@ -66,7 +66,7 @@ public class UrlBuilder {
      * @return Url
      * @throws MalformedURLException if Url cannot be made
      */
-    static URL imageUrl(Image image, ImageVariant imageVariant) throws MalformedURLException {
+    public static URL imageUrl(Image image, ImageVariant imageVariant) throws MalformedURLException {
 
         switch (imageVariant) {
             case PORTRAIT_SMALL:
@@ -110,6 +110,17 @@ public class UrlBuilder {
         }
 
 
+    }
+
+    /**
+     * Formats image's path
+     *
+     * @param image Marvel Image
+     * @return the name given to the file
+     */
+    public static String imageCachedName(Image image) {
+        return image.getPath().replaceAll("http://i.annihil.us/u/prod/marvel/i/mg/", "")
+                .replaceAll("/", "_") + "." + image.getExtension();
     }
 
     /**

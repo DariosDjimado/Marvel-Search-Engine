@@ -2,8 +2,8 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import com.google.gson.Gson;
 import fr.tse.fise2.heapoverflow.events.RequestListener;
-import fr.tse.fise2.heapoverflow.main.CacheImage;
 import okhttp3.*;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -166,32 +167,33 @@ public final class MarvelRequest extends UrlBuilder {
      * @param image        Marvel Image
      * @param imageVariant Marvel Image Variant
      * @param tmpPath      temporary folder where images will be stored
+     * @param observer     if any it will update later, for images downloaded in thread
      * @return BufferedImage
      * @throws IOException cannot read the image
      */
-    public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath) throws IOException {
-        File imageTmp = new File(tmpPath + image.getPath().substring(image.getPath().lastIndexOf('/') + 1) + '.' + image.getExtension());
+    public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath, @Nullable Observer observer) throws IOException {
+        File imageTmp = new File(tmpPath + UrlBuilder.imageCachedName(image)).getCanonicalFile();
         if (imageTmp.isFile()) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("reading file from disk");
+            if (imageTmp.canRead()) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("reading file from disk");
+                }
+                return ImageIO.read(imageTmp);
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("File cannot be read");
+                }
             }
-            return ImageIO.read(imageTmp);
         } else {
-            for (RequestListener requestListener : requestListeners) {
-                requestListener.startLoading(image.getPath());
-            }
-
-            BufferedImage bufferedReader = ImageIO.read(imageUrl(image, imageVariant));
-
-
-            for (RequestListener requestListener : requestListeners) {
-                requestListener.endLoading(image.getPath());
-            }
-
-            Thread cacheImage = new CacheImage(bufferedReader, image, tmpPath);
+            Thread cacheImage = new Thread(new CacheImage(image, imageVariant, tmpPath, observer));
             cacheImage.start();
+        }
+        return ImageIO.read(MarvelRequest.class.getResource("loading.png"));
+    }
 
-            return bufferedReader;
+    public static void startLoading(String url) {
+        for (RequestListener requestListener : requestListeners) {
+            requestListener.startLoading(url);
         }
     }
 
@@ -235,20 +237,16 @@ public final class MarvelRequest extends UrlBuilder {
         }
     }
 
-    public Set<RequestListener> asyncGetData(String partialUrl, String query, Callback callback) {
+    public void asyncGetData(String partialUrl, String query, Callback callback) {
         if (Authentication.getNumberOfRequest() < Authentication.getRateLimit()) {
             for (RequestListener requestListener : requestListeners) {
                 requestListener.startLoading(partialUrl);
             }
-
             Request request = new Request.Builder()
                     .url(appendBaseUrl(partialUrl, query))
                     .build();
-
             client.newCall(request).enqueue(callback);
-
         }
-        return requestListeners;
     }
 
     /**
