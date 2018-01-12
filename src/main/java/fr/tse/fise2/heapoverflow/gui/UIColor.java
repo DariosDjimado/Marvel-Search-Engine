@@ -3,6 +3,8 @@ package fr.tse.fise2.heapoverflow.gui;
 import java.awt.*;
 
 /**
+ * Colors palette
+ *
  * @author Darios DJIMADO
  */
 public final class UIColor {
