@@ -19,7 +19,6 @@ import java.util.List;
 public class GradesPanel extends JPanel {
 
     private static final ImageIcon starAddIcon = new ImageIcon(GradesPanel.class.getResource("star_add.png"));
-    private static final ImageIcon starAddAvgIcon = new ImageIcon(GradesPanel.class.getResource("star_add_owner.png"));
     private static final ImageIcon starRemoveIcon = new ImageIcon(GradesPanel.class.getResource("star_remove.png"));
 
     private List<GradeButton> grades = new ArrayList<>();
@@ -27,7 +26,6 @@ public class GradesPanel extends JPanel {
     private int id;
     private MarvelElement type;
     private String elementName;
-    private boolean isAverageGrade;
 
 
     /**
@@ -41,18 +39,13 @@ public class GradesPanel extends JPanel {
             grades.add(gradeButton);
             this.add(gradeButton);
         }
-        this.isAverageGrade = false;
 
     }
 
     private void select(int i) {
         for (GradeButton gradeButton : grades) {
             if (gradeButton.getGrade() <= i) {
-                if (isAverageGrade) {
-                    gradeButton.setIcon(starAddAvgIcon);
-                } else {
-                    gradeButton.setIcon(starAddIcon);
-                }
+                gradeButton.setIcon(starAddIcon);
             } else {
                 gradeButton.setIcon(starRemoveIcon);
             }
@@ -62,12 +55,7 @@ public class GradesPanel extends JPanel {
     private void deselect() {
         for (GradeButton gradeButton : grades) {
             if (gradeButton.getGrade() <= this.currentGrade) {
-                if (isAverageGrade) {
-                    gradeButton.setIcon(starAddAvgIcon);
-                } else {
-                    gradeButton.setIcon(starAddIcon);
-                }
-
+                gradeButton.setIcon(starAddIcon);
             } else {
                 gradeButton.setIcon(starRemoveIcon);
             }
@@ -79,7 +67,6 @@ public class GradesPanel extends JPanel {
     }
 
     public void setCurrentGrade(int currentGrade) {
-        this.isAverageGrade = false;
         this.currentGrade = currentGrade;
         select(this.currentGrade);
     }
@@ -138,14 +125,11 @@ public class GradesPanel extends JPanel {
 
     private void updateState(ElementAssociationRow row) {
         if (row != null) {
-            this.isAverageGrade = false;
             this.select(row.getGrade());
             this.currentGrade = row.getGrade();
         } else {
-            final int avgGrade = ElementsAssociation.getAverageGradeByComic(id);
-            this.isAverageGrade = true;
-            this.select(avgGrade);
-            this.currentGrade = avgGrade;
+            this.select(0);
+            this.currentGrade = 0;
         }
     }
 
