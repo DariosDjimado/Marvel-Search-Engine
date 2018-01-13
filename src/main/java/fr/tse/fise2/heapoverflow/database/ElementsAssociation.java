@@ -28,7 +28,7 @@ public class ElementsAssociation {
      * @param userId     user unique id
      * @param value      new value
      */
-    public static void updateGrade(int elementUid, int userId, int value) {
+    private static void updateGrade(int elementUid, int userId, int value) {
         updateElementInt(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET GRADE = ? WHERE UID = ? AND USER_ID = ?");
     }
 
@@ -39,7 +39,7 @@ public class ElementsAssociation {
      * @param userId     user unique id
      * @param value      new value
      */
-    public static void updateUserComment(int elementUid, int userId, String value) {
+    private static void updateUserComment(int elementUid, int userId, String value) {
         updateElementString(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET COMMENT = ? WHERE UID = ? AND USER_ID = ?");
     }
 
@@ -72,7 +72,7 @@ public class ElementsAssociation {
      * @param userId     user unique id
      * @param value      new value
      */
-    public static void updateCollection(int elementUid, int userId, int value) {
+    private static void updateCollection(int elementUid, int userId, int value) {
         updateElementInt(elementUid, userId, value, "UPDATE ELEMENTS_ASSOCIATION SET COLLECTION_ID = ? WHERE UID = ? AND USER_ID = ?");
     }
 
@@ -300,6 +300,35 @@ public class ElementsAssociation {
         } else {
             updateGrade(elementUID, userId, value);
         }
+    }
+
+    /**
+     * Gets an average grade by omic
+     *
+     * @param id the id of the comic
+     * @return the average note of this comic
+     */
+    public static int getAverageGradeByComic(int id) {
+        int averageGrade = 0;
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("SELECT AVG(GRADE) FROM ELEMENTS_ASSOCIATION " +
+                        "INNER JOIN ELEMENTS E ON ELEMENTS_ASSOCIATION.UID = E.UID " +
+                        "WHERE E.ID = ?")) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            boolean found = false;
+            while (resultSet.next()) {
+                if (!found) {
+                    found = true;
+                    averageGrade = resultSet.getInt(1);
+                } else {
+                    throw new SQLException("more than one element found in avg queries");
+                }
+            }
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+        }
+        return averageGrade;
     }
 
     public static void updateCollectionCreateAsNeeded(int elementId, String elementName, int userId, int value, MarvelElement marvelElement) {
