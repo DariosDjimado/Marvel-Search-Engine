@@ -46,12 +46,12 @@ public class StoriesEventsPopUp extends JFrame implements SubRequestCaller {
         charactersList.setCellRenderer(new CharactersListRenderer());
 
         this.tabs = new JTabbedPane();
-        tabs.addTab("Comics", comicsList);
-        tabs.addTab("Characters", charactersList);
+        tabs.addTab("Comics", new CustomScrollPane(comicsList));
+        tabs.addTab("Characters", new CustomScrollPane(charactersList));
 
         this.setContentPane(tabs);
         this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        this.setMinimumSize(new Dimension(600, 600));
+        this.setMinimumSize(new Dimension(650, 600));
     }
 
     synchronized public void setDispedO(Object dispedO) {
@@ -95,5 +95,13 @@ public class StoriesEventsPopUp extends JFrame implements SubRequestCaller {
                     break;
             }
         }
+    }
+
+    public JList<Comic> getComicsList() {
+        return comicsList;
+    }
+
+    public JList<Character> getCharactersList() {
+        return charactersList;
     }
 }

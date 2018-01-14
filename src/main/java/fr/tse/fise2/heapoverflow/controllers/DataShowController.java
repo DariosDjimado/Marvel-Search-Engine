@@ -19,12 +19,14 @@ public class DataShowController implements Observer{
     private final StoriesEventsPopUp popup;
 
     private ListSelectionListener updateListener;
-    public ListSelectionListener popupListener;
+    private ListSelectionListener popupListener;
 
     public DataShowController(DataShow dataShow) {
         this.dataShow = dataShow;
         this.dataShow.addObserver(this);
         this.popup = new StoriesEventsPopUp();
+        new PopupController(this.popup, this.dataShow);
+
 
         updateListener = new ListSelectionListener() {
             @Override
