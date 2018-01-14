@@ -220,7 +220,6 @@ public class DataShow extends Observable {
         description.setText(comic.getDescription());
         //endregion
         //region references
-        int index = 0;
         btnPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : ", comic.getIsbn());
@@ -272,7 +271,6 @@ public class DataShow extends Observable {
         creatorListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
-        //tabs.addTab("Creators", null, new CustomScrollPane(creators),null,1);
         isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken);
 
 
@@ -288,7 +286,6 @@ public class DataShow extends Observable {
 
             if(variants != null) {
                 tabs.addTab("Variants", new CustomScrollPane(variants));
-                index++;
             }
         }
         //endregion
