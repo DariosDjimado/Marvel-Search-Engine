@@ -14,7 +14,7 @@ public class EventListElement implements MarvelListElement {
 
     @Override
     public Object getDispedO() {
-        return null;
+        return event;
     }
 
     @Override

@@ -19,11 +19,9 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
  */
 class InfoSubRequestsThread implements Runnable {
 
+    private static InfoSubRequestsThread isrt = null;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(InfoSubRequestsThread.class);
-    /**
-     * the datashow element to callback
-     */
-    private DataShow caller;
     /**
      * The thread executing the queries
      */
@@ -39,14 +37,18 @@ class InfoSubRequestsThread implements Runnable {
 
     /**
      * Constructor, initialize job stack and start thread
-     *
-     * @param caller
      */
-    public InfoSubRequestsThread(DataShow caller) {
-        this.caller = caller;
+    private InfoSubRequestsThread() {
         this.jobs = new ConcurrentLinkedQueue<>();
         this.th = new Thread(this);
         th.start();
+    }
+
+    public static InfoSubRequestsThread getInstance(){
+        if(isrt == null){
+            isrt = new InfoSubRequestsThread();
+        }
+        return isrt;
     }
 
     /**
@@ -151,10 +153,10 @@ class InfoSubRequestsThread implements Runnable {
                         }
                         reqCount++;
                         if(offset + count < total) { //not the last request
-                            caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, false, new LoadingListElement());
+                            thisJob.getCaller().updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, false, new LoadingListElement());
                         }
                         else {
-                            caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, null);
+                            thisJob.getCaller().updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, null);
                         }
                     }
                     while (offset + count < total);
@@ -169,7 +171,7 @@ class InfoSubRequestsThread implements Runnable {
                     }
 
                 } catch (SocketTimeoutException e) {
-                    caller.updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, new TimeoutListElement());
+                    thisJob.getCaller().updateList(fetched, thisJob.elementType, thisJob.modelKey, thisJob.elementHash, true, new TimeoutListElement());
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("----" + thisJob + " Timed out");
                     }
@@ -198,12 +200,13 @@ class InfoSubRequestsThread implements Runnable {
      * @param shortUri      the short URI to request the set of datas
      * @param elementHash   a hash of the element displayed to avoid editing à list with an old request
      */
-    public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash) {
+    public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash, SubRequestCaller caller) {
         synchronized (this) {
-            jobs.add(new Job(elementsClass, modelKey, shortUri, elementHash));
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("----New Job for" + elementsClass);
-            }
+            jobs.add(new Job(elementsClass, modelKey, shortUri, elementHash, caller));
+//            if (LOGGER.isDebugEnabled()) {
+//                LOGGER.debug("----New Job for" + elementsClass);
+//            }
+            System.out.println("----New Job for" + elementsClass);
             notify();
         }
     }
@@ -229,6 +232,7 @@ class InfoSubRequestsThread implements Runnable {
  * A class representing a job
  */
 class Job {
+    private final SubRequestCaller caller;
     String elementType;
     String modelKey;
     String shortUri;
@@ -243,11 +247,12 @@ class Job {
      * @param shortUri    the short URI to request the set of datas
      * @param elementHash a hash of the element displayed to avoid editing à list with an old request
      */
-    public Job(String elementType, String modelKey, String shortUri, int elementHash) {
+    public Job(String elementType, String modelKey, String shortUri, int elementHash, SubRequestCaller caller) {
         this.elementType = elementType;
         this.modelKey = modelKey;
         this.shortUri = shortUri;
         this.elementHash = elementHash;
+        this.caller = caller;
     }
 
     @Override
@@ -258,5 +263,9 @@ class Job {
                 ", shortUri='" + shortUri + '\'' +
                 ", elementHash=" + elementHash +
                 '}';
+    }
+
+    public SubRequestCaller getCaller() {
+        return caller;
     }
 }

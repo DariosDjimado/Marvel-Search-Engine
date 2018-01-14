@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * @author Théo Basty
  * @version 2.0
  */
-public class DataShow extends Observable {
+public class DataShow extends Observable implements SubRequestCaller {
     //region Attributes
 //    Controller controllerLink;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
@@ -103,7 +103,7 @@ public class DataShow extends Observable {
      */
     public DataShow(JPanel panel_) {
 //        this.controllerLink = controller;
-        isrt = new InfoSubRequestsThread(this);
+        isrt = InfoSubRequestsThread.getInstance();
 
         this.elementToken = 0;
         this.panel = panel_;
@@ -263,7 +263,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
         tabs.addTab("Characters",new CustomScrollPane(characters));
-        isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region Creators
 
@@ -271,7 +271,7 @@ public class DataShow extends Observable {
         creatorListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
-        isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken, this);
 
 
         //endregion
@@ -321,7 +321,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
         tabs.addTab("Stories", new CustomScrollPane(stories));
-        isrt.addJob("Story", "Stories", comic.getStories().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Story", "Stories", comic.getStories().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
@@ -329,7 +329,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
         tabs.addTab("Events",new CustomScrollPane(events));
-        isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken, this);
         // external links
         List<LinkView> linkViews = Arrays.stream(comic.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
         tabs.addTab("External Links",new CustomScrollPane(new ExternalLinksView(linkViews)));
@@ -394,7 +394,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> series = new JList<>(seriesListModel);
         tabsJLists.put("Series", series);
         tabs.addTab("Series", new CustomScrollPane(series));
-        isrt.addJob("Serie", "Series", character.getSeries().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Serie", "Series", character.getSeries().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region Comics
         DefaultListModel<MarvelListElement> comicListModel = new DefaultListModel<>();
@@ -402,7 +402,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> comics = new JList<>(comicListModel);
         tabsJLists.put("Comics", comics);
         tabs.addTab("Comics", new CustomScrollPane(comics));
-        isrt.addJob("Comic", "Comics", character.getComics().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Comic", "Comics", character.getComics().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region Stories
         DefaultListModel<MarvelListElement> storiesListModel = new DefaultListModel<>();
@@ -410,7 +410,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
         tabs.addTab("Stories", new CustomScrollPane(stories));
-        isrt.addJob("Story", "Stories", character.getStories().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Story", "Stories", character.getStories().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region Events
         DefaultListModel<MarvelListElement> eventsListModel = new DefaultListModel<>();
@@ -418,7 +418,7 @@ public class DataShow extends Observable {
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
         tabs.addTab("Events", new CustomScrollPane(events));
-        isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken);
+        isrt.addJob("Event", "Events", character.getEvents().getCollectionURI().substring(36), elementToken, this);
         // external links
         List<LinkView> linkViews = Arrays.stream(character.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
         String url = WikipediaUrlsTable.findByLabel(character.getName());
