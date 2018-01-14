@@ -220,6 +220,7 @@ public class DataShow extends Observable {
         description.setText(comic.getDescription());
         //endregion
         //region references
+        int index = 0;
         btnPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : ", comic.getIsbn());
@@ -262,16 +263,18 @@ public class DataShow extends Observable {
         characterListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
-        tabs.addTab("Characters", new CustomScrollPane(characters));
+        tabs.addTab("Characters",new CustomScrollPane(characters));
         isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Creators
+
         DefaultListModel<MarvelListElement> creatorListModel = new DefaultListModel<>();
         creatorListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
-        tabs.addTab("Creators", new CustomScrollPane(creators));
+        //tabs.addTab("Creators", null, new CustomScrollPane(creators),null,1);
         isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken);
+
 
         //endregion
         //region variants
@@ -282,7 +285,11 @@ public class DataShow extends Observable {
             for (ComicSummary comicVariant : comic.getVariants()) {
                 variantsListModel.addElement(new ComicSummaryListElement(comicVariant));
             }
-            tabs.addTab("Variants", new CustomScrollPane(variants));
+
+            if(variants != null) {
+                tabs.addTab("Variants", new CustomScrollPane(variants));
+                index++;
+            }
         }
         //endregion
         //region collections
@@ -308,7 +315,7 @@ public class DataShow extends Observable {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
                 CollectedListModel.addElement(new ComicSummaryListElement(comicCollected));
             }
-            tabs.addTab("Collected Issues", new CustomScrollPane(collected));
+            tabs.addTab("Collected Issues",new CustomScrollPane(collected));
         }
         //endregion
         //region stories
@@ -324,11 +331,11 @@ public class DataShow extends Observable {
         eventsListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
-        tabs.addTab("Events", new CustomScrollPane(events));
+        tabs.addTab("Events",new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
         List<LinkView> linkViews = Arrays.stream(comic.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
-        tabs.add("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
+        tabs.addTab("External Links",new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
         setChanged();
@@ -503,9 +510,16 @@ public class DataShow extends Observable {
                     }
                     break;
                 case "Creator":
+                    List<LinkView> linkViews = new ArrayList<>();
                     for (Creator oneCreator : (TreeSet<Creator>) elements) {
-                        model.addElement(new CreatorListElement(oneCreator));
+                        String url = oneCreator.getUrls()[0].getUrl();
+                        if(oneCreator.getUrls().length > 0) {
+                            linkViews.add(new LinkView(oneCreator.getFullName(), url));
+                        }else{
+                            linkViews.add(new LinkView(oneCreator.getFullName(), "http://marvel.com/comics/creators"));
+                        }
                     }
+                    tabs.insertTab("Creators",null,new CustomScrollPane(new ExternalLinksView(linkViews)),null,1);
                     break;
                 case "Story":
                     for (Story oneStory : (TreeSet<Story>) elements) {
