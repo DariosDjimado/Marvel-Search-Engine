@@ -5,10 +5,13 @@ import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Comics list renderer
+ *
+ * @author Darios DJIMADO
+ */
 class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
-
     private TemplatePreviewListRenderer renderer;
-
 
     ComicsListRenderer() {
         super();
@@ -17,10 +20,9 @@ class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRend
             protected void fillCardData() {
                 Comic comic = (Comic) this.data;
                 this.cardTitle.setText("<html><body style='width: 110px'>");
-                if(comic.getTitle().length() > 80){
+                if (comic.getTitle().length() > 80) {
                     this.cardTitle.setText(this.cardTitle.getText() + comic.getTitle().substring(0, 80) + "...");
-                }
-                else{
+                } else {
                     this.cardTitle.setText(this.cardTitle.getText() + comic.getTitle());
                 }
 
@@ -28,7 +30,6 @@ class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRend
                 this.favoriteButton.setComic(comic);
                 this.readButton.setComic(comic);
                 this.gradesPanel.setComic(comic);
-
             }
 
             @Override
@@ -42,6 +43,7 @@ class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRend
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         renderer.setSelected(isSelected);
         renderer.setData(value);
+        renderer.setHostComponent(list);
         return renderer;
     }
 }

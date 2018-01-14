@@ -5,15 +5,18 @@ import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Observer;
 
+/**
+ * Preview list renderer
+ *
+ * @author Darios DJIMADO
+ */
 abstract class TemplatePreviewListRenderer extends JPanel {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TemplatePreviewListRenderer.class);
     final OwnButton ownButton;
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
@@ -23,13 +26,12 @@ abstract class TemplatePreviewListRenderer extends JPanel {
     private final JPanel cardHeaderPanel;
     private final JPanel cardBodyPanel;
     private final JPanel cardFooterPanel;
-    private final TemplatePreviewListRenderer.ImagePanel imagePanel;
+    private final ImagePanel imagePanel;
     Object data;
     private boolean selected;
 
-
     TemplatePreviewListRenderer() {
-        this.imagePanel = new TemplatePreviewListRenderer.ImagePanel();
+        this.imagePanel = new ImagePanel();
         this.mainPanel = new JPanel();
         this.cardTitle = new JLabel("default");
         this.ownButton = new OwnButton();
@@ -42,6 +44,9 @@ abstract class TemplatePreviewListRenderer extends JPanel {
         this.init();
     }
 
+    /**
+     * initializes the renderer
+     */
     private void init() {
         Dimension fixedDimension = new Dimension(298, 126);
         this.setMinimumSize(fixedDimension);
@@ -119,29 +124,39 @@ abstract class TemplatePreviewListRenderer extends JPanel {
 
     }
 
+    public void setHostComponent(Component hostComponent) {
+        this.imagePanel.setHostComponent(hostComponent);
+    }
+
+    /**
+     * Panel of preview image
+     */
     final class ImagePanel extends JPanel {
+
+        private Component hostComponent;
+        private Observer observer;
 
         ImagePanel() {
             Dimension fixedDimension = new Dimension(84, 126);
             this.setMinimumSize(fixedDimension);
             this.setPreferredSize(fixedDimension);
             this.setMaximumSize(fixedDimension);
-
-
+            this.observer = (o, arg) -> ImagePanel.this.hostComponent.repaint();
         }
 
         @Override
         public void paintComponent(Graphics graphics) {
             try {
-                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(), null);
+                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(), this.observer);
                 graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
             } catch (Exception e) {
                 AppErrorHandler.onError(e);
-                if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error(e.getMessage(), e);
-                }
             }
 
+        }
+
+        void setHostComponent(Component hostComponent) {
+            this.hostComponent = hostComponent;
         }
     }
 }

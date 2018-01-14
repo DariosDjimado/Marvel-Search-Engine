@@ -52,7 +52,6 @@ public class CacheImage extends Observable implements Runnable {
                 DOWNLOADING_IMAGES_SET.add(image.getPath());
 
                 File file = new File(this.tmpDir + UrlBuilder.imageCachedName(image));
-                System.out.println(file.getCanonicalFile());
                 if (!file.isFile()) {
                     BufferedImage bufferedImage = ImageIO.read(imageUrl(image, imageVariant));
                     if (bufferedImage != null) {
