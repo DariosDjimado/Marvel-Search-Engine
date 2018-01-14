@@ -1,6 +1,13 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
-public class Story implements Comparable{
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Story POJO
+ *
+ * @author Darios DJIMADO
+ */
+public class Story implements Comparable<Story> {
 
     private int id;
     private String title;
@@ -191,12 +198,11 @@ public class Story implements Comparable{
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(Object o) {
-        if((o == null) || (this.getClass() != o.getClass())) {
+    public int compareTo(@Nullable Story o) {
+        if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
-        }
-        else{
-            return this.getTitle().compareTo(((Story)o).getTitle());
+        } else {
+            return this.getTitle().compareTo(o.getTitle());
         }
     }
 }

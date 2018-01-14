@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * SeriesList POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class SeriesList extends TemplateList {
 
     private SeriesSummary[] items;

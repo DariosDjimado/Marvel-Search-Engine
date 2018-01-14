@@ -3,6 +3,8 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 /**
  * This class consists exclusively of  public methods that return or set protected fields. The fields are common of all
  * class *.DataWrapper. This POJO doesn't contain the override toString method.
+ *
+ * @author Darios DJIMADO
  */
 public class TemplateDataWrapper {
     protected String attributionText;

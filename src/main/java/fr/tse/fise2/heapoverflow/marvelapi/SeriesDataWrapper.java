@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * SeriesDataWrapper POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class SeriesDataWrapper extends TemplateDataWrapper {
 
     private SeriesDataContainer data;

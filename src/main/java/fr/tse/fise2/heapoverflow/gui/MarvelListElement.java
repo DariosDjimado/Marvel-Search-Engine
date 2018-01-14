@@ -7,8 +7,8 @@ package fr.tse.fise2.heapoverflow.gui;
  */
 public interface MarvelListElement{
 
-    public Object getDispedO();
+    Object getDispedO();
 
     @Override
-    public String toString();
+    String toString();
 }

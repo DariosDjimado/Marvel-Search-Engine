@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * SeriesDataContainer POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class SeriesDataContainer extends TemplateDataContainer {
     private Serie[] results;
 

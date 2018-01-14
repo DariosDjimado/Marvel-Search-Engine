@@ -2,9 +2,9 @@ package fr.tse.fise2.heapoverflow.interfaces;
 
 public interface UIComponent {
 
-    public void setSize();
+    void setSize();
 
-    public  void build();
+    void build();
 
-    public void setVisible();
+    void setVisible();
 }

@@ -11,7 +11,6 @@ public final class UIColor {
     public static final Color MAIN_BACKGROUND_COLOR = new Color(255, 255, 255, 255);
     // UITopComponent
     public static final Color HEADER_SHADOW_COLOR = new Color(158, 158, 158, 25);
-    public static final Color HEADER_TEXT_COLOR = new Color(255, 255, 255, 255);
     public static final Color SIGNED_IN_TEXT_COLOR = new Color(63, 81, 181);
     // primary color
     public static final Color PRIMARY_COLOR = new Color(63, 81, 181);
@@ -28,4 +27,6 @@ public final class UIColor {
     public static final Color SCROLLBAR_THUMB = new Color(158, 158, 158);
 
     public static final Color LiST_CELL_SELECTED = new Color(3, 169, 244);
+
+    public static final Color EMPTY_STATE = new Color(230, 230, 230);
 }

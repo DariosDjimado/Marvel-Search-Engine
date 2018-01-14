@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-public class Controller extends InternalController implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
+public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
     // Model
     private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     // Vue

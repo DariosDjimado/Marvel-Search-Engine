@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * Container of event date
+ *
+ * @author Darios DJIMADO
+ */
 public class EventDataContainer extends TemplateDataContainer {
     private Event[] results;
 

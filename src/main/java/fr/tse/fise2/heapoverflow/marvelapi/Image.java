@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * Image POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class Image {
     private String extension;
 

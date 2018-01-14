@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * ComicDataContainer POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class ComicDataContainer extends TemplateDataContainer {
 
     private Comic[] results;

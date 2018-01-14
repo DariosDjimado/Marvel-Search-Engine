@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * Converter MarvelElement
+ *
+ * @author Darios DJIMADO
+ */
 public class MarvelElementBase {
 
     private final static int comicMapInt = 0;

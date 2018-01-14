@@ -1,10 +1,17 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class Comic implements Comparable, IMarvelElement {
+/**
+ * Comic POJO
+ *
+ * @author Darios DJIMADO
+ */
+public class Comic implements Comparable<Comic>, IMarvelElement {
 
     private int id;
 
@@ -370,11 +377,11 @@ public class Comic implements Comparable, IMarvelElement {
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@Nullable Comic o) {
         if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
         } else {
-            return this.getTitle().compareTo(((Comic) o).getTitle());
+            return this.getTitle().compareTo(o.getTitle());
         }
     }
 }

@@ -1,24 +1,31 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 
-public class Event implements Comparable{
-    int id;
-    String title;
-    String description;
-    String resourceURI;
-    Url urls[];
-    String modified;
-    String start;
-    String end;
-    Image thumbnail;
-    ComicList comics;
-    StoryList stories;
-    SeriesList series;
-    CharacterList characters;
-    CreatorList creators;
-    EventSummary next;
-    EventSummary previous;
+/**
+ * Event POJO
+ *
+ * @author Darios DJIMADO
+ */
+public class Event implements Comparable<Event> {
+    private int id;
+    private String title;
+    private String description;
+    private String resourceURI;
+    private Url urls[];
+    private String modified;
+    private String start;
+    private String end;
+    private Image thumbnail;
+    private ComicList comics;
+    private StoryList stories;
+    private SeriesList series;
+    private CharacterList characters;
+    private CreatorList creators;
+    private EventSummary next;
+    private EventSummary previous;
 
     public int getId() {
         return id;
@@ -226,12 +233,11 @@ public class Event implements Comparable{
      */
 
     @Override
-    public int compareTo(Object o) {
-        if((o == null) || (this.getClass() != o.getClass())) {
+    public int compareTo(@Nullable Event o) {
+        if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
-        }
-        else{
-            return this.getTitle().compareTo(((Event)o).getTitle());
+        } else {
+            return this.getTitle().compareTo(o.getTitle());
         }
     }
 }

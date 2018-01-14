@@ -1,10 +1,16 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import fr.tse.fise2.heapoverflow.interfaces.IMarvelElement;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class Character implements Comparable, IMarvelElement {
+/**
+ * Character POJO
+ *
+ * @author Darios DJIMADO
+ */
+public class Character implements Comparable<Character>, IMarvelElement {
     private int id;
 
     private SeriesList series;
@@ -162,11 +168,11 @@ public class Character implements Comparable, IMarvelElement {
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@Nullable Character o) {
         if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
         } else {
-            return this.getName().compareTo(((Character) o).getName());
+            return this.getName().compareTo(o.getName());
         }
     }
 }

@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * StoryList POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class StoryList extends TemplateList {
 
     private StorySummary[] items;

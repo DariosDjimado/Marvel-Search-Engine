@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * Url POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class Url {
     private String type;
 

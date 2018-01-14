@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * EventsDataWrapper POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class EventsDataWrapper extends TemplateDataWrapper {
     private EventDataContainer data;
 

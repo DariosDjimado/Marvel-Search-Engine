@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Makes request to Marvel API
+ * Handles the requests to Marvel API
  *
  * @author Darios DJIMADO
  */
@@ -40,6 +40,11 @@ public final class MarvelRequest extends UrlBuilder {
                 .build();
     }
 
+    /**
+     * Gets the current instanec
+     *
+     * @return instance of MarvelRequest
+     */
     public static MarvelRequest getInstance() {
         if (instance == null) {
             instance = new MarvelRequest();
@@ -230,7 +235,8 @@ public final class MarvelRequest extends UrlBuilder {
                 for (RequestListener requestListener : requestListeners) {
                     requestListener.endLoading(partialUrl);
                 }
-                return response.body().string();
+                ResponseBody body = response.body();
+                return body == null ? null : body.string();
             }
         } else {
             return requestCanceled;

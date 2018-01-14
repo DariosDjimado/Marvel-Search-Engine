@@ -2,6 +2,12 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+
+/**
+ * CharacterDataContainer POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class CharacterDataContainer extends TemplateDataContainer {
 
     private Character[] results;

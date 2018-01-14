@@ -1,11 +1,13 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 
 /**
  * Created by théo on 22/11/2017.
  */
-public class Creator implements Comparable{
+public class Creator implements Comparable<Creator> {
     private int id;
 
     private String firstName;
@@ -205,12 +207,11 @@ public class Creator implements Comparable{
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(Object o) {
-        if((o == null) || (this.getClass() != o.getClass())) {
+    public int compareTo(@Nullable Creator o) {
+        if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
-        }
-        else {
-            return this.getFullName().compareTo(((Creator)o).getFullName());
+        } else {
+            return this.getFullName().compareTo(o.getFullName());
         }
     }
 }

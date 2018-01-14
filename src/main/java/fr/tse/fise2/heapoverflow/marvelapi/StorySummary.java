@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * StorySummary POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class StorySummary extends TemplateSummary {
 
     private String type;

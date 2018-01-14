@@ -27,7 +27,7 @@ public class UsersTable {
      * @return UserRow user's info
      */
     public static UserRow findUserById(int id) {
-        return getUserRow(id, "SELECT * FROM users WHERE id = ?");
+        return getUserRow(id);
     }
 
     /**
@@ -51,8 +51,8 @@ public class UsersTable {
         return getUserRow(email, "SELECT * FROM users WHERE email = ?");
     }
 
-    private static UserRow getUserRow(int id, String s) {
-        return getUserRow(id, null, s);
+    private static UserRow getUserRow(int id) {
+        return getUserRow(id, null, "SELECT * FROM users WHERE id = ?");
     }
 
     private static UserRow getUserRow(String uniqueConstraint, String s) {

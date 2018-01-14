@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * ComicPrice POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class ComicPrice {
 
     private String price;

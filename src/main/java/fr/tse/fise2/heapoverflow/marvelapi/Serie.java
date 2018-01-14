@@ -1,9 +1,16 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 
-public class Serie implements Comparable{
+/**
+ * Series POJO
+ *
+ * @author Darios DJIMADO
+ */
+public class Serie implements Comparable<Serie> {
 
     private int endYear;
 
@@ -237,12 +244,11 @@ public class Serie implements Comparable{
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(Object o) {
-        if((o == null) || (this.getClass() != o.getClass())) {
+    public int compareTo(@Nullable Serie o) {
+        if ((o == null) || (this.getClass() != o.getClass())) {
             return 0;
-        }
-        else{
-            return this.getTitle().compareTo(((Serie)o).getTitle());
+        } else {
+            return this.getTitle().compareTo(o.getTitle());
         }
     }
 }

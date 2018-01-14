@@ -5,7 +5,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 
 public interface ISelectionChangedListener {
 
-    public void showComic(Comic comic);
+    void showComic(Comic comic);
 
-    public void showCharacter(Character character);
+    void showCharacter(Character character);
 }

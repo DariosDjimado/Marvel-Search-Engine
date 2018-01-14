@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * StoryDataWrapper POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class StoriesDataWrapper extends TemplateDataWrapper {
 
     private StoryDataContainer data;

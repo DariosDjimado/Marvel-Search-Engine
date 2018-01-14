@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * Creator summary POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class CreatorSummary extends TemplateSummary {
 
     private String role;

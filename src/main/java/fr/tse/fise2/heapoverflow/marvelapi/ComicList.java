@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * ComicList POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class ComicList extends TemplateList {
 
     private ComicSummary[] items;

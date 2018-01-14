@@ -1,5 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+/**
+ * ComicDate POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class ComicDate {
 
     private String type;

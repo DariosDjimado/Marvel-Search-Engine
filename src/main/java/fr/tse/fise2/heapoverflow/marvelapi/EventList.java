@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * EventList POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class EventList extends TemplateList {
 
     private EventSummary[] items;

@@ -2,6 +2,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import java.util.Arrays;
 
+/**
+ * CreatorList POJO
+ *
+ * @author Darios DJIMADO
+ */
 public class CreatorList extends TemplateList {
 
     private CreatorSummary[] items;
