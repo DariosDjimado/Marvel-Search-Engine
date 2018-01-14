@@ -10,19 +10,24 @@ import java.awt.*;
  * @author Lionel Rajaona
  */
 public class UIBottomComponent {
-    //Wrapper Panel used
+    /** Wrapper Panel used
+     */
     private JPanel bottomWrapperPanel;
 
-    //JProgressBar is an already existing class in swing
+    /**     JProgressBar is an already existing class in swing*
+     */
     private JProgressBar progressBar;
 
-    //errorIcon displayed for errors
+    /**     errorIcon displayed for errors
+     */
     private JOptionPane errorIcon;
 
-    //displaying the url now searched
+    /**     displaying the url now searched
+     */
     private JLabel urlLabel;
 
-    //Constructor
+    /**     Constructor
+     */
     public UIBottomComponent(JPanel bottomWrapperPanel) {
         this.bottomWrapperPanel = bottomWrapperPanel;
         this.progressBar = new CustomProgressBar();
@@ -32,7 +37,8 @@ public class UIBottomComponent {
         this.urlLabel = new JLabel("default");
     }
 
-    //Getters/Setters
+    /**     Getters/Setters
+     */
     public JProgressBar getProgressBar() {
         return progressBar;
     }
@@ -70,7 +76,9 @@ public class UIBottomComponent {
     public void setUrlLabel(JLabel urlLabel) {
         this.urlLabel = urlLabel;
     }
-//Override methods existing from UIComponent
+
+    /**     Override methods existing from UIComponent
+     */
 
     public void build() {
         this.progressBar.setIndeterminate(true);
@@ -79,6 +87,7 @@ public class UIBottomComponent {
         this.progressBar.setMinimumSize(new Dimension(300, 3));
 
         this.progressBar.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
+
 
         //this.bottomWrapperPanel.add(this.errorIcon);
         this.urlLabel.setSize(new Dimension(300, 25));
