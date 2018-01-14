@@ -14,6 +14,7 @@ import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -27,10 +28,13 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * @author Lionel Rajaona
- * CollectionsView implements how collections will appear on the UI. It also provides all necessary button listeners.
+ * Collection view implements how collections will appear on the UI. It also provides all necessary button listeners.
+ *
+ * @author Lionel RAJAONA
+ * @author Darios DJIMADO
  */
 public class CollectionsView extends JPanel implements Observer {
+    private static final ImageIcon EMPTY_STATE_IMAGE_ICON = new ImageIcon(CollectionsView.class.getResource("empty_collection.png"));
     private static final ImageIcon addIcon = new ImageIcon(CollectionsView.class.getResource("addIcon.png"));
     private static final ImageIcon deleteIcon = new ImageIcon(CollectionsView.class.getResource("deleteIcon.png"));
     private static final ImageIcon editIcon = new ImageIcon(CollectionsView.class.getResource("editIcon.png"));
@@ -54,6 +58,9 @@ public class CollectionsView extends JPanel implements Observer {
     private final JTextArea editCollectionDialogTextArea;
     private final JButton editCollectionDialogSaveButton;
     private final JButton editCollectionDialogCancelButton;
+    private final JPanel emptyStatePanel;
+    private final JLabel emptyStateLabel;
+    private final GroupLayout selGroupLayout;
     private CollectionsRow currentCollectionsRow;
     private boolean createNewCollection;
 
@@ -99,6 +106,13 @@ public class CollectionsView extends JPanel implements Observer {
         this.editCollectionDialogSaveButton = new PrimaryButton("Save");
         this.editCollectionDialogCancelButton = new DefaultButton("Cancel");
 
+        // empty state
+        this.emptyStatePanel = new JPanel(new BorderLayout());
+        this.emptyStatePanel.setBackground(UIColor.EMPTY_STATE);
+        this.emptyStateLabel = new JLabel();
+
+        // layout
+        this.selGroupLayout = new GroupLayout(this);
 
         this.initComponent();
         this.createCollectionsButtonActionsListener();
@@ -127,9 +141,13 @@ public class CollectionsView extends JPanel implements Observer {
                 @Override
                 public void onResponse(Call call, Response res) throws IOException {
                     MarvelRequest.endRequest(call.request().url().toString());
-                    String response = res.body().string();
-                    ComicDataWrapper comicDataWrapper = MarvelRequest.deserializeComics(response);
-                    listModel.addElement(comicDataWrapper.getData().getResults()[0]);
+                    String response;
+                    ResponseBody body = res.body();
+                    if (body != null) {
+                        response = body.string();
+                        ComicDataWrapper comicDataWrapper = MarvelRequest.deserializeComics(response);
+                        listModel.addElement(comicDataWrapper.getData().getResults()[0]);
+                    }
                 }
             });
 
@@ -146,13 +164,30 @@ public class CollectionsView extends JPanel implements Observer {
             List<CollectionsRow> collections = CollectionsTable.findCollectionsByUserId(
                     Objects.requireNonNull(UserAuthenticationModel.getUser()).getId());
 
-            for (CollectionsRow row : collections) {
-                this.collectionsListModel.addElement(row);
+            if (collections.size() == 0) {
+                this.rightPanel.setVisible(false);
+                this.leftPanel.setVisible(false);
+                this.emptyStatePanel.setVisible(true);
+            } else {
+                this.rightPanel.setVisible(true);
+                this.leftPanel.setVisible(true);
+                this.emptyStatePanel.setVisible(false);
+
+                for (CollectionsRow row : collections) {
+                    this.collectionsListModel.addElement(row);
+                }
             }
         }
     }
 
     private void initComponent() {
+        // empty state
+        this.emptyStateLabel.setIcon(EMPTY_STATE_IMAGE_ICON);
+        this.emptyStateLabel.setText("You haven't created any collection yet");
+        this.emptyStateLabel.setOpaque(false);
+        this.emptyStateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.emptyStatePanel.add(emptyStateLabel, BorderLayout.CENTER);
+
         // self
         this.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
 
@@ -209,33 +244,33 @@ public class CollectionsView extends JPanel implements Observer {
                                 .addComponent(this.comicsListScrollPaneContainer)
                 );
 
-
-        GroupLayout groupLayout = new GroupLayout(this);
-        this.setLayout(groupLayout);
-
-        groupLayout
+        this.setLayout(this.selGroupLayout);
+        this.selGroupLayout.setHonorsVisibility(true);
+        this.selGroupLayout
                 .setHorizontalGroup(
-                        groupLayout.createParallelGroup()
+                        this.selGroupLayout.createParallelGroup()
                                 .addGap(10)
                                 .addComponent(this.createCollectionsButton)
                                 .addGroup(
-                                        groupLayout.createSequentialGroup()
+                                        this.selGroupLayout.createSequentialGroup()
                                                 .addComponent(this.leftPanel)
                                                 .addComponent(this.rightPanel)
                                 )
+                                .addComponent(this.emptyStatePanel)
                 );
 
-        groupLayout
+        this.selGroupLayout
                 .setVerticalGroup(
-                        groupLayout.createSequentialGroup()
+                        this.selGroupLayout.createSequentialGroup()
                                 .addGap(10)
                                 .addComponent(this.createCollectionsButton)
                                 .addGap(10)
                                 .addGroup(
-                                        groupLayout.createParallelGroup()
+                                        this.selGroupLayout.createParallelGroup()
                                                 .addComponent(this.leftPanel)
                                                 .addComponent(this.rightPanel)
                                 )
+                                .addComponent(this.emptyStatePanel)
                 );
 
         this.buildEditCollectionDialog();
@@ -279,9 +314,7 @@ public class CollectionsView extends JPanel implements Observer {
         });
 
         // cancel button
-        this.editCollectionDialogCancelButton.addActionListener(e -> {
-            this.editCollectionDialog.dispose();
-        });
+        this.editCollectionDialogCancelButton.addActionListener(e -> this.editCollectionDialog.dispose());
 
         // dialog
         JPanel mainPanel = (JPanel) this.editCollectionDialog.getContentPane();

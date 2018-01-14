@@ -1,21 +1,23 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 /**
+ * Marvel API keys
  *
+ * @author Darios DJIMADO
  */
-public class Authentication {
+class Authentication {
+    private static String privateKey = "8964bac1f6de8a7580e2cbf587674497ffb17e87";
+    private static String publicKey = "20ed82c345b223a930d1332c37058bc2";
+    private static int rateLimit = 3000;
+    // we need to abort request if the limit is reached
+    private static int numberOfRequest = 0;
+
     public Authentication(String privateKey, String publicKey, int rateLimit, int numberOfRequest) {
         Authentication.privateKey = privateKey;
         Authentication.publicKey = publicKey;
         Authentication.rateLimit = rateLimit;
         Authentication.numberOfRequest = numberOfRequest;
     }
-
-    private static String privateKey = "8964bac1f6de8a7580e2cbf587674497ffb17e87";
-    private static String publicKey = "20ed82c345b223a930d1332c37058bc2";
-    private static int rateLimit = 3000;
-    // we need to abort request if the limit is reached
-    private static int numberOfRequest = 0;
 
     public static String getPrivateKey() {
         return privateKey;
