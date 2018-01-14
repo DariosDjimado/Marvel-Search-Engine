@@ -220,6 +220,7 @@ public class DataShow extends Observable {
         description.setText(comic.getDescription());
         //endregion
         //region references
+        int index = 0;
         btnPane.setVisible(true);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : ", comic.getIsbn());
@@ -262,7 +263,7 @@ public class DataShow extends Observable {
         characterListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
-        tabs.insertTab("Characters",null,new CustomScrollPane(characters),null,0);
+        tabs.addTab("Characters",new CustomScrollPane(characters));
         isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken);
         //endregion
         //region Creators
@@ -271,7 +272,7 @@ public class DataShow extends Observable {
         creatorListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> creators = new JList<>(creatorListModel);
         tabsJLists.put("Creators", creators);
-        tabs.insertTab("Creators", null, new CustomScrollPane(creators),null,1);
+        //tabs.addTab("Creators", null, new CustomScrollPane(creators),null,1);
         isrt.addJob("Creator", "Creators", comic.getCreators().getCollectionURI().substring(36), elementToken);
 
 
@@ -284,7 +285,11 @@ public class DataShow extends Observable {
             for (ComicSummary comicVariant : comic.getVariants()) {
                 variantsListModel.addElement(new ComicSummaryListElement(comicVariant));
             }
-            tabs.insertTab("Variants", null,new CustomScrollPane(variants),null,3);
+
+            if(variants != null) {
+                tabs.addTab("Variants", new CustomScrollPane(variants));
+                index++;
+            }
         }
         //endregion
         //region collections
@@ -297,7 +302,7 @@ public class DataShow extends Observable {
             for (ComicSummary comicCollection : comic.getCollections()) {
                 CollectionsListModel.addElement(new ComicSummaryListElement(comicCollection));
             }
-            tabs.insertTab("Collections", null, new CustomScrollPane(collections), null, 4);
+            tabs.addTab("Collections", new CustomScrollPane(collections));
         }
         //endregion
         //region collected issues
@@ -310,7 +315,7 @@ public class DataShow extends Observable {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
                 CollectedListModel.addElement(new ComicSummaryListElement(comicCollected));
             }
-            tabs.insertTab("Collected Issues", null,new CustomScrollPane(collected),null,5);
+            tabs.addTab("Collected Issues",new CustomScrollPane(collected));
         }
         //endregion
         //region stories
@@ -318,7 +323,7 @@ public class DataShow extends Observable {
         storiesListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> stories = new JList<>(storiesListModel);
         tabsJLists.put("Stories", stories);
-        tabs.insertTab("Stories",null, new CustomScrollPane(stories),null,6);
+        tabs.addTab("Stories", new CustomScrollPane(stories));
         isrt.addJob("Story", "Stories", comic.getStories().getCollectionURI().substring(36), elementToken);
         //endregion
         //region events
@@ -326,11 +331,11 @@ public class DataShow extends Observable {
         eventsListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
-        tabs.insertTab("Events", null,new CustomScrollPane(events),null,7);
+        tabs.addTab("Events",new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken);
         // external links
         List<LinkView> linkViews = Arrays.stream(comic.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
-        tabs.insertTab("External Links", null,new CustomScrollPane(new ExternalLinksView(linkViews)),null,8);
+        tabs.addTab("External Links",new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
         setChanged();
@@ -514,7 +519,7 @@ public class DataShow extends Observable {
                             linkViews.add(new LinkView(oneCreator.getFullName(), "http://marvel.com/comics/creators"));
                         }
                     }
-                    tabs.insertTab("Creators", null,new CustomScrollPane(new ExternalLinksView(linkViews)),null,2);
+                    tabs.insertTab("Creators",null,new CustomScrollPane(new ExternalLinksView(linkViews)),null,1);
                     break;
                 case "Story":
                     for (Story oneStory : (TreeSet<Story>) elements) {
