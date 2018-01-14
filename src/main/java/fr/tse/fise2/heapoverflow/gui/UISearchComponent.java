@@ -191,7 +191,7 @@ public class UISearchComponent {
             }
         });
 
-        CustomScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+        CustomScrollPane scrollPane = new CustomScrollPane(jList,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 
@@ -221,7 +221,7 @@ public class UISearchComponent {
             }
         });
 
-        CustomScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+        CustomScrollPane scrollPane = new CustomScrollPane(jList,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 

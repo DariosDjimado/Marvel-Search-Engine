@@ -234,7 +234,7 @@ class UserAuthenticationView extends JPanel implements Observer {
             this.showSignUpField(false);
 
             // create new dialog dynamically
-            CustomDialog dialog = new CustomDialog(ui, "Authentication", true);
+            CustomDialog dialog = new CustomDialog(ui, "Authentication");
 
             // create new action listener and store its reference
             final ActionListener actionListener = new ActionListener() {
@@ -296,7 +296,7 @@ class UserAuthenticationView extends JPanel implements Observer {
                 this.showSignUpField(true);
 
                 // create new dialog dynamically
-                CustomDialog dialog = new CustomDialog(ui, "Authentication", true);
+                CustomDialog dialog = new CustomDialog(ui, "Authentication");
 
                 // create new action listener and store its reference
                 final ActionListener actionListener = new ActionListener() {

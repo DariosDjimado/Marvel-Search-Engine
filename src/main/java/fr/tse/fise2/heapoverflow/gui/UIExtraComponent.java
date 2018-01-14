@@ -64,7 +64,7 @@ public class UIExtraComponent implements Observer {
                 }
             });
 
-            JScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane scrollPane = new CustomScrollPane(jList,
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 
@@ -87,7 +87,7 @@ public class UIExtraComponent implements Observer {
                     this.selectionChangedListener.showCharacter(jList.getSelectedValue());
                 }
             });
-            JScrollPane scrollPane = new CustomScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane scrollPane = new CustomScrollPane(jList,
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 

@@ -64,16 +64,16 @@ public class ReactivePanel extends JPanel {
         this.collectionsRowJList.setCellRenderer(new CollectionsListRenderer());
 
         this.collectionsScrollPane = new CustomScrollPane(this.collectionsRowJList,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.collectionsDialog = new CustomDialog(null, "Select a collection", true);
+        this.collectionsDialog = new CustomDialog(null, "Select a collection");
 
         this.confirmCollectionSelectedButton = new PrimaryButton("Ok");
 
 
         this.commentListModel = new DefaultListModel<>();
         JList<ElementAssociationRow> commentList = new JList<>(this.commentListModel);
-        CustomScrollPane commentScrollPane = new CustomScrollPane(commentList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+        CustomScrollPane commentScrollPane = new CustomScrollPane(commentList,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         this.commentContainer = new JPanel(new BorderLayout());

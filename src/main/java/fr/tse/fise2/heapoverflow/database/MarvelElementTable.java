@@ -24,10 +24,10 @@ public class MarvelElementTable {
     public static CharacterRow findCharacterByName(String characterName) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
-                        MarvelElement.CHARACTER.getValue() +
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE= ? " +
                         " OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
         preparedStatement.setString(1, characterName);
+        preparedStatement.setInt(2, MarvelElement.CHARACTER.getValue());
 
         return getCharacterRow(preparedStatement);
     }
@@ -35,8 +35,7 @@ public class MarvelElementTable {
     public static List<CharacterRow> findCharactersLike(String pattern, int offset, int next) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE="
-                        + MarvelElement.CHARACTER.getValue() +
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE= ? " +
                         " ORDER BY NAME OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
 
         pattern = pattern
@@ -46,8 +45,9 @@ public class MarvelElementTable {
                 .replace("[", "![");
 
         preparedStatement.setString(1, "%" + pattern + "%");
-        preparedStatement.setInt(2, offset);
-        preparedStatement.setInt(3, next);
+        preparedStatement.setInt(2, MarvelElement.CHARACTER.getValue());
+        preparedStatement.setInt(3, offset);
+        preparedStatement.setInt(4, next);
 
         return getCharacterRows(preparedStatement);
 
@@ -56,9 +56,9 @@ public class MarvelElementTable {
     public static CharacterRow findCharacterById(int id) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" +
-                        MarvelElement.CHARACTER.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE= ?");
         preparedStatement.setInt(1, id);
+        preparedStatement.setInt(2, MarvelElement.CHARACTER.getValue());
 
         return getCharacterRow(preparedStatement);
     }
@@ -66,7 +66,9 @@ public class MarvelElementTable {
     public static List<CharacterRow> findCharacters() throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElement.CHARACTER.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE= ?");
+
+        preparedStatement.setInt(1, MarvelElement.CHARACTER.getValue());
 
         return getCharacterRows(preparedStatement);
     }
@@ -74,7 +76,9 @@ public class MarvelElementTable {
     public static List<ComicRow> findComics() throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE=" + MarvelElement.COMIC.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE TYPE= ?");
+
+        preparedStatement.setInt(1, MarvelElement.COMIC.getValue());
 
         return getComicRows(preparedStatement);
     }
@@ -87,8 +91,10 @@ public class MarvelElementTable {
     public static ComicRow findComicById(int id) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE=" + MarvelElement.COMIC.getValue());
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE ID = ? AND TYPE= ?");
+
         preparedStatement.setInt(1, id);
+        preparedStatement.setInt(2, MarvelElement.COMIC.getValue());
 
         return getComicRow(preparedStatement);
     }
@@ -96,11 +102,11 @@ public class MarvelElementTable {
     public static ComicRow findComicByTitle(String comicTitle) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE=" +
-                        MarvelElement.COMIC.getValue() +
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME = ? AND TYPE= ?" +
                         " OFFSET 0 ROWS FETCH  NEXT 1 ROWS ONLY ");
 
         preparedStatement.setString(1, comicTitle);
+        preparedStatement.setInt(2, MarvelElement.COMIC.getValue());
 
         return getComicRow(preparedStatement);
 
@@ -109,8 +115,7 @@ public class MarvelElementTable {
     public static List<ComicRow> findComicsLike(String pattern, int offset, int next) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance()
                 .getConnection()
-                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE=" +
-                        MarvelElement.COMIC.getValue() +
+                .prepareStatement("SELECT * FROM ELEMENTS WHERE NAME LIKE ? AND TYPE= ?" +
                         " ORDER BY NAME OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
         pattern = pattern
                 .replace("!", "!!")
@@ -118,8 +123,9 @@ public class MarvelElementTable {
                 .replace("_", "!_")
                 .replace("[", "![");
         preparedStatement.setString(1, "%" + pattern + "%");
-        preparedStatement.setInt(2, offset);
-        preparedStatement.setInt(3, next);
+        preparedStatement.setInt(2, MarvelElement.COMIC.getValue());
+        preparedStatement.setInt(3, offset);
+        preparedStatement.setInt(4, next);
 
         return getComicRows(preparedStatement);
     }

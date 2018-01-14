@@ -142,7 +142,7 @@ public class DataShow extends Observable {
 
         description = new JEditorPane();
         description.setEditable(false);
-        JScrollPane descriptionScroll = new CustomScrollPane(description, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane descriptionScroll = new CustomScrollPane(description, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         descriptionScroll.setPreferredSize(new Dimension(200, 100));
         detail.add(new CustomScrollPane(descriptionScroll), BorderLayout.NORTH);
 

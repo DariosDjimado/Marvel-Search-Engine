@@ -78,7 +78,7 @@ public class FirstAppearanceTable {
     public static boolean exist(String character) throws SQLException {
         boolean found = false;
         PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM FIRST_APPEARANCE WHERE CHARACTERR = ?)");
+                .prepareStatement("SELECT * FROM FIRST_APPEARANCE WHERE CHARACTERR = ?");
         preparedStatement.setString(1, character);
         preparedStatement.execute();
         ResultSet resultSet = preparedStatement.executeQuery();

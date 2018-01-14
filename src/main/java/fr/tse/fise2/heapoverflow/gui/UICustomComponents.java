@@ -473,9 +473,6 @@ final class CustomDialog extends JDialog {
      * @param owner the {@code Frame} from which the dialog is displayed
      * @param title the {@code String} to display in the dialog's
      *              title bar
-     * @param modal specifies whether dialog blocks user input to other top-level
-     *              windows when shown. If {@code true}, the modality type property is set to
-     *              {@code DEFAULT_MODALITY_TYPE} otherwise the dialog is modeless
      * @throws HeadlessException if {@code GraphicsEnvironment.isHeadless()}
      *                           returns {@code true}.
      * @see ModalityType
@@ -486,8 +483,8 @@ final class CustomDialog extends JDialog {
      * @see GraphicsEnvironment#isHeadless
      * @see JComponent#getDefaultLocale
      */
-    CustomDialog(Frame owner, String title, boolean modal) {
-        super(owner, title, modal);
+    CustomDialog(Frame owner, String title) {
+        super(owner, title, true);
         this.owner = owner;
     }
 
@@ -638,13 +635,11 @@ final class CustomScrollPane extends JScrollPane {
      * {@link #setHorizontalScrollBarPolicy}.
      *
      * @param view      the component to display in the scrollpanes viewport
-     * @param vsbPolicy an integer that specifies the vertical
-     *                  scrollbar policy
      * @param hsbPolicy an integer that specifies the horizontal
      * @see #setViewportView
      */
-    CustomScrollPane(Component view, int vsbPolicy, int hsbPolicy) {
-        super(view, vsbPolicy, hsbPolicy);
+    CustomScrollPane(Component view, int hsbPolicy) {
+        super(view, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, hsbPolicy);
         this.custom();
     }
 
