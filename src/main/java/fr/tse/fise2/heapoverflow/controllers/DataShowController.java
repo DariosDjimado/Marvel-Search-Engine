@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.controllers;
 
 import fr.tse.fise2.heapoverflow.gui.DataShow;
 import fr.tse.fise2.heapoverflow.gui.MarvelListElement;
+import fr.tse.fise2.heapoverflow.gui.StoriesEventsPopUp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ public class DataShowController implements Observer{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
     private final DataShow dataShow;
+    private final StoriesEventsPopUp popup;
 
     private ListSelectionListener updateListener;
     public ListSelectionListener popupListener;
@@ -22,6 +24,7 @@ public class DataShowController implements Observer{
     public DataShowController(DataShow dataShow) {
         this.dataShow = dataShow;
         this.dataShow.addObserver(this);
+        this.popup = new StoriesEventsPopUp();
 
         updateListener = new ListSelectionListener() {
             @Override
@@ -30,6 +33,17 @@ public class DataShowController implements Observer{
                 MarvelListElement selected = (MarvelListElement)source.getSelectedValue();
                 if(selected != null && selected.getDispedO() != null){
                     dataShow.DrawObject(selected.getDispedO());
+                }
+            }
+        };
+
+        popupListener = new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                JList source = (JList)e.getSource();
+                MarvelListElement selected = (MarvelListElement)source.getSelectedValue();
+                if(selected != null && selected.getDispedO() != null){
+                    popup.setDispedO(selected.getDispedO());
                 }
             }
         };
@@ -54,6 +68,10 @@ public class DataShowController implements Observer{
                         case "Comics":
                             dataShow.getTabsJLists().get(listName).removeListSelectionListener(updateListener);
                             break;
+                        case "Stories":
+                        case "Events":
+                            dataShow.getTabsJLists().get(listName).removeListSelectionListener(popupListener);
+                            break;
                     }
                 }
             }
@@ -63,6 +81,10 @@ public class DataShowController implements Observer{
                         case "Characters":
                         case "Comics":
                             dataShow.getTabsJLists().get(listName).addListSelectionListener(updateListener);
+                            break;
+                        case "Stories":
+                        case "Events":
+                            dataShow.getTabsJLists().get(listName).addListSelectionListener(popupListener);
                             break;
                     }
                 }
