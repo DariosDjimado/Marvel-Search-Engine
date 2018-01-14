@@ -12,7 +12,6 @@ import java.util.Observer;
 
 public class UIExtraComponent implements Observer {
     private final JPanel rightWrapperPanel;
-    private final JPanel rightTitlePanel;
     private final JPanel rightContainerPanel;
     private final JLabel rightTitleLabel;
 
@@ -34,17 +33,17 @@ public class UIExtraComponent implements Observer {
         this.rightWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
 
 
-        this.rightTitlePanel = new JPanel();
+        JPanel rightTitlePanel = new JPanel();
 
 
-        this.rightWrapperPanel.add(this.rightTitlePanel, BorderLayout.NORTH);
+        this.rightWrapperPanel.add(rightTitlePanel, BorderLayout.NORTH);
         this.rightWrapperPanel.add(this.rightContainerPanel, BorderLayout.CENTER);
 
         this.rightTitleLabel = new JLabel("Nothing to show");
-        this.rightTitlePanel.setBackground(UIColor.PRIMARY_COLOR);
+        rightTitlePanel.setBackground(UIColor.PRIMARY_COLOR);
         this.rightTitleLabel.setForeground(UIColor.MAIN_BACKGROUND_COLOR);
 
-        this.rightTitlePanel.add(this.rightTitleLabel);
+        rightTitlePanel.add(this.rightTitleLabel);
 
     }
 

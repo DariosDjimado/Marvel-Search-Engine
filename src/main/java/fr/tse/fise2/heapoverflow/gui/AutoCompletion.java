@@ -13,6 +13,8 @@ import java.awt.event.*;
 import java.sql.SQLException;
 
 /**
+ * Auto suggests title to user
+ *
  * @author Darios DJIMADO
  * @author Lionel RAJAONA
  */

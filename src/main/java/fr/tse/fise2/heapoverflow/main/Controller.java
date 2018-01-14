@@ -181,7 +181,7 @@ public class Controller extends InternalController implements IRequestListener, 
         });
     }
 
-    private void initDataShow(){
+    private void initDataShow() {
         new DataShowController(dataShow);
     }
 
@@ -190,7 +190,8 @@ public class Controller extends InternalController implements IRequestListener, 
         autoCompletion.initComponent();
         this.ui.getUiSearchComponent().setAutoCompletion(autoCompletion);
         this.ui.getUiSearchComponent().getSearchTextField().requestFocusInWindow();
-        this.ui.setVisible(true);
+
+        this.ui.display();
     }
 
     private void gradesPanelMVC() {

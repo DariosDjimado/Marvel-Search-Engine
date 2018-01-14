@@ -1,9 +1,6 @@
 package fr.tse.fise2.heapoverflow.controllers;
 
-import fr.tse.fise2.heapoverflow.database.CreateTables;
-import fr.tse.fise2.heapoverflow.database.FirstAppearanceTable;
-import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
-import fr.tse.fise2.heapoverflow.database.WikipediaUrlsTable;
+import fr.tse.fise2.heapoverflow.database.*;
 import fr.tse.fise2.heapoverflow.gui.SetupView;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
@@ -12,6 +9,7 @@ import fr.tse.fise2.heapoverflow.models.SetupModel;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.sql.Date;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
@@ -58,6 +56,7 @@ public class SetupController {
                         } else {
                             view.onLog("an error occured when creating database");
                         }
+                        saveConfig();
                         saveCharactersUrls();
                         saveCharacterFirstAppearance();
                         saveElement("characters_sample.csv", CHARACTER);
@@ -105,6 +104,7 @@ public class SetupController {
             AppErrorHandler.onError(e);
         }
     }
+
     private void saveCharacterFirstAppearance() {
         File sample = new File("characters_first_appearance.csv");
         try (BufferedReader reader = new BufferedReader(new FileReader(sample))) {
@@ -115,13 +115,21 @@ public class SetupController {
                     String character = lineArray[0];
                     String date = lineArray[1];
                     String comic = lineArray[2];
-                    FirstAppearanceTable.insert(character,date,comic);
+                    FirstAppearanceTable.insert(character, date, comic);
                     view.onLog("insert first appearance of " + character);
                 }
             }
         } catch (Exception e) {
             AppErrorHandler.onError(e);
         }
+    }
+
+    private void saveConfig() {
+        // configuration
+        view.onLog("saving configuration");
+        final AppConfigRow appConfigRow = new AppConfigRow("v1.0.0",
+                String.valueOf(Long.toString(System.currentTimeMillis())), 0, new Date(System.currentTimeMillis()));
+        AppConfigsTable.insertConfig(appConfigRow);
     }
 
     private void saveCharactersUrls() {

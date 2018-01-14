@@ -3,19 +3,25 @@ package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-
+/**
+ * Main Frame
+ *
+ * @author Darios DJIMADO
+ * @author Ismail BERRADA
+ */
 public class UI extends JFrame implements Observer {
     private final JPanel topPanel;
     private final UITopComponent uiTopComponent;
     private final JPanel searchViewPanel;
-    private final JPanel libraryViewPanel;
     private final JTabbedPane tabbedPane;
     private final FavoriteView favoriteView;
     private final LibraryView libraryView;
+    private final SplashScreen splashScreen;
     private JPanel container;
     private UISearchComponent uiSearchComponent;
     private UIExtraComponent uiExtraComponent;
@@ -24,29 +30,24 @@ public class UI extends JFrame implements Observer {
 
     public UI() {
         super("Marvel Search");
+        this.splashScreen = SplashScreen.getSplashScreen();
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.topPanel = new JPanel();
-
         this.searchViewPanel = new JPanel(new BorderLayout());
-        this.libraryViewPanel = new JPanel();
-
         this.tabbedPane = new JTabbedPane();
+        this.tabbedPane.setUI(new BasicTabbedPaneUI());
         this.tabbedPane.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
-
         this.favoriteView = new FavoriteView();
         this.libraryView = new LibraryView();
-
         this.uiTopComponent = new UITopComponent(this, this.topPanel);
-
-        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(1, 0, 0, 0));
-        UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", true);
-
         UserAuthenticationModel.getInstance().addObserver(this);
 
     }
 
+    /**
+     * Initializes the frame
+     */
     public void init() {
-
         container = new JPanel();
         container.setLayout(new BorderLayout(0, 0));
 
@@ -69,7 +70,6 @@ public class UI extends JFrame implements Observer {
 
         container.add(tabbedPane, BorderLayout.CENTER);
 
-
         createMenu();
         configureTopPanel();
         createLeftWrapperPanel();
@@ -84,6 +84,9 @@ public class UI extends JFrame implements Observer {
         this.setVisible(false);
     }
 
+    /**
+     * Creates the main menu
+     */
     private void createMenu() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(UIColor.HEADER_SHADOW_COLOR);
@@ -103,45 +106,45 @@ public class UI extends JFrame implements Observer {
         this.setJMenuBar(menuBar);
     }
 
+    /**
+     * Initializes the top wrapper
+     */
     private void configureTopPanel() {
-
-
         this.container.add(this.topPanel, BorderLayout.NORTH);
         uiTopComponent.init();
     }
 
-
+    /**
+     * Initializes the left wrapper
+     */
     private void createLeftWrapperPanel() {
         JPanel leftWrapperPanel = new JPanel();
         leftWrapperPanel.setLayout(new BorderLayout(0, 0));
         leftWrapperPanel.setMinimumSize(new Dimension(300, 500));
         leftWrapperPanel.setPreferredSize(new Dimension(300, 500));
-
         this.uiSearchComponent = new UISearchComponent(leftWrapperPanel);
         uiSearchComponent.setup();
-
-
         container.add(leftWrapperPanel, BorderLayout.WEST);
-
-
     }
 
+    /**
+     * Initializes the main wrapper
+     */
     private void createCenterWrapperPanel() {
         this.centerWrapperPanel = new JPanel();
         centerWrapperPanel.setLayout(new GridBagLayout());
         centerWrapperPanel.setMinimumSize(new Dimension(600, 500));
         centerWrapperPanel.setPreferredSize(new Dimension(600, 500));
         centerWrapperPanel.setVisible(true);
-        //centerWrapperPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.gray));
         centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
         centerWrapperPanel.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
-
-        //  container.add(centerWrapperPanel, BorderLayout.CENTER);
-
         this.searchViewPanel.add(this.centerWrapperPanel, BorderLayout.CENTER);
 
     }
 
+    /**
+     * Initializes the right wrapper
+     */
     private void createRightWrapperPanel() {
         JPanel rightWrapperPanel = new JPanel();
         rightWrapperPanel.setMinimumSize(new Dimension(320, 500));
@@ -151,14 +154,14 @@ public class UI extends JFrame implements Observer {
         this.searchViewPanel.add(rightWrapperPanel, BorderLayout.EAST);
     }
 
+    /**
+     * Initializes the bottom wrapper
+     */
     private void createBottomWrapperPanel() {
         JPanel bottomWrapperPanel = new JPanel();
         this.uiBottomComponent = new UIBottomComponent(bottomWrapperPanel);
         this.uiBottomComponent.build();
-
-        container.add(bottomWrapperPanel, BorderLayout.SOUTH);
-
-
+        this.container.add(bottomWrapperPanel, BorderLayout.SOUTH);
     }
 
     public UISearchComponent getUiSearchComponent() {
@@ -177,12 +180,22 @@ public class UI extends JFrame implements Observer {
         return uiBottomComponent;
     }
 
-    public UITopComponent getUiTopComponent() {
-        return uiTopComponent;
-    }
-
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    /**
+     * Displays the frame
+     */
+    public void display() {
+        if (this.splashScreen != null) {
+            this.splashScreen.close();
+        }
+        final Toolkit toolkit = Toolkit.getDefaultToolkit();
+        this.setLocation((int) toolkit.getScreenSize().getWidth() / 2 - this.getWidth() / 2,
+                (int) toolkit.getScreenSize().getHeight() / 2 - this.getHeight() / 2);
+        this.pack();
+        this.setVisible(true);
     }
 
     /**

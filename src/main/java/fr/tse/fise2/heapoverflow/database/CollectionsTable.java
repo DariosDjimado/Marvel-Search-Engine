@@ -115,7 +115,7 @@ public class CollectionsTable {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            if (resultSet.getString(1) == title) {
+            if (resultSet.getString(1).equals(title)) {
                 found = true;
             }
         }

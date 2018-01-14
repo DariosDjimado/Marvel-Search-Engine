@@ -27,7 +27,8 @@ public final class CreateTables {
                 && createCollectionsTable()
                 && createElementsAssociationTable()
                 && createWikipediaUrlsTable()
-                && createFirstAppearanceTable();
+                && createFirstAppearanceTable()
+                && createAppConfigsTable();
     }
 
     /**
@@ -113,12 +114,17 @@ public final class CreateTables {
                 "PRIMARY KEY (CHARACTER_NAME,CHARACTER_URL))");
     }
 
-    public static boolean createFirstAppearanceTable(){
+    public static boolean createFirstAppearanceTable() {
         return createTable("CREATE TABLE FIRST_APPEARANCE(" +
                 " CHARACTERR VARCHAR(255) NOT NULL," +
                 "DATE VARCHAR(255)," +
                 "COMIC VARCHAR(255)," +
                 "PRIMARY KEY (CHARACTERR,COMIC))");
+    }
+
+    public static boolean createAppConfigsTable() {
+        return createTable("CREATE TABLE APP_CONFIGS (APP_VERSION VARCHAR(45) PRIMARY KEY," +
+                " APP_SECTION VARCHAR(45) NOT NULL  UNIQUE, REQUEST_COUNT INTEGER NOT NULL DEFAULT 0, REQUEST_LAST_CHECK DATE NOT NULL)");
     }
 
 
@@ -135,6 +141,7 @@ public final class CreateTables {
             execute = true;
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println(sql);
             execute = false;
         }
         return execute;
