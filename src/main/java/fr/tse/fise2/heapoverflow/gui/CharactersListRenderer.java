@@ -5,7 +5,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import javax.swing.*;
 import java.awt.*;
 
-public class CharactersListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
+class CharactersListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
 
     private TemplatePreviewListRenderer renderer;
 

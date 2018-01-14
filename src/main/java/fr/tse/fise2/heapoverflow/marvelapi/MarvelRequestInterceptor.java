@@ -19,7 +19,7 @@ import static java.lang.System.nanoTime;
  *
  * @author Darios DJIMADO
  */
-public class MarvelRequestInterceptor implements Interceptor {
+class MarvelRequestInterceptor implements Interceptor {
     // logging
     private static final Logger LOGGER = LoggerFactory.getLogger(MarvelRequestInterceptor.class);
 

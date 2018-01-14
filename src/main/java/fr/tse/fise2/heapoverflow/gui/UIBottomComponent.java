@@ -65,7 +65,7 @@ public class UIBottomComponent {
     }
 
     public void displayErrorPopup(String message) {
-        errorIcon.showMessageDialog(null, message, "Error",
+        JOptionPane.showMessageDialog(null, message, "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
 
@@ -76,9 +76,6 @@ public class UIBottomComponent {
     public void setUrlLabel(JLabel urlLabel) {
         this.urlLabel = urlLabel;
     }
-
-    /**     Override methods existing from UIComponent
-     */
 
     public void build() {
         this.progressBar.setIndeterminate(true);

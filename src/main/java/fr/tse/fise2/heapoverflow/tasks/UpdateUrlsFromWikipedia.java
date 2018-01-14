@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
  * @author Darios DJIMADO
  */
-public final class UpdateUrlsFromWikipedia {
+final class UpdateUrlsFromWikipedia {
     private final static String[] urls = {
             "https://en.wikipedia.org/wiki/Category:Marvel_Comics_superheroes",
             "https://en.wikipedia.org/wiki/Category:Marvel_Comics_aliens",

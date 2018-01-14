@@ -3,7 +3,7 @@ package fr.tse.fise2.heapoverflow.gui;
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class TemplateSearchListRenderer extends JPanel {
+abstract class TemplateSearchListRenderer extends JPanel {
     private final ImageIcon imageIcon;
     private final JLabel label;
     private final JPanel imagePanel;

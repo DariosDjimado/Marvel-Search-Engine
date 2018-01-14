@@ -16,8 +16,8 @@ import javax.swing.*;
 public abstract class ToggleStateButton extends ButtonFormat {
     private final ImageIcon iconUnselected;
     private final ImageIcon iconSelected;
-    protected int id;
-    protected MarvelElement type;
+    private int id;
+    private MarvelElement type;
     private boolean state;
     private String elementName;
 

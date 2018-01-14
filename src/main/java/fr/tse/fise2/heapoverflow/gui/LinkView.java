@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class LinkView extends JButton {
+class LinkView extends JButton {
     private static final ImageIcon URL_OUT_IMAGE_ICON = new ImageIcon(ComicsSearchListRenderer.class.getResource("url_out.png"));
 
     private String url;

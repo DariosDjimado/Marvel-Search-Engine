@@ -4,7 +4,7 @@ import fr.tse.fise2.heapoverflow.main.Controller;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class SearchButtonListener {
+class SearchButtonListener {
     private Controller controller;
 
     public SearchButtonListener(Controller controller) {
@@ -15,7 +15,7 @@ public class SearchButtonListener {
         this.onSearch(text);
     }
 
-    public void onSearch(String text){
+    private void onSearch(String text){
         this.controller.searchStartsWith(text);
     }
 

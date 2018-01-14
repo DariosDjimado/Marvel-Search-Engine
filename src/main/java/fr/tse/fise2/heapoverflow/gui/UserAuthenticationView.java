@@ -19,7 +19,7 @@ import java.util.Observer;
 /**
  * @author Darios DJIMADO
  */
-public class UserAuthenticationView extends JPanel implements Observer {
+class UserAuthenticationView extends JPanel implements Observer {
     private final UserAuthenticationModel model;
     private final UserAuthenticationController controller;
     private final JButton logInButton;

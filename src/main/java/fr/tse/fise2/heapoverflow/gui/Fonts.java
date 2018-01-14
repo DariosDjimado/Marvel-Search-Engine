@@ -6,7 +6,7 @@ import java.awt.*;
  * Class containing fonts definitions for UI
  * @author Théo Basty
  */
-public class Fonts {
+class Fonts {
     /**
      * Font for first level titles
      */

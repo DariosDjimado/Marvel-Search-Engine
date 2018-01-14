@@ -5,7 +5,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.Comic;
 import javax.swing.*;
 import java.awt.*;
 
-public class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
+class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
 
     private TemplatePreviewListRenderer renderer;
 

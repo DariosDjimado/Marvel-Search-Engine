@@ -17,25 +17,25 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.*;
 /**
  * Object to manage subrequest thread for datashow panel
  */
-public class InfoSubRequestsThread implements Runnable {
+class InfoSubRequestsThread implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InfoSubRequestsThread.class);
     /**
      * the datashow element to callback
      */
-    DataShow caller;
+    private DataShow caller;
     /**
      * The thread executing the queries
      */
-    Thread th;
+    private Thread th;
     /**
      * A FIFO stack of jobs to do
      */
-    volatile Queue<Job> jobs;
+    private volatile Queue<Job> jobs;
     /**
      * last canceled token to interrupt job in progress
      */
-    int lastCanceledToken;
+    private int lastCanceledToken;
 
     /**
      * Constructor, initialize job stack and start thread

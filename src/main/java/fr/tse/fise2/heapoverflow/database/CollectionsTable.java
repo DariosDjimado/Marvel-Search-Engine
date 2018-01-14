@@ -21,7 +21,7 @@ public class CollectionsTable {
         try (PreparedStatement statement = ConnectionDB.getInstance()
                 .getConnection()
                 .prepareStatement("INSERT INTO collections(title,description,USER_ID)" +
-                        " VALUES (?,?,?)");) {
+                        " VALUES (?,?,?)")) {
             statement.setString(1, title);
             statement.setString(2, description);
             statement.setInt(3, userId);

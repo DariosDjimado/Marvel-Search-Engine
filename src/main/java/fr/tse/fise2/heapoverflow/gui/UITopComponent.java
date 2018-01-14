@@ -6,7 +6,7 @@ import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
 import javax.swing.*;
 import java.awt.*;
 
-public class UITopComponent {
+class UITopComponent {
     private final JPanel topPanel;
     private final JPanel topRightPanel;
     private final UI ui;

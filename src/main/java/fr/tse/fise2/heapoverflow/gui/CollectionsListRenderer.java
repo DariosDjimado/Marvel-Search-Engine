@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import java.awt.*;
 
-public class CollectionsListRenderer implements ListCellRenderer<CollectionsRow> {
+class CollectionsListRenderer implements ListCellRenderer<CollectionsRow> {
     private final ListPanel renderer;
 
     CollectionsListRenderer() {

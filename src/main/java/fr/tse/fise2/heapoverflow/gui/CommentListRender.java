@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * @author Darios DJIMADO
  */
-public class CommentListRender implements ListCellRenderer<ElementAssociationRow> {
+class CommentListRender implements ListCellRenderer<ElementAssociationRow> {
     private CommentView renderer;
 
     CommentListRender() {

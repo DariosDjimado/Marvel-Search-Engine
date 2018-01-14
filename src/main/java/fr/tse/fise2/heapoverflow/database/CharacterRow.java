@@ -18,7 +18,7 @@ public class CharacterRow {
         this(id, name, "", "");
     }
 
-    public CharacterRow(int id, String name, String wikipediaEnUrl, String wikipediaFrUrl) {
+    private CharacterRow(int id, String name, String wikipediaEnUrl, String wikipediaFrUrl) {
         this.id = id;
         this.name = name;
         this.wikipediaEnUrl = wikipediaEnUrl;

@@ -6,18 +6,18 @@ package fr.tse.fise2.heapoverflow.marvelapi;
  *
  * @author Darios DJIMADO
  */
-public class TemplateDataWrapper {
-    protected String attributionText;
+class TemplateDataWrapper {
+    String attributionText;
 
-    protected String etag;
+    String etag;
 
-    protected String status;
+    String status;
 
-    protected String copyright;
+    String copyright;
 
-    protected int code;
+    int code;
 
-    protected String attributionHTML;
+    String attributionHTML;
 
     public String getAttributionText() {
         return attributionText;

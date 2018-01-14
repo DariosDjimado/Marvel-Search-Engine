@@ -8,9 +8,9 @@ package fr.tse.fise2.heapoverflow.marvelapi;
  */
 public class TemplateSummary {
 
-    protected String resourceURI;
+    String resourceURI;
 
-    protected String name;
+    String name;
 
     public String getResourceURI() {
         return resourceURI;

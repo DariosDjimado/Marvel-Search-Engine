@@ -8,11 +8,11 @@ package fr.tse.fise2.heapoverflow.marvelapi;
  */
 public class TemplateList {
 
-    protected String collectionURI;
+    String collectionURI;
 
-    protected int available;
+    int available;
 
-    protected int returned;
+    int returned;
 
     public String getCollectionURI() {
         return collectionURI;

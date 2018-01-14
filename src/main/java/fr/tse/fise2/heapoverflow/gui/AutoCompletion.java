@@ -235,11 +235,11 @@ public class AutoCompletion {
             this.id = id;
         }
 
-        public String getName() {
+        String getName() {
             return name;
         }
 
-        public int getId() {
+        int getId() {
             return id;
         }
 

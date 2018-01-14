@@ -3,7 +3,7 @@ package fr.tse.fise2.heapoverflow.database;
 /**
  * @author Darios DJIMADO
  */
-public class WikipediaUrlRow {
+class WikipediaUrlRow {
 
     private String characterName;
     private String characterLabel;

@@ -7,7 +7,7 @@ import java.awt.*;
  *
  * @author Darios DJIMADO
  */
-public final class UIColor {
+final class UIColor {
     public static final Color MAIN_BACKGROUND_COLOR = new Color(255, 255, 255, 255);
     // UITopComponent
     public static final Color HEADER_SHADOW_COLOR = new Color(158, 158, 158, 25);

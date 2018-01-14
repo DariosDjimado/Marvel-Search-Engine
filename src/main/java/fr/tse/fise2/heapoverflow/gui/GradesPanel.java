@@ -88,7 +88,7 @@ public class GradesPanel extends JPanel {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
         User user = UserAuthenticationModel.getUser();
         if (user != null) {

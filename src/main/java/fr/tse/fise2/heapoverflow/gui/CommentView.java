@@ -10,7 +10,7 @@ import java.awt.*;
 /**
  * @author Darios DJIMADO
  */
-public class CommentView extends JPanel {
+class CommentView extends JPanel {
 
     private final CircleButton userAvatarButton;
     private final JTextArea commentArea;

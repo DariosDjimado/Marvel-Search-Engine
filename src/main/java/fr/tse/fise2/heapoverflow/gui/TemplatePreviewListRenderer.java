@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class TemplatePreviewListRenderer extends JPanel {
+abstract class TemplatePreviewListRenderer extends JPanel {
     final OwnButton ownButton;
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
@@ -21,7 +21,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
     private final JPanel cardBodyPanel;
     private final JPanel cardFooterPanel;
     private final TemplatePreviewListRenderer.ImagePanel imagePanel;
-    protected Object data;
+    Object data;
     private boolean selected;
 
 
@@ -116,7 +116,7 @@ public abstract class TemplatePreviewListRenderer extends JPanel {
 
     }
 
-    public final class ImagePanel extends JPanel {
+    final class ImagePanel extends JPanel {
 
         ImagePanel() {
             Dimension fixedDimension = new Dimension(84, 126);

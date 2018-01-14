@@ -5,7 +5,7 @@ import fr.tse.fise2.heapoverflow.marvelapi.Character;
 import javax.swing.*;
 import java.awt.*;
 
-public class CharactersSerachListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
+class CharactersSerachListRenderer extends DefaultListCellRenderer implements ListCellRenderer<Object> {
     private static final ImageIcon icon = new ImageIcon(ComicsSearchListRenderer.class.getResource("h_for_hero.png"));
     private TemplateSearchListRenderer renderer;
 

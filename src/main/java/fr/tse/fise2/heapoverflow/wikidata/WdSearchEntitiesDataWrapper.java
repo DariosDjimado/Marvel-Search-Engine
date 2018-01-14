@@ -2,7 +2,7 @@ package fr.tse.fise2.heapoverflow.wikidata;
 
 import java.util.Arrays;
 
-public class WdSearchEntitiesDataWrapper {
+class WdSearchEntitiesDataWrapper {
     private WdSearchEntity[] search;
 
     private WdSearchInfo searchinfo;

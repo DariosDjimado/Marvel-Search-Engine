@@ -15,8 +15,8 @@ import java.sql.SQLException;
  * This class procides Marvel characters first appearance : which comic at which date.
  * It is integrated in SetupMVC class, as all pieces of data are saved in a csv file.
  */
-public class FirstAppearance {
-    public static void getFirstAppearance() throws IOException, SQLException {
+class FirstAppearance {
+    private static void getFirstAppearance() throws IOException, SQLException {
         Document doc = Jsoup.connect("https://en.wikipedia.org/wiki/List_of_Marvel_Comics_superhero_debuts").get();
         Elements tables = doc.select("table");
         for (int i = 1; i < tables.size() - 1; i++) {

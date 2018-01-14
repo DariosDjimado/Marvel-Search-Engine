@@ -13,10 +13,10 @@ import java.util.Observer;
 
 public class DataShowController implements Observer{
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
-    public final DataShow dataShow;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
+    private final DataShow dataShow;
 
-    public ListSelectionListener updateListener;
+    private ListSelectionListener updateListener;
     public ListSelectionListener popupListener;
 
     public DataShowController(DataShow dataShow) {

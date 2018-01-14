@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class DataShow extends Observable {
     //region Attributes
 //    Controller controllerLink;
-    public static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
 
     /**
      * The object managing background requests

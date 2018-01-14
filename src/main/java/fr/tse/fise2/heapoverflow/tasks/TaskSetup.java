@@ -2,7 +2,7 @@ package fr.tse.fise2.heapoverflow.tasks;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 
-public class TaskSetup {
+class TaskSetup {
     public static void main(String[] args) {
         TaskSetup taskSetup = new TaskSetup();
         AppErrorHandler.configureLogging();

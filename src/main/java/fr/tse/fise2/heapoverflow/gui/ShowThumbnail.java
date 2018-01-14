@@ -13,11 +13,11 @@ import java.util.Observer;
  *
  * @author Théo Basty
  */
-public class ShowThumbnail extends JPanel implements Observer {
+class ShowThumbnail extends JPanel implements Observer {
     /**
      * Image drawn on the panel
      */
-    BufferedImage image_;
+    private BufferedImage image_;
 
     /**
      * Constructor of the panel

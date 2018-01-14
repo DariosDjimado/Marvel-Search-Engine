@@ -7,13 +7,13 @@ package fr.tse.fise2.heapoverflow.marvelapi;
  * @author Darios DJIMADO
  */
 public class TemplateDataContainer {
-    protected int total;
+    int total;
 
-    protected int limit;
+    int limit;
 
-    protected int count;
+    int count;
 
-    protected int offset;
+    int offset;
 
     public int getTotal() {
         return total;

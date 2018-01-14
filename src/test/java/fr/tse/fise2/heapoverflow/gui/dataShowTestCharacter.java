@@ -11,7 +11,7 @@ import java.awt.*;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeCharacters;
 
-public class dataShowTestCharacter {
+class dataShowTestCharacter {
     public static void main(String[] args) {
         UI ui = new UI();
         EventQueue.invokeLater(ui::init);

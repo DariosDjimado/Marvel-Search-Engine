@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class LibraryButton extends ButtonFormat {
+class LibraryButton extends ButtonFormat {
 
     private static final ImageIcon libraryIcon = new ImageIcon(ComicsSearchListRenderer.class.getResource("library_add.png"));
     private static final ImageIcon libraryDefaultIcon = new ImageIcon(ComicsSearchListRenderer.class.getResource("library_remove.png"));

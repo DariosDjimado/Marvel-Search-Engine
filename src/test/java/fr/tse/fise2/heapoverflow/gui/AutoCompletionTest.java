@@ -1,5 +1,5 @@
 package fr.tse.fise2.heapoverflow.gui;
-public class AutoCompletionTest {
+class AutoCompletionTest {
     /*public AutoCompletionTest() {
         JFrame frame = new JFrame();
         frame.setPreferredSize(new Dimension(300,400));

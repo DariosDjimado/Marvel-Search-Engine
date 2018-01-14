@@ -1,6 +1,6 @@
 package fr.tse.fise2.heapoverflow.wikidata;
 
-public class WdSpecialEntityDataWrapper {
+class WdSpecialEntityDataWrapper {
 
     private WdEntities entities;
 

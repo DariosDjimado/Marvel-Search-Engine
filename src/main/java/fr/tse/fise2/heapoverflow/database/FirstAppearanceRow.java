@@ -1,9 +1,9 @@
 package fr.tse.fise2.heapoverflow.database;
 
 public class FirstAppearanceRow {
-    String character;
-    String date;
-    String comic;
+    private String character;
+    private String date;
+    private String comic;
 
     public FirstAppearanceRow(String character, String date, String comic) {
         this.character = character;

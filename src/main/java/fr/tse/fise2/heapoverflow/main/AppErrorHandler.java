@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 public final class AppErrorHandler {
-    final static Logger LOGGER = Logger.getLogger(AppErrorHandler.class);
+    private final static Logger LOGGER = Logger.getLogger(AppErrorHandler.class);
     private static UI ui;
 
-    public AppErrorHandler() {
+    private AppErrorHandler() {
     }
 
     public static void onError(Exception e) {
