@@ -26,6 +26,10 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * @author Lionel Rajaona
+ * CollectionsView implements how collections will appear on the UI. It also provides all necessary button listeners.
+ */
 public class CollectionsView extends JPanel implements Observer {
     private static final ImageIcon addIcon = new ImageIcon(CollectionsView.class.getResource("addIcon.png"));
     private static final ImageIcon deleteIcon = new ImageIcon(CollectionsView.class.getResource("deleteIcon.png"));

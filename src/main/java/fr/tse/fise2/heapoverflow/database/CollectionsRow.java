@@ -1,5 +1,13 @@
 package fr.tse.fise2.heapoverflow.database;
 
+/**
+ * @author Lionel Rajaona
+ * This class defines all rows in the database collecion table.
+ * It is needed :
+ * - the collection_id as the primary key
+ * - a title ad a description for each collection
+ * - an user_id, which verifies that it is the right user who is logged.
+ */
 public class CollectionsRow {
     private int collectionId;
     private String title;

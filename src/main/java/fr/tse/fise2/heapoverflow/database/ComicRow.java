@@ -1,5 +1,12 @@
 package fr.tse.fise2.heapoverflow.database;
 
+/**
+ * @author Lionel Rajaona
+ * This class defines all rows in the database collecion table.
+ * It is needed :
+ * - the id as the primary key
+ * - the title
+ */
 public class ComicRow {
     private int id;
     private String title;

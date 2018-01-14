@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * author @Lionel Rajaona
+ * This class implements methods acting on the database collection table
+ */
 public class CollectionsTable {
 
 

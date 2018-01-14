@@ -12,7 +12,8 @@ import java.sql.SQLException;
 
 /**
  * @author Rajaona
- * This class will have to get Marvel character first appearance : which comic at which date.
+ * This class procides Marvel characters first appearance : which comic at which date.
+ * It is integrated in SetupMVC class, as all pieces of data are saved in a csv file.
  */
 public class FirstAppearance {
     public static void getFirstAppearance() throws IOException, SQLException {

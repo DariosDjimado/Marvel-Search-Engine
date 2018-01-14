@@ -1,5 +1,12 @@
 package fr.tse.fise2.heapoverflow.database;
 
+/**
+ * @author Lionel Rajaona
+ * This class defines all rows in the database character table.
+ * It is needed :
+ * - the character_id as the primary key
+ * - character name & wikipedia links if existing.
+ */
 public class CharacterRow {
     private int id;
     private String name;

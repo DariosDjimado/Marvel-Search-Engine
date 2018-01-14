@@ -2,6 +2,10 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import javax.swing.*;
 
+/**
+ * @author Lionel Rajaona
+ * This class is used for collection buttons such as add, delete and edit.
+ */
 class DecorateButtonFormat extends ButtonFormat {
 
 
