@@ -3,6 +3,8 @@ package fr.tse.fise2.heapoverflow.database;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +17,7 @@ import java.util.List;
  * This class implements methods acting on the database collection table
  */
 public class CollectionsTable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectionsTable.class);
 
 
     public static void insertCollection(String title, String description, int userId) {
@@ -28,6 +31,9 @@ public class CollectionsTable {
             statement.execute();
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
     }
@@ -49,6 +55,9 @@ public class CollectionsTable {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -87,6 +96,9 @@ public class CollectionsTable {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return collectionsRows;
@@ -138,6 +150,9 @@ public class CollectionsTable {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 

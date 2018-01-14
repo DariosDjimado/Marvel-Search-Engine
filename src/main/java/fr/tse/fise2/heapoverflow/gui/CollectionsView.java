@@ -15,6 +15,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -34,6 +36,7 @@ import java.util.Observer;
  * @author Darios DJIMADO
  */
 public class CollectionsView extends JPanel implements Observer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectionsView.class);
     private static final ImageIcon EMPTY_STATE_IMAGE_ICON = new ImageIcon(CollectionsView.class.getResource("empty_collection.png"));
     private static final ImageIcon addIcon = new ImageIcon(CollectionsView.class.getResource("addIcon.png"));
     private static final ImageIcon deleteIcon = new ImageIcon(CollectionsView.class.getResource("deleteIcon.png"));
@@ -136,6 +139,9 @@ public class CollectionsView extends JPanel implements Observer {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     AppErrorHandler.onError(e);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
                 }
 
                 @Override

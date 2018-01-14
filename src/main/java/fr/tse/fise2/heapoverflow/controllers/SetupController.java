@@ -5,6 +5,8 @@ import fr.tse.fise2.heapoverflow.gui.SetupView;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.models.SetupModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +17,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
 
 public class SetupController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetupController.class);
     private SetupModel model;
     private SetupView view = null;
 
@@ -102,6 +105,9 @@ public class SetupController {
             }
         } catch (Exception e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -121,6 +127,9 @@ public class SetupController {
             }
         } catch (Exception e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -151,6 +160,9 @@ public class SetupController {
             }
         } catch (Exception e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 

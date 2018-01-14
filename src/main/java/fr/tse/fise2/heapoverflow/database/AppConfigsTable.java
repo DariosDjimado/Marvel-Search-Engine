@@ -1,10 +1,16 @@
 package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AppConfigsTable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppConfigsTable.class);
 
     public static void insertConfig(AppConfigRow appConfigRow) {
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
@@ -17,6 +23,9 @@ public class AppConfigsTable {
             preparedStatement.execute();
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -27,6 +36,9 @@ public class AppConfigsTable {
             preparedStatement.execute();
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 

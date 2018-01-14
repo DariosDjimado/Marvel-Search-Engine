@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.marvelapi;
 
 import fr.tse.fise2.heapoverflow.database.CacheUrlsRow;
 import fr.tse.fise2.heapoverflow.database.CacheUrlsTable;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -71,7 +72,10 @@ class MarvelRequestInterceptor implements Interceptor {
 
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
 

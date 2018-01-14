@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.database;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,8 +141,10 @@ public final class CreateTables {
             statement.execute(sql);
             execute = true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(sql);
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
             execute = false;
         }
         return execute;
@@ -163,7 +166,10 @@ public final class CreateTables {
             final ResultSet resultSet = databaseMetaData.getTables(null, null, tableName.toUpperCase(), null);
             found = resultSet.next();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
             found = false;
         }
         if (LOGGER.isDebugEnabled()) {

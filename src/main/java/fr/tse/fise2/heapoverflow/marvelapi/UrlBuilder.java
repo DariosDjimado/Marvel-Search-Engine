@@ -1,7 +1,10 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,7 +17,7 @@ import java.net.URL;
  * @author Darios DJIMADO
  */
 public class UrlBuilder {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlBuilder.class);
     /**
      * Appends hash, timestamp  and keys to the url
      *
@@ -53,7 +56,10 @@ public class UrlBuilder {
             URI uri = new URI("https", null, "gateway.marvel.com", 443, "/v1/public/" + partialUrl, query, null);
             url = uri.toURL();
         } catch (URISyntaxException | MalformedURLException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return url;
     }

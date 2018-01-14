@@ -28,8 +28,12 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * UI controller
+ *
+ * @author Darios DJIMADO
+ */
 public class Controller implements IRequestListener, ISelectionChangedListener, ComicsRequestObserver, CharactersRequestObserver {
-    // Model
     private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     // Vue
     private final DataShow dataShow;
@@ -70,7 +74,10 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                     try {
                         ConnectionDB.getInstance().getConnection().close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        AppErrorHandler.onError(e);
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error(e.getMessage(), e);
+                        }
                     }
 
                     System.exit(0);
@@ -242,7 +249,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
     }
 
     public void searchStartsWith(String text) {
-        //this.autoCompletion.getPopUpWindow().setVisible(false);
         try {
             if (this.ui.getUiSearchComponent().getCharactersRadioButton().isSelected()) {
                 Thread fetchCharacterById = new FetchData(this, "characters", "nameStartsWith=" + text.toLowerCase() +
@@ -255,7 +261,10 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 fetchCharacterById.start();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -303,7 +312,10 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 customDrawComic(comic);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                AppErrorHandler.onError(e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(e.getMessage(), e);
+                }
             }
         });
     }

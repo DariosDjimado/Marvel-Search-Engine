@@ -2,6 +2,8 @@ package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElementBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommentHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentHandler.class);
+
     public static List<ElementAssociationRow> findCommentsByComic(int id) {
         List<ElementAssociationRow> elementAssociationRows = new ArrayList<>();
 
@@ -44,6 +48,9 @@ public class CommentHandler {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return elementAssociationRows;
     }

@@ -3,7 +3,10 @@ package fr.tse.fise2.heapoverflow.gui;
 import fr.tse.fise2.heapoverflow.database.CharacterRow;
 import fr.tse.fise2.heapoverflow.database.ComicRow;
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.main.Controller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -19,6 +22,7 @@ import java.sql.SQLException;
  * @author Lionel RAJAONA
  */
 public class AutoCompletion {
+    private final static Logger LOGGER = LoggerFactory.getLogger(AutoCompletion.class);
     private final static String DOWN_RELEASED = "Down released";
     private final JFrame frame;
 
@@ -206,7 +210,10 @@ public class AutoCompletion {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                AppErrorHandler.onError(e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(e.getMessage(), e);
+                }
             }
         }
 

@@ -38,6 +38,7 @@ CacheImage.tmp/*
 lc_database/*
 
 classes
+out/*
 
 characters_sample.csv
 comics_sample.csv

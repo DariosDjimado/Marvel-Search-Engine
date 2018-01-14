@@ -9,6 +9,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wikidata.wdtk.datamodel.interfaces.ItemDocument;
 import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
 
@@ -19,6 +21,7 @@ import java.io.IOException;
  * @author Darios DJIMADO
  */
 final class UpdateUrlsFromWikipedia {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateUrlsFromWikipedia.class);
     private final static String[] urls = {
             "https://en.wikipedia.org/wiki/Category:Marvel_Comics_superheroes",
             "https://en.wikipedia.org/wiki/Category:Marvel_Comics_aliens",
@@ -42,8 +45,10 @@ final class UpdateUrlsFromWikipedia {
                 try {
                     tempUrl = getEnUrls(tempUrl);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     AppErrorHandler.onError(e);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
                 }
             } while (tempUrl != null);
         }
@@ -62,7 +67,10 @@ final class UpdateUrlsFromWikipedia {
         try {
             doc = Jsoup.connect(url).get();
         } catch (IOException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         if (doc != null) {
             Element mainPage = doc.getElementById("mw-pages");
@@ -92,6 +100,9 @@ final class UpdateUrlsFromWikipedia {
                         // do nothing since we know that we'll have some duplicated elements
                     } catch (Exception e) {
                         AppErrorHandler.onError(e);
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error(e.getMessage(), e);
+                        }
                     }
                 }
             }

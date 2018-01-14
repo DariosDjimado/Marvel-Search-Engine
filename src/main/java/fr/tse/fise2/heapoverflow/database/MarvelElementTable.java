@@ -4,6 +4,8 @@ import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarvelElementTable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarvelElementTable.class);
 
     public static int insertComic(int id, String title) {
         return insertElement(id, title, MarvelElement.COMIC.getValue());
@@ -142,6 +145,9 @@ public class MarvelElementTable {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return elementId;
     }
@@ -162,6 +168,9 @@ public class MarvelElementTable {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return generatedID;
     }

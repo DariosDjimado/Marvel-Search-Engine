@@ -3,16 +3,20 @@ package fr.tse.fise2.heapoverflow.tasks;
 import fr.tse.fise2.heapoverflow.database.MarvelElementTable;
 import fr.tse.fise2.heapoverflow.events.ComicsRequestAdaper;
 import fr.tse.fise2.heapoverflow.interfaces.Tasks;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.main.FetchData;
 import fr.tse.fise2.heapoverflow.marvelapi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest.deserializeComics;
 
 public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tasks {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchAllComicsTask.class);
 
-    public FetchAllComicsTask() {
+    FetchAllComicsTask() {
     }
 
     @Override
@@ -38,7 +42,10 @@ public final class FetchAllComicsTask extends ComicsRequestAdaper implements Tas
 
         } catch (IOException e) {
             isDone = false;
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return isDone;
     }

@@ -2,6 +2,8 @@ package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirstAppearanceTable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirstAppearanceTable.class);
 
     public static void insert(String character, String date, String comic) throws SQLException {
         PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
@@ -46,6 +49,9 @@ public class FirstAppearanceTable {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return firstAppearanceRows;
     }
@@ -70,6 +76,9 @@ public class FirstAppearanceTable {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return firstAppearanceRow;

@@ -1,12 +1,21 @@
 package fr.tse.fise2.heapoverflow.database;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * All operations on DERBY EMBEDDED database
+ *
+ * @author Darios DJIMADO
+ */
 public class DataBase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataBase.class);
 
     public static void cleanUpDB(final ConnectionDB CONNECTION_DB) {
         Statement selectAllConstraintsStatement = null;
@@ -36,7 +45,10 @@ public class DataBase {
                 dropSingleTableStatement.execute(dropTablesStatementsResultSet.getString(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         } finally {
             try {
                 if (selectAllConstraintsStatement != null) {
@@ -52,7 +64,10 @@ public class DataBase {
                     selectAllTablesStatement.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                AppErrorHandler.onError(e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(e.getMessage(), e);
+                }
             }
         }
     }

@@ -2,6 +2,8 @@ package fr.tse.fise2.heapoverflow.database;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +18,7 @@ import java.util.List;
  * @author Darios DJIMADO
  */
 public class WikipediaUrlsTable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WikipediaUrlsTable.class);
 
     public static void insert(String characterName, String characterLabel, String characterUrl, String characterAlias, String characterDescription) throws SQLException {
         try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
@@ -159,6 +162,9 @@ public class WikipediaUrlsTable {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return wikipediaUrlRows;
     }
@@ -183,7 +189,10 @@ public class WikipediaUrlsTable {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return wikipediaUrlRows;
     }

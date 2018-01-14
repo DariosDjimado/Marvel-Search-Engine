@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.database;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -5,12 +5,15 @@ import fr.tse.fise2.heapoverflow.main.AppConfig;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelRequest;
 import fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 abstract class TemplatePreviewListRenderer extends JPanel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemplatePreviewListRenderer.class);
     final OwnButton ownButton;
     final FavoriteButton favoriteButton;
     final ReadButton readButton;
@@ -71,12 +74,12 @@ abstract class TemplatePreviewListRenderer extends JPanel {
         this.mainPanel.add(cardFooterPanel, BorderLayout.SOUTH);
 
         //card text
-        Dimension textFieldDimension = new Dimension(170,60);
+        Dimension textFieldDimension = new Dimension(170, 60);
         this.cardTitle.setMaximumSize(textFieldDimension);
         this.cardTitle.setMinimumSize(textFieldDimension);
         this.cardTitle.setPreferredSize(textFieldDimension);
 
-        Dimension gradesDimension = new Dimension(110,40);
+        Dimension gradesDimension = new Dimension(110, 40);
         this.gradesPanel.setMaximumSize(gradesDimension);
         this.gradesPanel.setPreferredSize(gradesDimension);
         this.gradesPanel.setMinimumSize(gradesDimension);
@@ -130,10 +133,13 @@ abstract class TemplatePreviewListRenderer extends JPanel {
         @Override
         public void paintComponent(Graphics graphics) {
             try {
-                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(),null);
+                final BufferedImage imageIcon = MarvelRequest.getImage(((IMarvelElement) data).getThumbnail(), UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(), null);
                 graphics.drawImage(imageIcon, 0, 0, 84, 126, null);
             } catch (Exception e) {
                 AppErrorHandler.onError(e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(e.getMessage(), e);
+                }
             }
 
         }

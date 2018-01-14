@@ -6,6 +6,8 @@ import fr.tse.fise2.heapoverflow.marvelapi.MarvelElementBase;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +22,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.COMIC;
  * @author Darios DJIMADO
  */
 public class ElementsAssociation {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElementsAssociation.class);
 
     /**
      * Updates grade in elements association table
@@ -104,6 +107,9 @@ public class ElementsAssociation {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -124,6 +130,9 @@ public class ElementsAssociation {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -144,6 +153,9 @@ public class ElementsAssociation {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -222,6 +234,9 @@ public class ElementsAssociation {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return elementAssociationRows;
     }
@@ -271,6 +286,9 @@ public class ElementsAssociation {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return elementAssociationRow;
     }
@@ -327,6 +345,9 @@ public class ElementsAssociation {
             }
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         return averageGrade;
     }
@@ -368,6 +389,9 @@ public class ElementsAssociation {
             preparedStatement.execute();
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -383,6 +407,9 @@ public class ElementsAssociation {
 
         } catch (SQLException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 

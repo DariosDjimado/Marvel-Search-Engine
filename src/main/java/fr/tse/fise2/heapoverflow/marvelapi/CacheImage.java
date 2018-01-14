@@ -1,6 +1,8 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,7 @@ import static fr.tse.fise2.heapoverflow.marvelapi.UrlBuilder.imageUrl;
  * @author Darios DJIMADO
  */
 public class CacheImage extends Observable implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheImage.class);
     private static Set<String> DOWNLOADING_IMAGES_SET = ConcurrentHashMap.newKeySet();
 
     private final UrlBuilder.ImageVariant imageVariant;
@@ -64,6 +67,10 @@ public class CacheImage extends Observable implements Runnable {
             }
         } catch (IOException e) {
             AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
+
         } finally {
             MarvelRequest.endRequest(image.getPath());
         }

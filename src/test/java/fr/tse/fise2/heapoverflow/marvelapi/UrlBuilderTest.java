@@ -1,5 +1,6 @@
 package fr.tse.fise2.heapoverflow.marvelapi;
 
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.BeforeClass;
 import org.junit.Test;
