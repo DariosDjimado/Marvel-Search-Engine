@@ -92,7 +92,7 @@ public class CollectionsView extends JPanel implements Observer {
 
         this.comicListPopupMenu = new JPopupMenu();
 
-        this.editCollectionDialog = new CustomDialog(null, "Collection", true);
+        this.editCollectionDialog = new CustomDialog(null, "Collection");
         this.editCollectionDialogTextField = new CustomTextField("Title");
         this.editCollectionDialogTextArea = new CustomTextArea("Description");
 
