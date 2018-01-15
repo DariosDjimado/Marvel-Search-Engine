@@ -1,6 +1,5 @@
 package fr.tse.fise2.heapoverflow.gui;
 
-import com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
 import fr.tse.fise2.heapoverflow.database.ElementsAssociation;
 import fr.tse.fise2.heapoverflow.marvelapi.Comic;
