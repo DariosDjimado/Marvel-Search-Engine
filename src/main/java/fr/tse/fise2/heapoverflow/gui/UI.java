@@ -69,8 +69,8 @@ public class UI extends JFrame implements Observer {
             if (this.tabbedPane.getSelectedComponent() == this.favoriteView || this.tabbedPane.getSelectedComponent() == this.libraryView) {
                 ((FavoriteView) this.tabbedPane.getSelectedComponent()).refresh();
             }
-            if (this.tabbedPane.getSelectedComponent() == this.recommendView){
-                ((RecommendView)this.tabbedPane.getSelectedComponent()).refresh();
+            if (this.tabbedPane.getSelectedComponent() == this.recommendView) {
+                ((RecommendView) this.tabbedPane.getSelectedComponent()).refresh();
             }
         });
 
@@ -168,6 +168,7 @@ public class UI extends JFrame implements Observer {
         this.uiBottomComponent = new UIBottomComponent(bottomWrapperPanel);
         this.uiBottomComponent.build();
         this.container.add(bottomWrapperPanel, BorderLayout.SOUTH);
+        this.uiBottomComponent.getErrorDialog().setLocationRelativeTo(this);
     }
 
     public UISearchComponent getUiSearchComponent() {
@@ -190,7 +191,9 @@ public class UI extends JFrame implements Observer {
         return tabbedPane;
     }
 
-    public RecommendView getRecommendView() { return recommendView; }
+    public RecommendView getRecommendView() {
+        return recommendView;
+    }
 
     /**
      * Displays the frame

@@ -34,27 +34,22 @@ public class DataShow extends Observable implements SubRequestCaller {
     //region Attributes
 //    Controller controllerLink;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataShow.class);
-
-    /**
-     * The object managing background requests
-     */
-    private InfoSubRequestsThread isrt;
-
-    /**
-     * The hashcode of the displayed element, used to manage multithreaded request
-     */
-    private int elementToken;
-
-    /**
-     * The panel used to show the data (Character or Comic)
-     */
-    private JPanel panel;
-
     /**
      * The thumbnail od the element displayed
      */
     private final ShowThumbnail thumbnail;
-
+    /**
+     * The object managing background requests
+     */
+    private InfoSubRequestsThread isrt;
+    /**
+     * The hashcode of the displayed element, used to manage multithreaded request
+     */
+    private int elementToken;
+    /**
+     * The panel used to show the data (Character or Comic)
+     */
+    private JPanel panel;
     /**
      * The title of the Panel
      */
@@ -208,7 +203,7 @@ public class DataShow extends Observable implements SubRequestCaller {
      */
     synchronized public void DrawComic(Comic comic) {
         //Don't redraw if called for the same element
-        if(elementToken == comic.hashCode()){
+        if (elementToken == comic.hashCode()) {
             return;
         }
         //Clearing jobs for the previous element
@@ -217,6 +212,7 @@ public class DataShow extends Observable implements SubRequestCaller {
         elementToken = comic.hashCode();
         //region title display
         head.setText(comic.getTitle());
+        head.setToolTipText(comic.getTitle());
         //endregion
         //region detail display
         referencesPane.setVisible(true);
@@ -267,7 +263,7 @@ public class DataShow extends Observable implements SubRequestCaller {
         characterListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> characters = new JList<>(characterListModel);
         tabsJLists.put("Characters", characters);
-        tabs.addTab("Characters",new CustomScrollPane(characters));
+        tabs.addTab("Characters", new CustomScrollPane(characters));
         isrt.addJob("Character", "Characters", comic.getCharacters().getCollectionURI().substring(36), elementToken, this);
         //endregion
         //region Creators
@@ -288,10 +284,7 @@ public class DataShow extends Observable implements SubRequestCaller {
             for (ComicSummary comicVariant : comic.getVariants()) {
                 variantsListModel.addElement(new ComicSummaryListElement(comicVariant));
             }
-
-            if(variants != null) {
-                tabs.addTab("Variants", new CustomScrollPane(variants));
-            }
+            tabs.addTab("Variants", new CustomScrollPane(variants));
         }
         //endregion
         //region collections
@@ -317,7 +310,7 @@ public class DataShow extends Observable implements SubRequestCaller {
             for (ComicSummary comicCollected : comic.getCollectedIssues()) {
                 CollectedListModel.addElement(new ComicSummaryListElement(comicCollected));
             }
-            tabs.addTab("Collected Issues",new CustomScrollPane(collected));
+            tabs.addTab("Collected Issues", new CustomScrollPane(collected));
         }
         //endregion
         //region stories
@@ -333,11 +326,11 @@ public class DataShow extends Observable implements SubRequestCaller {
         eventsListModel.addElement(new LoadingListElement());
         JList<MarvelListElement> events = new JList<>(eventsListModel);
         tabsJLists.put("Events", events);
-        tabs.addTab("Events",new CustomScrollPane(events));
+        tabs.addTab("Events", new CustomScrollPane(events));
         isrt.addJob("Event", "Events", comic.getEvents().getCollectionURI().substring(36), elementToken, this);
         // external links
         List<LinkView> linkViews = Arrays.stream(comic.getUrls()).map((Url url) -> new LinkView(url.getType(), url.getUrl())).collect(Collectors.toList());
-        tabs.addTab("External Links",new CustomScrollPane(new ExternalLinksView(linkViews)));
+        tabs.addTab("External Links", new CustomScrollPane(new ExternalLinksView(linkViews)));
         //endregion
         tabs.revalidate();
         setChanged();
@@ -358,7 +351,7 @@ public class DataShow extends Observable implements SubRequestCaller {
      */
     synchronized public void DrawCharacter(final Character character) {
         //Don't redraw if called for the same element
-        if(elementToken == character.hashCode()){
+        if (elementToken == character.hashCode()) {
             return;
         }
         //Clearing jobs for the previous element
@@ -368,6 +361,7 @@ public class DataShow extends Observable implements SubRequestCaller {
 
         //region title display
         head.setText(character.getName());
+        head.setToolTipText(character.getName());
         //endregion
         //region detail display
         referencesPane.setVisible(false);
@@ -520,13 +514,13 @@ public class DataShow extends Observable implements SubRequestCaller {
                     List<LinkView> linkViews = new ArrayList<>();
                     for (Creator oneCreator : (TreeSet<Creator>) elements) {
                         String url = oneCreator.getUrls()[0].getUrl();
-                        if(oneCreator.getUrls().length > 0) {
+                        if (oneCreator.getUrls().length > 0) {
                             linkViews.add(new LinkView(oneCreator.getFullName(), url));
-                        }else{
+                        } else {
                             linkViews.add(new LinkView(oneCreator.getFullName(), "http://marvel.com/comics/creators"));
                         }
                     }
-                    tabs.insertTab("Creators",null,new CustomScrollPane(new ExternalLinksView(linkViews)),null,1);
+                    tabs.insertTab("Creators", null, new CustomScrollPane(new ExternalLinksView(linkViews)), null, 1);
                     break;
                 case "Story":
                     for (Story oneStory : (TreeSet<Story>) elements) {

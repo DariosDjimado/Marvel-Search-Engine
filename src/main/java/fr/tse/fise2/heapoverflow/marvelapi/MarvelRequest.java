@@ -176,7 +176,7 @@ public final class MarvelRequest extends UrlBuilder {
      * @return BufferedImage
      * @throws IOException cannot read the image
      */
-    public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath, @Nullable Observer observer) throws IOException {
+    public static BufferedImage getImage(Image image, ImageVariant imageVariant, String tmpPath, @Nullable Observer observer) throws Exception {
         File imageTmp = new File(tmpPath + UrlBuilder.imageCachedName(image)).getCanonicalFile();
         if (imageTmp.isFile()) {
             if (imageTmp.canRead()) {

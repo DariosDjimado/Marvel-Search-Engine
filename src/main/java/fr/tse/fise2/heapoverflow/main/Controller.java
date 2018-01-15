@@ -88,12 +88,9 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         });
 
         UserAuthenticationModel.getInstance().addObserver(this.ui.getUiExtraComponent());
-        // this.emitSearchComicById("61522");
-
-
         FavoriteView.setController(this);
         CollectionsView.setController(this);
-
+        AppErrorHandler.setUserInterface(this.ui);
     }
 
     private void initRecommendView() {

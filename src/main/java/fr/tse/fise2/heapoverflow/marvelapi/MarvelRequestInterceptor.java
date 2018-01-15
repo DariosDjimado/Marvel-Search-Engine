@@ -46,8 +46,6 @@ class MarvelRequestInterceptor implements Interceptor {
         }
 
         // try to find the url in cache
-
-
         try {
             CacheUrlsRow cacheUrlsRow = CacheUrlsTable.findCompleteUrl(request.url().toString());
 
@@ -79,28 +77,42 @@ class MarvelRequestInterceptor implements Interceptor {
         }
 
 
-        Response response = chain.proceed(newRequest).newBuilder()
-                .header("Cache-Control", "max-age=86400")
-                .build();
+        Response response;
+        response = getResponse(chain, newRequest);
 
-        if (response.code() == 504) {
+        if (response != null && response.code() == 504) {
             newRequest = request.newBuilder()
                     .url(UrlBuilder.appendHash(request.url().toString()))
                     .cacheControl(CacheControl.FORCE_NETWORK)
                     .build();
 
-            response = chain.proceed(newRequest).newBuilder()
-                    .header("Cache-Control", "max-age=86400")
-                    .build();
+            response = getResponse(chain, newRequest);
         }
 
         // log end request info
         Long t2 = nanoTime();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("Received response for %s in %.1fms%n%s",
-                    response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+                    response != null ? response.request().url() : null, (t2 - t1) / 1e6d,
+                    response != null ? response.headers() : null));
         }
 
+        return response;
+    }
+
+    private Response getResponse(Chain chain, Request newRequest) throws IOException {
+        Response response;
+        try {
+            response = chain.proceed(newRequest).newBuilder()
+                    .header("Cache-Control", "max-age=86400")
+                    .build();
+        } catch (Exception e) {
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
+            throw new IOException(e);
+        }
         return response;
     }
 }

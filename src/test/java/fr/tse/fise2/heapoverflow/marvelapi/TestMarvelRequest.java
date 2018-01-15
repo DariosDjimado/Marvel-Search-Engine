@@ -15,6 +15,9 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author Darios DJIMADO
+ */
 public class TestMarvelRequest {
 
     @BeforeClass
@@ -144,7 +147,7 @@ public class TestMarvelRequest {
         image.setExtension(extension);
 
         // get url
-        BufferedImage bufferedImage = MarvelRequest.getImage(image, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(),null);
+        BufferedImage bufferedImage = MarvelRequest.getImage(image, UrlBuilder.ImageVariant.PORTRAIT_FANTASTIC, AppConfig.getInstance().getTmpDir(), null);
 
         assertNotNull(bufferedImage);
         assertEquals(bufferedImage.getHeight(), 252);

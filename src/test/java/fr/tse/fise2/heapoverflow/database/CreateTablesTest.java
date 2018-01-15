@@ -66,6 +66,7 @@ public class CreateTablesTest {
 
     @Test
     public void createCollectionsListTable() {
+        CreateTables.createUsersTable();
         CreateTables.createCollectionsTable();
         assertTrue(CreateTables.tableIsCreated("collections"));
     }
