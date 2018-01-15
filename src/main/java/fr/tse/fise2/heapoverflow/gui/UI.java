@@ -21,6 +21,7 @@ public class UI extends JFrame implements Observer {
     private final JTabbedPane tabbedPane;
     private final FavoriteView favoriteView;
     private final LibraryView libraryView;
+    private final RecommendView recommendView;
     private final SplashScreen splashScreen;
     private JPanel container;
     private UISearchComponent uiSearchComponent;
@@ -39,6 +40,7 @@ public class UI extends JFrame implements Observer {
         this.tabbedPane.setBackground(UIColor.MAIN_BACKGROUND_COLOR);
         this.favoriteView = new FavoriteView();
         this.libraryView = new LibraryView();
+        this.recommendView = new RecommendView();
         this.uiTopComponent = new UITopComponent(this, this.topPanel);
         UserAuthenticationModel.getInstance().addObserver(this);
 
@@ -52,19 +54,23 @@ public class UI extends JFrame implements Observer {
         container.setLayout(new BorderLayout(0, 0));
 
         this.tabbedPane.add("Search ", this.searchViewPanel);
+        this.tabbedPane.add("Recommendations", this.recommendView);
         this.tabbedPane.add("Library", this.libraryView);
         this.tabbedPane.add("Favorite", this.favoriteView);
         this.tabbedPane.add("Collection", CollectionsView.getInstance());
 
         // disable, library, favorite and collection panel
-        this.tabbedPane.setEnabledAt(1, false);
         this.tabbedPane.setEnabledAt(2, false);
         this.tabbedPane.setEnabledAt(3, false);
+        this.tabbedPane.setEnabledAt(4, false);
 
         //
         this.tabbedPane.addChangeListener(e -> {
             if (this.tabbedPane.getSelectedComponent() == this.favoriteView || this.tabbedPane.getSelectedComponent() == this.libraryView) {
                 ((FavoriteView) this.tabbedPane.getSelectedComponent()).refresh();
+            }
+            if (this.tabbedPane.getSelectedComponent() == this.recommendView){
+                ((RecommendView)this.tabbedPane.getSelectedComponent()).refresh();
             }
         });
 
@@ -184,6 +190,8 @@ public class UI extends JFrame implements Observer {
         return tabbedPane;
     }
 
+    public RecommendView getRecommendView() { return recommendView; }
+
     /**
      * Displays the frame
      */
@@ -212,15 +220,15 @@ public class UI extends JFrame implements Observer {
         if (o == UserAuthenticationModel.getInstance()) {
             if (arg != null) {
                 // enable, library, favorite and collection panel
-                this.tabbedPane.setEnabledAt(1, true);
                 this.tabbedPane.setEnabledAt(2, true);
                 this.tabbedPane.setEnabledAt(3, true);
+                this.tabbedPane.setEnabledAt(4, true);
                 this.tabbedPane.setSelectedIndex(1);
             } else {
                 // disable, library, favorite and collection panel
-                this.tabbedPane.setEnabledAt(1, false);
                 this.tabbedPane.setEnabledAt(2, false);
                 this.tabbedPane.setEnabledAt(3, false);
+                this.tabbedPane.setEnabledAt(4, false);
                 this.tabbedPane.setSelectedIndex(0);
             }
         }

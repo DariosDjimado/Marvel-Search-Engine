@@ -2,6 +2,7 @@ package fr.tse.fise2.heapoverflow.main;
 
 import fr.tse.fise2.heapoverflow.authentication.User;
 import fr.tse.fise2.heapoverflow.controllers.DataShowController;
+import fr.tse.fise2.heapoverflow.controllers.RecommendController;
 import fr.tse.fise2.heapoverflow.database.CacheUrlsTable;
 import fr.tse.fise2.heapoverflow.database.ConnectionDB;
 import fr.tse.fise2.heapoverflow.database.ElementAssociationRow;
@@ -60,6 +61,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         this.initReadButton();
         this.initOwnButton();
         this.initDataShow();
+        this.initRecommendView();
 
         this.initCacheUrlsTable();
 
@@ -92,6 +94,10 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
         FavoriteView.setController(this);
         CollectionsView.setController(this);
 
+    }
+
+    private void initRecommendView() {
+        new RecommendController(this.ui.getRecommendView(), this.dataShow, this);
     }
 
 
@@ -322,7 +328,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     private void customDrawComic(Comic comic) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnPane().setComic(comic);
             dataShow.DrawComic(comic);
             this.ui.revalidate();
             this.ui.repaint();
@@ -388,7 +393,6 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
     private void customDrawCharacter(Character character) {
         EventQueue.invokeLater(() -> {
-            this.dataShow.getBtnPane().setCharacter(character);
             dataShow.DrawCharacter(character);
             this.ui.revalidate();
             this.ui.repaint();

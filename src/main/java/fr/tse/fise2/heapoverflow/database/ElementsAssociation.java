@@ -188,6 +188,18 @@ public class ElementsAssociation {
                 " WHERE user_id = ? AND TYPE = ? AND OWNED = TRUE ");
     }
 
+
+    /**
+     * Selects all rows that match user and has been read by him
+     *
+     * @param userId user unique id
+     * @return list of ElementAssociationRow
+     */
+    public static List<ElementAssociationRow> findReadComicsByUser(int userId) {
+        return findElementsByUser(userId, COMIC, "SELECT * FROM ELEMENTS_ASSOCIATION ea INNER JOIN ELEMENTS e ON ea.UID =e.UID" +
+                " WHERE user_id = ? AND TYPE = ? AND IS_READ = TRUE ");
+    }
+
     /**
      * Selects all rows that match user and character constraints
      *
@@ -291,6 +303,76 @@ public class ElementsAssociation {
             }
         }
         return elementAssociationRow;
+    }
+
+    public static List<ElementAssociationRow> findMostFavedComics(int limit){
+        List<ElementAssociationRow> succinctElementAssociationRows = new ArrayList<>();
+
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("SELECT ID, count(*) FROM ELEMENTS_ASSOCIATION  " +
+                        "INNER JOIN ELEMENTS ON ELEMENTS_ASSOCIATION.UID = ELEMENTS.UID" +
+                        " WHERE FAVORITE = TRUE AND TYPE = 0 GROUP BY ID ORDER BY count(*) DESC FETCH FIRST ? ROWS ONLY")) {
+            preparedStatement.setInt(1, limit);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                succinctElementAssociationRows.add(new ElementAssociationRow(0,
+                        resultSet.getInt("id"),
+                        MarvelElement.COMIC,
+                        "",
+                        0,
+                        false,
+                        -1,
+                        false,
+                        0,
+                        "",
+                        false
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return succinctElementAssociationRows;
+    }
+
+    public static List<ElementAssociationRow> findBestRankedComics(int limit){
+        List<ElementAssociationRow> succinctElementAssociationRows = new ArrayList<>();
+
+        try (PreparedStatement preparedStatement = ConnectionDB.getInstance().getConnection()
+                .prepareStatement("SELECT ID, avg(GRADE) FROM ELEMENTS_ASSOCIATION  " +
+                        "INNER JOIN ELEMENTS ON ELEMENTS_ASSOCIATION.UID = ELEMENTS.UID" +
+                        " WHERE FAVORITE = TRUE AND TYPE = 0 GROUP BY ID ORDER BY avg(GRADE) DESC FETCH FIRST ? ROWS ONLY")) {
+            preparedStatement.setInt(1, limit);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                succinctElementAssociationRows.add(new ElementAssociationRow(0,
+                        resultSet.getInt("id"),
+                        MarvelElement.COMIC,
+                        "",
+                        0,
+                        false,
+                        -1,
+                        false,
+                        0,
+                        "",
+                        false
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            AppErrorHandler.onError(e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return succinctElementAssociationRows;
     }
 
     public static void updateCommentCreateAsNeeded(int elementId, String elementName, int userId, String value, MarvelElement marvelElement) {

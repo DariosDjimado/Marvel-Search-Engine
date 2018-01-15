@@ -207,6 +207,10 @@ public class DataShow extends Observable implements SubRequestCaller {
      * @param comic The comic to display
      */
     synchronized public void DrawComic(Comic comic) {
+        //Don't redraw if called for the same element
+        if(elementToken == comic.hashCode()){
+            return;
+        }
         //Clearing jobs for the previous element
         isrt.clearJobsFor(elementToken);
         //Getting token for the next element
@@ -221,6 +225,7 @@ public class DataShow extends Observable implements SubRequestCaller {
         //endregion
         //region references
         btnPane.setVisible(true);
+        btnPane.setComic(comic);
         LinkedHashMap<String, String> references = new LinkedHashMap<>();
         references.put("ISBN : ", comic.getIsbn());
         references.put("UPC : ", comic.getUpc());
@@ -352,6 +357,10 @@ public class DataShow extends Observable implements SubRequestCaller {
      * @param character The Character to display
      */
     synchronized public void DrawCharacter(final Character character) {
+        //Don't redraw if called for the same element
+        if(elementToken == character.hashCode()){
+            return;
+        }
         //Clearing jobs for the previous element
         isrt.clearJobsFor(elementToken);
         //Getting token for the next element
@@ -363,6 +372,7 @@ public class DataShow extends Observable implements SubRequestCaller {
         //region detail display
         referencesPane.setVisible(false);
         btnPane.setVisible(false);
+        btnPane.setCharacter(character);
         LinkedHashMap<String, String> details = new LinkedHashMap<>();
         details.put("Appears in : ", "");
         details.put(" ", "- " + Integer.valueOf(character.getSeries().getAvailable()).toString() + " Serie");
