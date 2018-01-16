@@ -2,7 +2,10 @@ package fr.tse.fise2.heapoverflow.gui;
 
 import fr.tse.fise2.heapoverflow.controllers.SetupController;
 import fr.tse.fise2.heapoverflow.database.ConnectionDB;
+import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.models.SetupModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +18,7 @@ import java.util.Observer;
  * @author Darios DJIMADO
  */
 public class SetupView implements Observer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetupView.class);
     private final JButton prevButton;
     private final JButton nextButton;
     private final JButton finishedButton;
@@ -128,7 +132,11 @@ public class SetupView implements Observer {
                         try {
                             ConnectionDB.closeConnection();
                         } catch (SQLException ex) {
-                            ex.printStackTrace();
+                            AppErrorHandler.onError(ex);
+                            if(LOGGER.isErrorEnabled()){
+                                LOGGER.error(ex.getMessage(),ex);
+                            }
+
                         }
                         System.exit(0);
                     }

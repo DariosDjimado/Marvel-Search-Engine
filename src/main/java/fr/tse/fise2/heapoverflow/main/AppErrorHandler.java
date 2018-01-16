@@ -16,7 +16,6 @@ public final class AppErrorHandler {
         if (userInterface != null) {
             userInterface.getUiBottomComponent().addNewError(e);
         }
-        e.printStackTrace();
         LOGGER.error(e.getMessage());
     }
 
@@ -26,14 +25,7 @@ public final class AppErrorHandler {
 
     public static void configureLogging() {
         try {
-
-            ConsoleAppender consoleAppender = new ConsoleAppender();
             String pattern = "%c{1}:%L %d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
-            consoleAppender.setLayout(new PatternLayout(pattern));
-            consoleAppender.setThreshold(Level.ERROR);
-            consoleAppender.activateOptions();
-
-
             FileAppender fileAppender = new FileAppender(new PatternLayout(), "log.log");
             fileAppender.setLayout(new PatternLayout(pattern));
             fileAppender.activateOptions();

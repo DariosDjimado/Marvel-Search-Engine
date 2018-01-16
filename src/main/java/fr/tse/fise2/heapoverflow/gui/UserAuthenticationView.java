@@ -4,6 +4,8 @@ import fr.tse.fise2.heapoverflow.controllers.UserAuthenticationController;
 import fr.tse.fise2.heapoverflow.database.UserRow;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.models.UserAuthenticationModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +22,7 @@ import java.util.Observer;
  * @author Darios DJIMADO
  */
 class UserAuthenticationView extends JPanel implements Observer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserAuthenticationView.class);
     private final UserAuthenticationModel model;
     private final UserAuthenticationController controller;
     private final JButton logInButton;
@@ -312,7 +315,10 @@ class UserAuthenticationView extends JPanel implements Observer {
                             try {
                                 controller.signUp(userRow);
                             } catch (SQLException ex) {
-                                ex.printStackTrace();
+                                AppErrorHandler.onError(ex);
+                                if(LOGGER.isErrorEnabled()){
+                                    LOGGER.error(ex.getMessage(),ex);
+                                }
                                 JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Sign Up error",
                                         JOptionPane.ERROR_MESSAGE);
                                 errorCurred = true;
