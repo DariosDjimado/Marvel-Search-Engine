@@ -203,10 +203,9 @@ class InfoSubRequestsThread implements Runnable {
     public void addJob(String elementsClass, String modelKey, String shortUri, int elementHash, SubRequestCaller caller) {
         synchronized (this) {
             jobs.add(new Job(elementsClass, modelKey, shortUri, elementHash, caller));
-//            if (LOGGER.isDebugEnabled()) {
-//                LOGGER.debug("----New Job for" + elementsClass);
-//            }
-            System.out.println("----New Job for" + elementsClass);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("----New Job for" + elementsClass);
+            }
             notify();
         }
     }

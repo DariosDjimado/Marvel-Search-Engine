@@ -81,7 +81,6 @@ public class StoriesEventsPopUp extends JFrame implements SubRequestCaller {
     @Override
     synchronized public void updateList(Set elements, String elementType, String tab, int token, boolean end, MarvelListElement lastElement) {
         if(this.elementToken == token) {
-            System.out.println("updating " + tab + " tab");
             switch (elementType) {
                 case "Comic":
                     for (Comic oneComic : (TreeSet<Comic>) elements) {

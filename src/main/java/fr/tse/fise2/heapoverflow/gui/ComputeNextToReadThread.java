@@ -144,7 +144,9 @@ public class ComputeNextToReadThread implements Runnable {
                 }
 
                 jobDone = true;
-                System.out.println("----Refresh Done");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("----Refresh Done");
+            }
 
             } catch (InterruptedException e) {
                 break;
@@ -157,10 +159,9 @@ public class ComputeNextToReadThread implements Runnable {
             this.readComics = readComics;
             this.targetModel = modelToUpdate;
             this.jobDone = false;
-//            if (LOGGER.isDebugEnabled()) {
-//                LOGGER.debug("----New Job for" + elementsClass);
-//            }
-            System.out.println("----Refresh nextToRead");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("----Refresh nextToRead");
+            }
             notify();
         }
     }
