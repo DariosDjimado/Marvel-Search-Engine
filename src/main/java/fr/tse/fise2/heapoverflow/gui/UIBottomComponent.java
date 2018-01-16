@@ -94,7 +94,7 @@ public class UIBottomComponent {
         this.urlLabel.setSize(new Dimension(300, 25));
         this.urlLabel.setPreferredSize(new Dimension(300, 25));
 
-        JLabel attributionLabel = new JLabel("<HTML><FONT color=\"#000099\"><U>Data provided by Marvel. © 2017 MARVEL</U></FONT></HTML>");
+        JLabel attributionLabel = new JLabel("<HTML><FONT color=\"#000099\"><U>Data provided by Marvel. © 2018 MARVEL</U></FONT></HTML>");
         attributionLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
 

@@ -115,6 +115,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                         ElementsAssociation.updateFavorite(favRow.getUid(), favRow.getUserId(), false);
                         favoriteButtonView.setState(false);
                         this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                        this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                     }
                 } else {
                     LOGGER.debug("Adding Favorite " + favoriteButtonView.getId());
@@ -123,6 +124,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                             favoriteButtonView.getElementName(), userId, true, favoriteButtonView.getType());
                     favoriteButtonView.setState(true);
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                 }
             }
         });
@@ -146,6 +148,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                         ElementsAssociation.updateRead(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
                         readButtonView.setState(false);
                         this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                        this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                     }
                 } else {
                     int userId = user.getId();
@@ -153,6 +156,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                             readButtonView.getElementName(), userId, true, readButtonView.getType());
                     readButtonView.setState(true);
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                 }
             }
         });
@@ -176,6 +180,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                         ElementsAssociation.updateOwned(elementAssociationRow.getUid(), elementAssociationRow.getUserId(), false);
                         ownButtonView.setState(false);
                         this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                        this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                     }
                 } else {
                     int userId = user.getId();
@@ -186,6 +191,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
 
 
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                 }
             }
         });
@@ -213,6 +219,7 @@ public class Controller implements IRequestListener, ISelectionChangedListener, 
                 if (user != null) {
                     ElementsAssociation.updateGradeAsNeeded(gradesPanelView.getId(), gradesPanelView.getElementName(), user.getId(), button.getGrade(), gradesPanelView.getType());
                     this.ui.getUiExtraComponent().getRightWrapperPanel().repaint();
+                    this.ui.getUiSearchComponent().getLeftWrapperPanel().repaint();
                     gradesPanelView.setCurrentGrade(button.getGrade());
                 }
             });

@@ -11,6 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * Search panel
+ *
+ * @author Darios DJIMADO
+ * @author Ismail BERRADA
+ */
 public class UISearchComponent {
     private final JPanel leftWrapperPanel;
     private Controller controller;
@@ -235,6 +241,10 @@ public class UISearchComponent {
 
     public void setController(Controller controller) {
         this.controller = controller;
+    }
+
+    public JPanel getLeftWrapperPanel() {
+        return leftWrapperPanel;
     }
 }
 

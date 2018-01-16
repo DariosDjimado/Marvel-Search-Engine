@@ -10,14 +10,15 @@ import java.awt.*;
 /**
  * @author Darios DJIMADO
  */
-class CommentView extends JPanel {
+public class CommentView extends JPanel {
+    public static final String EMPTY_COMMENT = "no comment";
 
     private final CircleButton userAvatarButton;
     private final JTextArea commentArea;
 
     CommentView() {
         this.userAvatarButton = new CircleButton("");
-        this.commentArea = new CustomTextArea("no comment");
+        this.commentArea = new CustomTextArea(EMPTY_COMMENT);
         this.setOpaque(false);
         this.initComponent();
     }
@@ -25,6 +26,7 @@ class CommentView extends JPanel {
     public void setElementAssociationRow(ElementAssociationRow elementAssociationRow) {
         UserRow userRow = UsersTable.findUserById(elementAssociationRow.getUserId());
         this.userAvatarButton.setText(userRow.getUsername().substring(0, 1));
+        this.userAvatarButton.setToolTipText(userRow.getUsername());
         this.commentArea.setText(elementAssociationRow.getComment());
     }
 
@@ -32,6 +34,7 @@ class CommentView extends JPanel {
         this.userAvatarButton.setBackground(UIColor.ACCENT_COLOR);
         this.commentArea.setBackground(UIColor.TEXT_FIELD_DISABLE_COLOR);
         this.commentArea.setBackground(Color.lightGray);
+        this.commentArea.setMargin(new Insets(2, 5, 2, 2));
 
         GroupLayout groupLayout = new GroupLayout(this);
         this.setLayout(groupLayout);

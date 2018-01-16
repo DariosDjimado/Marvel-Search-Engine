@@ -14,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
+import static fr.tse.fise2.heapoverflow.gui.CommentView.EMPTY_COMMENT;
+
 /**
  * @author Darios DJIMADO
  */
@@ -50,7 +52,7 @@ public class ReactivePanel extends JPanel {
         this.saveCommentButton = new DefaultButton("save");
         this.saveCommentButton.setVisible(false);
 
-        this.commentTextArea.setText("no comment");
+        this.commentTextArea.setText(EMPTY_COMMENT);
         this.commentTextArea.setDisabledTextColor(Color.GRAY);
         this.commentTextArea.setEnabled(false);
         this.commentTextArea.setLineWrap(true);
@@ -73,8 +75,7 @@ public class ReactivePanel extends JPanel {
 
         this.commentListModel = new DefaultListModel<>();
         JList<ElementAssociationRow> commentList = new JList<>(this.commentListModel);
-        CustomScrollPane commentScrollPane = new CustomScrollPane(commentList,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        CustomScrollPane commentScrollPane = new CustomScrollPane(commentList, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         this.commentContainer = new JPanel(new BorderLayout());
         this.commentContainer.setPreferredSize(new Dimension(this.commentContainer.getWidth(), 60));
@@ -256,14 +257,21 @@ public class ReactivePanel extends JPanel {
         if (user != null) {
             row = ElementsAssociation.findElement(user.getId(), comic.getId(), MarvelElement.COMIC);
             if (row != null) {
-                this.commentTextArea.setText(row.getComment().isEmpty() ? "no comment" : row.getComment());
+                this.commentTextArea.setText(row.getComment().isEmpty() ? EMPTY_COMMENT : row.getComment());
+            } else {
+                this.commentTextArea.setText(EMPTY_COMMENT);
             }
-        }
 
-
-        this.commentListModel.clear();
-        for (ElementAssociationRow elementAssociationRow : CommentHandler.findCommentsByComic(comic.getId())) {
-            this.commentListModel.addElement(elementAssociationRow);
+            this.commentListModel.clear();
+            for (ElementAssociationRow elementAssociationRow : CommentHandler.findCommentsByComic(comic.getId())) {
+                if (elementAssociationRow.getUserId() != user.getId()) {
+                    if (!elementAssociationRow.getComment().isEmpty()) {
+                        this.commentListModel.addElement(elementAssociationRow);
+                    }
+                }
+            }
+        } else {
+            this.gradesPanelView.setComic(comic, null);
         }
 
 
@@ -283,7 +291,7 @@ public class ReactivePanel extends JPanel {
         if (user != null) {
             row = ElementsAssociation.findElement(user.getId(), character.getId(), MarvelElement.CHARACTER);
             if (row != null) {
-                this.commentTextArea.setText(row.getComment().isEmpty() ? "no comment" : row.getComment());
+                this.commentTextArea.setText(row.getComment().isEmpty() ? EMPTY_COMMENT : row.getComment());
             }
         }
 

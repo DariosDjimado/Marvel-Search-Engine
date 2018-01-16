@@ -112,6 +112,18 @@ public class GradesPanel extends JPanel {
         this.elementName = comic.getTitle();
         this.type = MarvelElement.COMIC;
         this.setId(comic.getId());
+        this.updateState(null);
+
+        User user = UserAuthenticationModel.getUser();
+        if (user != null) {
+            ElementAssociationRow row = ElementsAssociation.findElement(user.getId(), this.id, this.type);
+            updateState(row);
+        } else {
+            final int avgGrade = ElementsAssociation.getAverageGradeByComic(id);
+            this.isAverageGrade = true;
+            this.select(avgGrade);
+            this.currentGrade = avgGrade;
+        }
     }
 
     public void setCharacter(@NotNull Character character) {

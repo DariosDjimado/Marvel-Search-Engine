@@ -26,6 +26,8 @@ class ComicsListRenderer extends DefaultListCellRenderer implements ListCellRend
                     this.cardTitle.setText(this.cardTitle.getText() + comic.getTitle());
                 }
 
+
+
                 this.ownButton.setComic(comic);
                 this.favoriteButton.setComic(comic);
                 this.readButton.setComic(comic);

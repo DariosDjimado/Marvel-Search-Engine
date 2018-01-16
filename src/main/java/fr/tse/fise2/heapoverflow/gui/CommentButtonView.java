@@ -67,6 +67,7 @@ public class CommentButtonView extends ToggleStateButton implements Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
+        this.commentTextArea.setText(CommentView.EMPTY_COMMENT);
         this.refresh();
     }
 }

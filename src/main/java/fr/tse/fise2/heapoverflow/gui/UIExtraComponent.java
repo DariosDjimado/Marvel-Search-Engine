@@ -10,6 +10,12 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * Right panel
+ *
+ * @author Darios DJIMADO
+ * @author Ismail BERRADA
+ */
 public class UIExtraComponent implements Observer {
     private final JPanel rightWrapperPanel;
     private final JPanel rightContainerPanel;

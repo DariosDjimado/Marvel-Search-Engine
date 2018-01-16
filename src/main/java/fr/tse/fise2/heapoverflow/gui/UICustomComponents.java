@@ -8,6 +8,11 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+/**
+ * Custom components
+ *
+ * @author Darios DJIMADO
+ */
 final class DefaultButton extends JButton {
     /**
      * Creates a button with text.
