@@ -38,6 +38,11 @@ public class AppConfig {
         AppErrorHandler.configureLogging();
         this.cacheUrls = new Cache(new File("CacheResponse.tmp"), 10 * 1024 * 1024);
         File file = new File("CacheImage.tmp");
+
+        if (!file.exists()) {
+            boolean f = file.mkdir();
+        }
+
         this.tmpDir = file.getName() + "/";
         try {
             if (!CreateTables.tableIsCreated("app_configs")) {
