@@ -20,7 +20,7 @@ import java.io.IOException;
 /**
  * @author Darios DJIMADO
  */
-final class UpdateUrlsFromWikipedia {
+public final class UpdateUrlsFromWikipedia {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateUrlsFromWikipedia.class);
     private final static String[] urls = {
             "https://en.wikipedia.org/wiki/Category:Marvel_Comics_superheroes",

@@ -13,6 +13,7 @@ public final class AppErrorHandler {
     }
 
     public static void onError(Exception e) {
+        e.printStackTrace();
         if (userInterface != null) {
             userInterface.getUiBottomComponent().addNewError(e);
         }

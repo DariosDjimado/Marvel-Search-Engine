@@ -5,12 +5,16 @@ import fr.tse.fise2.heapoverflow.gui.SetupView;
 import fr.tse.fise2.heapoverflow.main.AppErrorHandler;
 import fr.tse.fise2.heapoverflow.marvelapi.MarvelElement;
 import fr.tse.fise2.heapoverflow.models.SetupModel;
+import fr.tse.fise2.heapoverflow.tasks.FetchAllCharactersTask;
+import fr.tse.fise2.heapoverflow.tasks.FetchAllComicsTask;
+import fr.tse.fise2.heapoverflow.tasks.UpdateUrlsFromWikipedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Date;
 
 import static fr.tse.fise2.heapoverflow.marvelapi.MarvelElement.CHARACTER;
@@ -39,42 +43,9 @@ public class SetupController {
                 this.model.setLocalSetup(true);
             }
             if (this.model.isLocalSetup()) {
-                Thread thread = new Thread() {
-                    /**
-                     * When an object implementing interface <code>Runnable</code> is used
-                     * to create a thread, starting the thread causes the object's
-                     * <code>run</code> method to be called in that separately executing
-                     * thread.
-                     * <p>
-                     * The general contract of the method <code>run</code> is that it may
-                     * take any action whatsoever.
-                     *
-                     * @see Thread#run()
-                     */
-                    @Override
-                    public void run() {
-                        view.onLog("creating database");
-                        if (CreateTables.createAllTables()) {
-                            view.onLog("database created");
-                        } else {
-                            view.onLog("an error occured when creating database");
-                        }
-                        saveConfig();
-                        saveCharactersUrls();
-                        saveCharacterFirstAppearance();
-                        saveElement("characters_sample.csv", CHARACTER);
-                        saveElement("comics_sample.csv", COMIC);
-                        if (view != null) {
-                            view.setInstallFinished();
-                        }
-                        model.nextPage();
-                    }
-                };
-                thread.start();
+                this.localInstallation();
             } else {
-                if (view != null) {
-                    view.onLog("not yet");
-                }
+                this.onlineInstall();
             }
         }
     }
@@ -168,6 +139,93 @@ public class SetupController {
 
     public void setView(SetupView view) {
         this.view = view;
+    }
+
+    private void onlineInstall() {
+        Thread thread = new Thread() {
+            /**
+             * When an object implementing interface <code>Runnable</code> is used
+             * to create a thread, starting the thread causes the object's
+             * <code>run</code> method to be called in that separately executing
+             * thread.
+             * <p>
+             * The general contract of the method <code>run</code> is that it may
+             * take any action whatsoever.
+             *
+             * @see Thread#run()
+             */
+            @Override
+            public void run() {
+                view.onLog("creating database");
+                if (CreateTables.createAllTables()) {
+                    view.onLog("database created");
+                } else {
+                    view.onLog("an error occured when creating database");
+                }
+                saveConfig();
+                UpdateUrlsFromWikipedia urlsFromWikipedia = new UpdateUrlsFromWikipedia(view);
+                urlsFromWikipedia.init();
+
+                FetchAllComicsTask comicsTask = new FetchAllComicsTask(view);
+                try {
+                    comicsTask.doTask();
+                } catch (IOException e) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                }
+
+                FetchAllCharactersTask charactersTask = new FetchAllCharactersTask(view);
+                try {
+                    charactersTask.doTask();
+                } catch (IOException e) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                }
+
+                if (view != null) {
+                    view.setInstallFinished();
+                }
+                model.nextPage();
+            }
+        };
+        thread.start();
+    }
+
+    private void localInstallation() {
+        Thread thread = new Thread() {
+            /**
+             * When an object implementing interface <code>Runnable</code> is used
+             * to create a thread, starting the thread causes the object's
+             * <code>run</code> method to be called in that separately executing
+             * thread.
+             * <p>
+             * The general contract of the method <code>run</code> is that it may
+             * take any action whatsoever.
+             *
+             * @see Thread#run()
+             */
+            @Override
+            public void run() {
+                view.onLog("creating database");
+                if (CreateTables.createAllTables()) {
+                    view.onLog("database created");
+                } else {
+                    view.onLog("an error occured when creating database");
+                }
+                saveConfig();
+                saveCharactersUrls();
+                saveCharacterFirstAppearance();
+                saveElement("characters_sample.csv", CHARACTER);
+                saveElement("comics_sample.csv", COMIC);
+                if (view != null) {
+                    view.setInstallFinished();
+                }
+                model.nextPage();
+            }
+        };
+        thread.start();
     }
 
 }
