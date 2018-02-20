@@ -30,7 +30,7 @@ public class UI extends JFrame implements Observer {
     private UIBottomComponent uiBottomComponent;
 
     public UI() {
-        super("Marvel Search");
+        super("Marvel Search Engine");
         this.splashScreen = SplashScreen.getSplashScreen();
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.topPanel = new JPanel();
