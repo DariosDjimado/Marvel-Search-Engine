@@ -1,10 +1,5 @@
-# 2017PInfo83-HeapOverflow
+# Marvel Search Engine
 
-[Comprendre l'architecture du projet](docs/project.md)
+This module allows you to search Marvel characters and comics.
 
-
-Documentation 
-
-- [Utilisation de l'API](docs/marvelapi.md)
-- [Utilisation de l'interface graphique](docs/gui.md)
-- [Utilisation de la base de donnée](docs/database.md)
+![Image of Marvel Search Engine](screen.png)

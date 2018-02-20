@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: fr.tse.fise2.heapoverflow.main.Launcher
-
